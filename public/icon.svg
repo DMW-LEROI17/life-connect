@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="LIFE CONNECT">
+  <rect width="512" height="512" rx="112" fill="#0A1A2F"/>
+  <path d="M256 104v56M256 352v56M104 256h56M352 256h56M147 147l40 40M325 325l40 40M365 147l-40 40M187 325l-40 40" stroke="#12B3A6" stroke-width="26" stroke-linecap="round"/>
+  <circle cx="256" cy="256" r="66" fill="#E24B4A"/>
+  <circle cx="256" cy="256" r="24" fill="#FFFFFF"/>
+</svg>
