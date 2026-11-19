@@ -1,0 +1,221 @@
+#!/usr/bin/env node
+/**
+ * Vérifie la configuration Supabase de LIFE CONNECT – HELP ME.
+ * Usage : node scripts/check-supabase.mjs
+ *
+ * Ne modifie rien. N'affiche jamais les clés.
+ */
+
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+function loadEnvFile() {
+  const path = resolve(process.cwd(), '.env.local');
+
+  try {
+    const content = readFileSync(path, 'utf8');
+
+    for (const line of content.split(/\r?\n/)) {
+      const match = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
+      if (!match) continue;
+
+      let value = match[2].trim();
+
+      if (
+        (value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))
+      ) {
+        value = value.slice(1, -1);
+      }
+
+      if (!process.env[match[1]]) process.env[match[1]] = value;
+    }
+  } catch {
+    console.error(
+      '❌ Fichier .env.local introuvable. Copie .env.example vers .env.local puis remplis-le.',
+    );
+    process.exit(1);
+  }
+}
+
+function ok(message) {
+  console.log(`✅ ${message}`);
+}
+
+function fail(message) {
+  console.log(`❌ ${message}`);
+}
+
+function warn(message) {
+  console.log(`⚠️  ${message}`);
+}
+
+loadEnvFile();
+
+const url = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/\/$/, '');
+const key = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+const adminPassword = process.env.ADMIN_PASSWORD || '';
+const authSecret = process.env.AUTH_SECRET || '';
+
+console.log('\n=== LIFE CONNECT – vérification Supabase ===\n');
+
+let errors = 0;
+
+if (!url) {
+  fail('NEXT_PUBLIC_SUPABASE_URL est vide.');
+  errors++;
+} else if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url)) {
+  warn(
+    `NEXT_PUBLIC_SUPABASE_URL ne ressemble pas à une URL Supabase standard : ${url}`,
+  );
+} else {
+  ok(`URL Supabase : ${url}`);
+}
+
+if (!key) {
+  fail('SUPABASE_SERVICE_ROLE_KEY est vide.');
+  errors++;
+} else if (key.length < 20) {
+  fail('SUPABASE_SERVICE_ROLE_KEY semble trop courte.');
+  errors++;
+} else {
+  ok('Clé service_role / secret présente.');
+}
+
+if (!appUrl || !/^https?:\/\//.test(appUrl)) {
+  warn('NEXT_PUBLIC_APP_URL est vide ou invalide.');
+} else {
+  ok(`URL de l’application : ${appUrl}`);
+}
+
+if (!adminPassword || adminPassword.length < 8) {
+  fail('ADMIN_PASSWORD doit contenir au moins 8 caractères.');
+  errors++;
+} else {
+  ok('Mot de passe administrateur défini.');
+}
+
+if (!authSecret || authSecret.length < 32) {
+  fail('AUTH_SECRET doit contenir au moins 32 caractères.');
+  errors++;
+} else {
+  ok('AUTH_SECRET défini et assez long.');
+}
+
+if (errors > 0) {
+  console.log(`\n${errors} problème(s) de configuration à corriger.\n`);
+  process.exit(1);
+}
+
+const headers = {
+  apikey: key,
+  Authorization: `Bearer ${key}`,
+  'Content-Type': 'application/json',
+};
+
+async function check(path, options = {}) {
+  try {
+    const response = await fetch(`${url}${path}`, {
+      ...options,
+      headers: { ...headers, ...(options.headers || {}) },
+      signal: AbortSignal.timeout(15000),
+    });
+
+    return { response, body: await response.text() };
+  } catch (error) {
+    return { response: null, error };
+  }
+}
+
+console.log('\n--- Connexion à Supabase ---');
+
+const stats = await check('/rest/v1/rpc/admin_stats', {
+  method: 'POST',
+  body: '{}',
+});
+
+if (!stats.response) {
+  fail(
+    'Impossible de joindre Supabase. Vérifie l’URL, la connexion internet et que le projet n’est pas en pause.',
+  );
+  process.exit(1);
+}
+
+if (stats.response.status === 404) {
+  fail(
+    'La fonction admin_stats est introuvable. Exécute supabase/02_functions.sql, puis : notify pgrst, \'reload schema\';',
+  );
+  process.exit(1);
+}
+
+if (stats.response.status === 401 || stats.response.status === 403) {
+  fail('Clé Supabase refusée. Utilise la clé service_role ou Secret key.');
+  process.exit(1);
+}
+
+if (!stats.response.ok) {
+  fail(`Réponse inattendue de Supabase (${stats.response.status}).`);
+  console.log(stats.body.slice(0, 300));
+  process.exit(1);
+}
+
+ok('Connexion Supabase et fonction admin_stats opérationnelles.');
+
+const publicView = await check('/rest/v1/providers_public?select=id&limit=1');
+
+if (publicView.response?.status === 404) {
+  fail(
+    'La vue providers_public est introuvable. Exécute supabase/01_schema.sql.',
+  );
+  process.exit(1);
+}
+
+ok('Vue publique providers_public accessible.');
+
+const bucket = await check('/storage/v1/bucket/providers');
+
+if (bucket.response?.status === 404) {
+  fail(
+    'Le bucket Storage « providers » est introuvable. Crée-le (public, 2 Mo max).',
+  );
+  process.exit(1);
+}
+
+if (bucket.response?.ok) {
+  try {
+    const data = JSON.parse(bucket.body);
+    if (data.public === false) {
+      fail('Le bucket « providers » n’est pas public.');
+      process.exit(1);
+    }
+    ok('Bucket « providers » présent et public.');
+  } catch {
+    warn('Bucket « providers » présent, mais sa configuration n’a pas pu être lue.');
+  }
+} else {
+  warn(`Vérification du bucket impossible (${bucket.response?.status}).`);
+}
+
+const demo = await check('/rest/v1/providers?select=id&est_demo=eq.true');
+
+if (demo.response?.ok) {
+  try {
+    const rows = JSON.parse(demo.body);
+    ok(`Données de démonstration : ${rows.length} prestataire(s) DÉMO.`);
+  } catch {
+    warn('Nombre de prestataires de démonstration illisible.');
+  }
+}
+
+const requests = await check('/rest/v1/requests?select=id&limit=1');
+
+if (requests.response?.status === 404) {
+  fail('La table requests est introuvable. Exécute supabase/01_schema.sql.');
+  process.exit(1);
+}
+
+ok('Table requests accessible.');
+
+console.log('\n=== Configuration Supabase valide ===');
+console.log('Tu peux lancer : npm run dev\n');

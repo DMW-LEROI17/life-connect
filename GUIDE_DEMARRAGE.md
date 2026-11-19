@@ -105,6 +105,16 @@ Règles :
 
 ## 5. Étape 3 — Tester en local
 
+Avant de lancer le site, vérifie la configuration Supabase :
+
+```powershell
+node scripts/check-supabase.mjs
+```
+
+Le script contrôle : les variables, la connexion, la fonction `admin_stats`, la vue `providers_public`, le bucket `providers` et la table `requests`. Il n’affiche jamais tes clés.
+
+Puis lance :
+
 ```powershell
 npm run dev
 ```
@@ -178,6 +188,8 @@ Dans l’admin, clique **Exporter en CSV**. Le fichier doit s’ouvrir dans Exce
 
 ## 6. Étape 4 — GitHub
 
+Le dossier est **déjà** un dépôt Git local, avec un premier commit qui contient tout le code. Tu n’as donc pas besoin de refaire `git init`, `git add` et `git commit`, sauf si tu modifies des fichiers toi-même.
+
 Crée d’abord un dépôt **vide** sur `https://github.com/new` :
 
 - nom : `life-connect` ;
@@ -188,21 +200,19 @@ Puis dans VS Code :
 
 ```powershell
 cd C:\Users\LEROI\Desktop\LIFE-CONNCT
-git init
-git config --global user.name "Leroi"
-git config --global user.email "dmwleroi17@gmail.com"
-git add .
 git status
-```
-
-Vérifie que `.env.local` **n’apparaît pas** dans la liste. Ensuite :
-
-```powershell
-git commit -m "LIFE CONNECT HELP ME - V1"
-git branch -M main
 git remote add origin https://github.com/TON-COMPTE/life-connect.git
 git push -u origin main
 ```
+
+Si `git status` affiche des fichiers modifiés que tu veux garder :
+
+```powershell
+git add .
+git commit -m "Mise à jour"
+```
+
+Vérifie que `.env.local` **n’apparaît jamais** dans `git status`.
 
 Si Git demande une authentification, utilise un **Personal Access Token** GitHub (Settings → Developer settings → Personal access tokens) comme mot de passe. Ne me partage jamais ce token.
 

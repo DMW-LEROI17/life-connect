@@ -104,6 +104,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 | `npm run build` | Build de production |
 | `npm start` | Serveur de production (après build) |
 | `npm run lint` | ESLint |
+| `node scripts/check-supabase.mjs` | Vérifie les clés, les fonctions SQL, la vue et le bucket |
 
 ## 7. Structure
 
@@ -122,6 +123,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 │  ├─ types/                 Types TypeScript
 │  └─ middleware.ts          Protection de /admin
 ├─ public/icon.svg
+├─ scripts/check-supabase.mjs  Vérification de la configuration Supabase
 ├─ next.config.mjs
 ├─ tailwind.config.ts
 └─ .env.example
@@ -139,15 +141,19 @@ Statuts d’un prestataire : `en_attente`, `valide`, `refuse`, `suspendu`.
 ## 9. Déploiement Vercel
 
 1. Crée un dépôt GitHub **vide** `life-connect`.
-2. Pousse le projet :
+2. Le dossier est déjà un dépôt Git local avec un commit initial. Pousse-le :
 
 ```powershell
-git init
-git add .
-git commit -m "LIFE CONNECT HELP ME - V1"
-git branch -M main
 git remote add origin https://github.com/TON-COMPTE/life-connect.git
 git push -u origin main
+```
+
+Si tu modifies des fichiers avant de pousser :
+
+```powershell
+git add .
+git commit -m "Mise à jour"
+git push
 ```
 
 3. Sur `https://vercel.com/new`, importe le dépôt. Framework : **Next.js**.
