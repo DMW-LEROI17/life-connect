@@ -2,6 +2,8 @@
 
 Web-app mobile-first d’assistance locale à Douala. Un client en panne choisit son problème, laisse son numéro et son quartier, puis l’administrateur alerte un prestataire vérifié sur WhatsApp et l’assigne. Le client voit alors le contact du prestataire et peut noter l’intervention.
 
+> **Le projet est déjà construit dans ce dossier.** Ne relance pas `create-next-app` : tu écraserais le code. Suis `GUIDE_DEMARRAGE.md` pour Supabase, GitHub et Vercel.
+
 **Stack :** Next.js 14.2 (App Router, TypeScript), Tailwind CSS 3.4, Supabase (PostgreSQL + Storage), Vercel. Aucune dépendance payante.
 
 ---

@@ -1,5 +1,7 @@
 # PROMPT COURT — LIFE CONNECT / HELP ME
 
+> **Document d’archive.** Le projet est déjà construit dans ce dossier. Le guide opérationnel est [`GUIDE_DEMARRAGE.md`](GUIDE_DEMARRAGE.md).
+
 > Version condensée. À utiliser si la conversation complète devient trop longue, ou pour relancer DeepSeek en cours de route. Le document principal reste `PROMPT_DEEPSEEK_LIFE_CONNECT.md`.
 
 ---

@@ -1,5 +1,7 @@
 # PROMPT MAÎTRE — LIFE CONNECT / HELP ME (V1)
 
+> **Document d’archive.** Ce prompt a servi à spécifier le projet. Le code est déjà construit dans ce dossier et validé par `npm run build`. Le guide opérationnel est [`GUIDE_DEMARRAGE.md`](GUIDE_DEMARRAGE.md).
+
 ## 0. RÉSUMÉ EXÉCUTIF
 
 Tu es mon ingénieur logiciel principal : architecte, développeur full-stack, designer UX/UI, expert sécurité et testeur QA. Tu vas construire avec moi la première version réellement utilisable de **LIFE CONNECT – HELP ME**, une web-app mobile-first qui met en relation, à Douala (Cameroun), un client en panne avec un prestataire vérifié (mécanicien, dépanneur, technicien).
