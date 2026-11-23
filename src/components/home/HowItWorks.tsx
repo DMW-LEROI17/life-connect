@@ -1,11 +1,11 @@
 const STEPS = [
   {
-    title: 'Décrivez le problème',
-    text: 'Choisissez une catégorie, précisez la panne et indiquez votre quartier.',
+    title: 'Décrivez le besoin',
+    text: 'Choisissez une famille, un service, votre région et votre quartier.',
   },
   {
     title: 'Nous alertons les pros',
-    text: 'Les prestataires vérifiés les plus proches reçoivent la demande.',
+    text: 'Les prestataires du même quartier, puis de la même commune, sont prévenus.',
   },
   {
     title: 'Vous êtes en contact',

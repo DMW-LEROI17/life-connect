@@ -10,8 +10,11 @@ type ExportRow = {
   id: string;
   token: string;
   categorie: string;
+  categorie_nom: string | null;
   probleme: string;
   quartier: string;
+  region_nom: string | null;
+  is_emergency: boolean;
   tel_client: string;
   statut: string;
   cree_le: string;
@@ -35,7 +38,7 @@ export async function GET() {
   const { data, error } = await supabase
     .from('requests')
     .select(
-      'id, token, categorie, probleme, quartier, tel_client, statut, cree_le, assigne_le, resolue_le, providers(nom), ratings(etoiles)',
+      'id, token, categorie, categorie_nom, probleme, quartier, region_nom, is_emergency, tel_client, statut, cree_le, assigne_le, resolue_le, providers(nom), ratings(etoiles)',
     )
     .order('cree_le', { ascending: false });
 
@@ -53,7 +56,9 @@ export async function GET() {
     'reference',
     'date',
     'categorie',
+    'urgence',
     'probleme',
+    'region',
     'quartier',
     'telephone',
     'statut',
@@ -67,8 +72,10 @@ export async function GET() {
     [
       row.token.slice(0, 8).toUpperCase(),
       formatDateTime(row.cree_le),
-      row.categorie,
+      row.categorie_nom || row.categorie,
+      row.is_emergency ? 'OUI' : 'NON',
       row.probleme,
+      row.region_nom ?? '',
       row.quartier,
       row.tel_client,
       row.statut,

@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'LIFE CONNECT – HELP ME',
     short_name: 'LIFE CONNECT',
     description:
-      'Trouvez un mécanicien, un dépanneur ou un technicien vérifié à Douala.',
+      'Trouvez un professionnel vérifié dans les 10 régions du Cameroun : santé, maison, auto, numérique, famille, transport.',
     start_url: '/',
     display: 'standalone',
     background_color: '#F6F8FB',

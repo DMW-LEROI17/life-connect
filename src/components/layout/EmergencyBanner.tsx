@@ -33,9 +33,12 @@ export function EmergencyBanner() {
       <div className="container-lc flex items-start gap-3 py-2.5 text-xs sm:text-sm">
         <Icon name="alert" size={18} className="mt-0.5 shrink-0" />
         <p className="flex-1">
-          <strong>Urgence vitale ?</strong> Appelez le 119 (ambulance), le 117
-          (police) ou le 118 (pompiers). LIFE CONNECT ne remplace pas les
-          secours.
+          <strong>Urgence vitale ?</strong> Appelez le 117 (police), le 118
+          (pompiers) ou le 119 (SAMU / ambulance).{' '}
+          <a href="/urgence" className="font-semibold underline underline-offset-2">
+            Voir les premiers gestes
+          </a>
+          . LIFE CONNECT ne remplace pas les secours.
         </p>
         <button
           type="button"

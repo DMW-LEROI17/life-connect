@@ -16,7 +16,7 @@ export function Footer() {
           <p className="mt-3 max-w-xs text-sm text-muted">
             Un besoin. Une connexion. Une solution.
             <br />
-            Douala, Cameroun.
+            Tout le Cameroun, 10 régions.
           </p>
         </div>
 
@@ -24,13 +24,38 @@ export function Footer() {
           <p className="text-sm font-semibold">Le service</p>
           <ul className="mt-3 space-y-2 text-sm text-muted">
             <li>
+              <Link href="/urgence" className="font-semibold text-urgent-600 hover:text-urgent-500">
+                Urgence 117 / 118 / 119
+              </Link>
+            </li>
+            <li>
               <Link href="/aide" className="hover:text-ink">
                 Demander de l’aide
               </Link>
             </li>
             <li>
+              <Link href="/regions" className="hover:text-ink">
+                Les 10 régions
+              </Link>
+            </li>
+            <li>
               <Link href="/prestataire" className="hover:text-ink">
                 Devenir prestataire
+              </Link>
+            </li>
+            <li>
+              <Link href="/a-propos" className="hover:text-ink">
+                À propos
+              </Link>
+            </li>
+            <li>
+              <Link href="/faq" className="hover:text-ink">
+                FAQ
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="hover:text-ink">
+                Contact
               </Link>
             </li>
             <li>
@@ -82,7 +107,8 @@ export function Footer() {
 
       <div className="border-t border-line py-4">
         <p className="container-lc text-center text-xs text-muted">
-          © {year} LIFE CONNECT – HELP ME. Fait à Douala.
+          © {year} LIFE CONNECT – HELP ME. Cameroun. Les secours officiels
+          restent le 117, le 118 et le 119.
         </p>
       </div>
     </footer>

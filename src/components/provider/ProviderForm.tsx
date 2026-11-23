@@ -5,20 +5,31 @@ import { useState, type ChangeEvent, type FormEvent } from 'react';
 
 import { registerProvider } from '@/actions/register-provider';
 import { Icon } from '@/components/Icons';
+import { ServicesPicker } from '@/components/provider/ServicesPicker';
+import { ZonesPicker } from '@/components/provider/ZonesPicker';
 import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
 import { Spinner } from '@/components/ui/Spinner';
-import { CATEGORIES, QUARTIERS } from '@/lib/constants';
-import type { Categorie } from '@/types/db';
+import type {
+  CategoryWithSubs,
+  GeoTree,
+  ZoneSelection,
+} from '@/types/db';
 
 const MAX_PHOTO_SIZE = 2 * 1024 * 1024;
 
-export function ProviderForm() {
+export function ProviderForm({
+  catalog,
+  geo,
+}: {
+  catalog: CategoryWithSubs[];
+  geo: GeoTree;
+}) {
   const [nom, setNom] = useState('');
-  const [metier, setMetier] = useState<Categorie>('mecanicien');
   const [specialite, setSpecialite] = useState('');
-  const [quartier, setQuartier] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
+  const [serviceIds, setServiceIds] = useState<number[]>([]);
+  const [zones, setZones] = useState<ZoneSelection[]>([]);
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoError, setPhotoError] = useState('');
   const [consent, setConsent] = useState(false);
@@ -61,8 +72,13 @@ export function ProviderForm() {
       return;
     }
 
-    if (!quartier) {
-      setError('Choisissez votre quartier.');
+    if (serviceIds.length === 0) {
+      setError('Choisissez au moins un service.');
+      return;
+    }
+
+    if (zones.length === 0) {
+      setError('Choisissez au moins une zone d’intervention.');
       return;
     }
 
@@ -70,12 +86,15 @@ export function ProviderForm() {
 
     const formData = new FormData();
     formData.set('nom', nom);
-    formData.set('metier', metier);
     formData.set('specialite', specialite);
-    formData.set('quartier', quartier);
     formData.set('whatsapp', whatsapp);
     formData.set('consent', consent ? 'on' : '');
     formData.set('site_web', siteWeb);
+    formData.set('zones', JSON.stringify(zones));
+
+    for (const id of serviceIds) {
+      formData.append('service_ids', String(id));
+    }
 
     if (photo) {
       formData.set('photo', photo);
@@ -128,23 +147,8 @@ export function ProviderForm() {
         />
       </Field>
 
-      <Field label="Votre métier" htmlFor="metier" required>
-        <select
-          id="metier"
-          value={metier}
-          onChange={(event) => setMetier(event.target.value as Categorie)}
-          className="select-lc"
-        >
-          {CATEGORIES.map((category) => (
-            <option key={category.slug} value={category.slug}>
-              {category.label}
-            </option>
-          ))}
-        </select>
-      </Field>
-
       <Field
-        label="Spécialité"
+        label="Spécialité / présentation courte"
         htmlFor="specialite"
         hint="Facultatif. Ex. : électricité, plomberie, Wi-Fi, moto."
       >
@@ -153,31 +157,15 @@ export function ProviderForm() {
           type="text"
           value={specialite}
           onChange={(event) => setSpecialite(event.target.value)}
-          maxLength={60}
+          maxLength={80}
           className="input-lc"
         />
-      </Field>
-
-      <Field label="Votre quartier" htmlFor="quartier" required>
-        <select
-          id="quartier"
-          value={quartier}
-          onChange={(event) => setQuartier(event.target.value)}
-          className="select-lc"
-        >
-          <option value="">Choisir mon quartier</option>
-          {QUARTIERS.map((item) => (
-            <option key={item} value={item}>
-              {item}
-            </option>
-          ))}
-        </select>
       </Field>
 
       <Field
         label="Votre numéro WhatsApp"
         htmlFor="whatsapp"
-        hint="Format camerounais. C’est par ce numéro que l’administrateur vous alertera."
+        hint="C’est par ce numéro que l’administrateur vous alertera."
         required
       >
         <div className="flex items-stretch overflow-hidden rounded-xl border border-line bg-surface focus-within:ring-2 focus-within:ring-teal-500/30">
@@ -195,6 +183,14 @@ export function ProviderForm() {
           />
         </div>
       </Field>
+
+      <ServicesPicker
+        catalog={catalog}
+        selected={serviceIds}
+        onChange={setServiceIds}
+      />
+
+      <ZonesPicker geo={geo} zones={zones} onChange={setZones} />
 
       <Field
         label="Photo de profil"

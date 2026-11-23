@@ -114,6 +114,40 @@ export default function ConfidentialitePage() {
               informons les personnes concernées.
             </p>
           </section>
+
+          <section>
+            <h2 className="text-base font-bold text-ink">
+              9. Urgences et données de santé
+            </h2>
+            <p className="mt-2">
+              Si vous utilisez l’écran urgence, la description peut contenir des
+              informations de santé. Elles servent uniquement à orienter la
+              demande vers un professionnel ou un établissement. LIFE CONNECT ne
+              pose pas de diagnostic et ne conserve pas de dossier médical. Pour
+              une urgence vitale, appelez le 117, le 118 ou le 119 : ces
+              informations ne sont pas transmises automatiquement aux secours.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-base font-bold text-ink">
+              10. Localisation et mineurs
+            </h2>
+            <p className="mt-2">
+              La position GPS n’est enregistrée que si vous appuyez sur
+              « Utiliser ma position ». Elle est utilisée pour calculer la
+              distance et n’est pas publiée. Si la demande concerne un mineur,
+              le parent ou le tuteur doit donner son accord et rester le
+              interlocuteur de la plateforme et du prestataire.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-base font-bold text-ink">11. Contact</h2>
+            <p className="mt-2">
+              dmwleroi17@gmail.com — WhatsApp : +237 672 115 570.
+            </p>
+          </section>
         </div>
       </main>
       <Footer />

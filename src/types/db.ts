@@ -1,4 +1,4 @@
-export type Categorie = 'mecanicien' | 'depanneur' | 'technicien';
+export type Categorie = string;
 
 export type RequestStatus =
   | 'nouvelle'
@@ -48,6 +48,7 @@ export interface CategoryDef {
 export interface PublicProvider {
   nom: string;
   metier: Categorie;
+  metier_nom?: string | null;
   specialite: string | null;
   photo_url: string | null;
   note_moyenne: number;
@@ -62,10 +63,17 @@ export interface RequestPublic {
   token: string;
   ville: string;
   categorie: Categorie;
+  categorie_nom?: string | null;
   probleme: string;
   description: string | null;
   quartier: string;
+  region_nom?: string | null;
+  departement_nom?: string | null;
+  arrondissement_nom?: string | null;
   statut: RequestStatus;
+  is_emergency?: boolean;
+  emergency_type?: string | null;
+  needs_transport?: boolean;
   cree_le: string;
   expire_le: string;
   assigne_le: string | null;
@@ -84,8 +92,13 @@ export interface ProviderRow {
   id: string;
   nom: string;
   metier: Categorie;
+  metier_nom: string | null;
   specialite: string | null;
   quartier: string;
+  quartier_id: number | null;
+  region_id: number | null;
+  departement_id: number | null;
+  arrondissement_id: number | null;
   latitude: number | null;
   longitude: number | null;
   whatsapp: string;
@@ -95,6 +108,7 @@ export interface ProviderRow {
   note_moyenne: number;
   nombre_avis: number;
   est_demo: boolean;
+  type_aideur: boolean;
   cree_le: string;
   valide_le: string | null;
 }
@@ -110,10 +124,13 @@ export interface RequestListRow {
   id: string;
   token: string;
   categorie: Categorie;
+  categorie_nom: string | null;
   probleme: string;
   quartier: string;
+  region_nom: string | null;
   tel_client: string;
   statut: RequestStatus;
+  is_emergency: boolean;
   cree_le: string;
   assigne_le: string | null;
   providers: { nom: string } | null;
@@ -124,14 +141,26 @@ export interface RequestDetailRow {
   token: string;
   ville: string;
   categorie: Categorie;
+  categorie_nom: string | null;
   probleme: string;
   description: string | null;
   tel_client: string;
   latitude: number | null;
   longitude: number | null;
   quartier: string;
+  quartier_id: number | null;
+  region_id: number | null;
+  departement_id: number | null;
+  arrondissement_id: number | null;
+  sous_categorie_id: number | null;
+  region_nom: string | null;
+  departement_nom: string | null;
+  arrondissement_nom: string | null;
   statut: RequestStatus;
   provider_id: string | null;
+  is_emergency: boolean;
+  emergency_type: string | null;
+  needs_transport: boolean;
   cree_le: string;
   expire_le: string;
   assigne_le: string | null;
@@ -147,8 +176,11 @@ export interface NearbyProvider {
   id: string;
   nom: string;
   metier: Categorie;
+  metier_nom: string | null;
   specialite: string | null;
   quartier: string;
+  quartier_id: number | null;
+  zone_score: number;
   distance_km: number | null;
   note_moyenne: number;
   nombre_avis: number;
@@ -164,4 +196,137 @@ export interface AdminStats {
   temps_reponse_moyen_sec: number | null;
   pourcentage_resolu: number;
   note_moyenne: number | null;
+}
+
+export interface AdminRegionStats {
+  region_nom: string;
+  total: number;
+  en_attente: number;
+  resolues: number;
+  urgentes: number;
+}
+
+// -----------------------------------------------------------------------------
+// V2 — géographie, catalogue, urgences
+// -----------------------------------------------------------------------------
+export interface QuartierNode {
+  id: number;
+  nom: string;
+}
+
+export interface ArrondissementNode {
+  id: number;
+  nom: string;
+  quartiers: QuartierNode[];
+}
+
+export interface DepartementNode {
+  id: number;
+  nom: string;
+  arrondissements: ArrondissementNode[];
+}
+
+export interface RegionNode {
+  id: number;
+  nom: string;
+  slug: string;
+  departements: DepartementNode[];
+}
+
+export type GeoTree = RegionNode[];
+
+export interface RegionRow {
+  id: number;
+  slug: string;
+  nom: string;
+  chef_lieu: string | null;
+}
+
+export interface FamilyRow {
+  slug: string;
+  nom_fr: string;
+  nom_en: string | null;
+  icon: string;
+  description: string | null;
+  sort_order: number;
+}
+
+export interface CategoryRow {
+  id: number;
+  slug: string;
+  family_slug: string;
+  nom_fr: string;
+  nom_en: string | null;
+  icon: string;
+  description: string | null;
+  sort_order: number;
+  is_active: boolean;
+  is_emergency: boolean;
+}
+
+export interface SubcategoryRow {
+  id: number;
+  category_id: number;
+  slug: string;
+  nom_fr: string;
+  nom_en: string | null;
+  description: string | null;
+  sort_order: number;
+  is_active: boolean;
+}
+
+export interface CategoryWithSubs extends CategoryRow {
+  subcategories: SubcategoryRow[];
+}
+
+export interface EmergencyGuide {
+  slug: string;
+  title: string;
+  summary: string | null;
+  icon: string;
+  do_steps: string[];
+  dont_steps: string[];
+  warning: string;
+  sort_order: number;
+}
+
+export interface EmergencyFacility {
+  id: number;
+  nom: string;
+  type: 'hopital' | 'clinique' | 'centre_sante' | 'pharmacie' | 'ambulance' | 'protection_civile';
+  region_id: number | null;
+  region_nom: string | null;
+  departement_nom: string | null;
+  ville: string;
+  adresse: string | null;
+  telephone: string | null;
+  telephone_alt: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  horaires: string | null;
+  is_verified: boolean;
+  source: string | null;
+}
+
+export type ZoneScope =
+  | 'region'
+  | 'departement'
+  | 'arrondissement'
+  | 'quartier';
+
+export interface ZoneSelection {
+  scope: ZoneScope;
+  region_id?: number;
+  departement_id?: number;
+  arrondissement_id?: number;
+  quartier_id?: number;
+  label: string;
+}
+
+export interface LocationValue {
+  regionId: number | null;
+  departementId: number | null;
+  arrondissementId: number | null;
+  quartierId: number | null;
+  freeText: string;
 }

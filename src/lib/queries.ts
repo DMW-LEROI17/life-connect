@@ -1,6 +1,7 @@
 import { isSupabaseConfigured } from '@/lib/config';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import type {
+  AdminRegionStats,
   AdminStats,
   NearbyProvider,
   ProviderRow,
@@ -70,44 +71,77 @@ export async function listAdminRequests(
 ): Promise<RequestListRow[]> {
   const supabase = getSupabaseAdmin();
 
-  // Le constructeur de requêtes Supabase a des génériques très complexes :
-  // on le laisse en any ici, la validation des entrées est faite plus bas.
-  let query: any = supabase
-    .from('requests')
-    .select(
-      'id, token, categorie, probleme, quartier, tel_client, statut, cree_le, assigne_le, providers(nom)',
-    )
-    .order('cree_le', { ascending: false })
-    .limit(200);
+  function build(select: string) {
+    // Le constructeur de requêtes Supabase a des génériques très complexes :
+    // on le laisse en any ici, la validation des entrées est faite plus bas.
+    let query: any = supabase
+      .from('requests')
+      .select(select)
+      .order('cree_le', { ascending: false })
+      .limit(200);
 
-  if (filters.statut && REQUEST_STATUSES.includes(filters.statut as RequestStatus)) {
-    query = query.eq('statut', filters.statut);
-  }
-
-  if (
-    filters.categorie &&
-    ['mecanicien', 'depanneur', 'technicien'].includes(filters.categorie)
-  ) {
-    query = query.eq('categorie', filters.categorie);
-  }
-
-  if (filters.q) {
-    const safe = filters.q.replace(/[%,()]/g, ' ').trim();
-    if (safe) {
-      query = query.or(
-        `tel_client.ilike.%${safe}%,quartier.ilike.%${safe}%,probleme.ilike.%${safe}%`,
-      );
+    if (
+      filters.statut &&
+      REQUEST_STATUSES.includes(filters.statut as RequestStatus)
+    ) {
+      query = query.eq('statut', filters.statut);
     }
+
+    if (
+      filters.categorie &&
+      filters.categorie.trim().length > 0 &&
+      filters.categorie.length <= 80
+    ) {
+      query = query.eq('categorie', filters.categorie);
+    }
+
+    if (filters.q) {
+      const safe = filters.q.replace(/[%,()]/g, ' ').trim();
+      if (safe) {
+        query = query.or(
+          `tel_client.ilike.%${safe}%,quartier.ilike.%${safe}%,probleme.ilike.%${safe}%`,
+        );
+      }
+    }
+
+    return query;
   }
 
-  const { data, error } = await query;
+  const newColumns =
+    'id, token, categorie, categorie_nom, probleme, quartier, region_nom, tel_client, statut, is_emergency, cree_le, assigne_le, providers(nom)';
+  const legacyColumns =
+    'id, token, categorie, probleme, quartier, tel_client, statut, cree_le, assigne_le, providers(nom)';
+
+  let { data, error } = await build(newColumns);
+
+  // Base encore en V1 : les colonnes V2 n'existent pas.
+  if (error) {
+    const fallback = await build(legacyColumns);
+    data = fallback.data;
+    error = fallback.error;
+  }
 
   if (error) {
     console.error('[listAdminRequests]', error.message);
     return [];
   }
 
-  return (data ?? []) as RequestListRow[];
+  return ((data ?? []) as Record<string, unknown>[]).map((row) => ({
+    id: String(row.id),
+    token: String(row.token),
+    categorie: String(row.categorie),
+    categorie_nom: (row.categorie_nom as string | null) ?? null,
+    probleme: String(row.probleme),
+    quartier: String(row.quartier),
+    region_nom: (row.region_nom as string | null) ?? null,
+    tel_client: String(row.tel_client),
+    statut: row.statut as RequestStatus,
+    is_emergency: Boolean(row.is_emergency),
+    cree_le: String(row.cree_le),
+    assigne_le: (row.assigne_le as string | null) ?? null,
+    providers:
+      (row.providers as { nom: string } | null | undefined) ?? null,
+  }));
 }
 
 export async function getAdminStats(): Promise<AdminStats> {
@@ -146,6 +180,23 @@ export async function getAdminStats(): Promise<AdminStats> {
   } catch (error) {
     console.error('[getAdminStats]', error);
     return empty;
+  }
+}
+
+export async function getAdminRegionStats(): Promise<AdminRegionStats[]> {
+  try {
+    const supabase = getSupabaseAdmin();
+    const { data, error } = await supabase.rpc('admin_stats_by_region');
+
+    if (error) {
+      console.error('[admin_stats_by_region]', error.message);
+      return [];
+    }
+
+    return (data ?? []) as AdminRegionStats[];
+  } catch (error) {
+    console.error('[getAdminRegionStats]', error);
+    return [];
   }
 }
 
@@ -210,44 +261,62 @@ export async function getRequestDetail(
   return (data as RequestDetailRow | null) ?? null;
 }
 
-export async function getNearbyForRequest(
-  request: Pick<RequestDetailRow, 'categorie' | 'latitude' | 'longitude'>,
+export async function getProvidersForRequest(
+  requestId: string,
 ): Promise<NearbyProvider[]> {
-  const supabase = getSupabaseAdmin();
+  if (!isUuid(requestId)) return [];
 
-  if (request.latitude == null || request.longitude == null) {
-    const { data, error } = await supabase
+  try {
+    const supabase = getSupabaseAdmin();
+    const { data, error } = await supabase.rpc('providers_for_request', {
+      p_request_id: requestId,
+    });
+
+    if (!error) {
+      return (data ?? []) as NearbyProvider[];
+    }
+
+    // Base encore en V1 : on retombe sur l'ancienne logique par métier.
+    const { data: request } = await supabase
+      .from('requests')
+      .select('categorie')
+      .eq('id', requestId)
+      .maybeSingle();
+
+    if (!request?.categorie) return [];
+
+    const { data: providers, error: providersError } = await supabase
       .from('providers')
-      .select(
-        'id, nom, metier, specialite, quartier, note_moyenne, nombre_avis, photo_url, whatsapp, disponible',
-      )
-      .eq('metier', request.categorie)
+      .select('*')
       .eq('statut', 'valide')
+      .eq('metier', request.categorie)
       .order('disponible', { ascending: false })
       .order('note_moyenne', { ascending: false })
-      .limit(20);
+      .limit(30);
 
-    if (error) {
-      console.error('[getNearbyForRequest:fallback]', error.message);
+    if (providersError || !providers) {
+      console.error('[getProvidersForRequest]', providersError?.message);
       return [];
     }
 
-    return ((data ?? []) as Omit<NearbyProvider, 'distance_km'>[]).map(
-      (provider) => ({ ...provider, distance_km: null }),
-    );
-  }
-
-  const { data, error } = await supabase.rpc('nearby_providers', {
-    p_lat: request.latitude,
-    p_lng: request.longitude,
-    p_categorie: request.categorie,
-    p_limit: 20,
-  });
-
-  if (error) {
-    console.error('[nearby_providers]', error.message);
+    return (providers as Record<string, unknown>[]).map((provider) => ({
+      id: String(provider.id),
+      nom: String(provider.nom),
+      metier: String(provider.metier),
+      metier_nom: (provider.metier_nom as string | null) ?? null,
+      specialite: (provider.specialite as string | null) ?? null,
+      quartier: String(provider.quartier ?? ''),
+      quartier_id: (provider.quartier_id as number | null) ?? null,
+      zone_score: 0,
+      distance_km: null,
+      note_moyenne: Number(provider.note_moyenne ?? 0),
+      nombre_avis: Number(provider.nombre_avis ?? 0),
+      photo_url: (provider.photo_url as string | null) ?? null,
+      whatsapp: String(provider.whatsapp ?? ''),
+      disponible: Boolean(provider.disponible),
+    }));
+  } catch (error) {
+    console.error('[getProvidersForRequest]', error);
     return [];
   }
-
-  return (data ?? []) as NearbyProvider[];
 }

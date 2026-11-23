@@ -1,41 +1,47 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
-import { Icon } from '@/components/Icons';
+import { Icon, safeIcon } from '@/components/Icons';
 import { EmergencyBanner } from '@/components/layout/EmergencyBanner';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { RequestForm } from '@/components/request/RequestForm';
-import { CATEGORIES, CATEGORY_TONE, getCategory } from '@/lib/constants';
+import { getCategoryWithSubs } from '@/lib/catalog';
+import { getGeoTree } from '@/lib/geo';
 
-type PageProps = {
+export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({
+  params,
+}: {
   params: { categorie: string };
-};
-
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return CATEGORIES.map((category) => ({ categorie: category.slug }));
-}
-
-export function generateMetadata({ params }: PageProps): Metadata {
-  const category = getCategory(params.categorie);
+}): Promise<Metadata> {
+  const category = await getCategoryWithSubs(params.categorie);
 
   return {
-    title: category ? `Aide ${category.label}` : 'Demander de l’aide',
-    description: category?.description,
+    title: category ? category.nom_fr : 'Demander de l’aide',
+    description: category?.description ?? undefined,
   };
 }
 
-export default function CategoriePage({ params }: PageProps) {
-  const category = getCategory(params.categorie);
+export default async function CategoriePage({
+  params,
+}: {
+  params: { categorie: string };
+}) {
+  const [category, geo] = await Promise.all([
+    getCategoryWithSubs(params.categorie),
+    getGeoTree(),
+  ]);
 
   if (!category) {
     notFound();
   }
 
-  const tone = CATEGORY_TONE[category.slug];
+  if (category.slug === 'urgences') {
+    redirect('/urgence');
+  }
 
   return (
     <>
@@ -44,7 +50,7 @@ export default function CategoriePage({ params }: PageProps) {
 
       <main id="contenu" className="container-lc max-w-xl py-8">
         <Link
-          href="/aide"
+          href={`/aide?famille=${category.family_slug}`}
           className="inline-flex items-center gap-1.5 text-sm font-medium text-muted hover:text-ink"
         >
           <Icon name="arrowLeft" size={16} />
@@ -52,21 +58,21 @@ export default function CategoriePage({ params }: PageProps) {
         </Link>
 
         <div className="mt-4 flex items-center gap-3">
-          <span
-            className={`grid h-12 w-12 place-items-center rounded-xl ${tone.iconBox}`}
-          >
-            <Icon name={category.icon} size={24} />
+          <span className="grid h-12 w-12 place-items-center rounded-xl bg-teal-50 text-teal-600 dark:bg-teal-500/10 dark:text-teal-300">
+            <Icon name={safeIcon(category.icon)} size={24} />
           </span>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">
-              {category.label}
+              {category.nom_fr}
             </h1>
-            <p className="text-sm text-muted">{category.short}</p>
+            <p className="text-sm text-muted">
+              {category.description || 'Tout le Cameroun'}
+            </p>
           </div>
         </div>
 
         <div className="mt-6">
-          <RequestForm category={category} />
+          <RequestForm category={category} geo={geo} />
         </div>
       </main>
 

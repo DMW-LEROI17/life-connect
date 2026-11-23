@@ -7,16 +7,16 @@ import { Header } from '@/components/layout/Header';
 import { ButtonLink } from '@/components/ui/Button';
 
 export const metadata: Metadata = {
-  title: 'Devenir prestataire',
+  title: 'Devenir prestataire ou aideur — Cameroun',
   description:
-    'Mécaniciens, dépanneurs et techniciens à Douala : recevez des demandes de clients proches.',
+    'Mécaniciens, plombiers, techniciens, soignants, taxis, moto-taxis : recevez des demandes de clients proches, dans tout le Cameroun.',
 };
 
 const BENEFITS = [
   {
     icon: 'phone' as const,
     title: 'Des clients qui ont besoin de vous',
-    text: 'Vous recevez une alerte WhatsApp avec le problème et le quartier.',
+    text: 'Vous recevez une alerte WhatsApp avec le problème et la zone.',
   },
   {
     icon: 'shield' as const,
@@ -39,15 +39,16 @@ export default function PrestatairePage() {
       <main id="contenu" className="container-lc max-w-3xl py-8">
         <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 text-xs font-medium text-muted">
           <Icon name="wrench" size={14} />
-          Douala · prestataires
+          Cameroun · prestataires et aideurs
         </div>
 
         <h1 className="mt-4 max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">
-          Vous êtes mécanicien, dépanneur ou technicien à Douala ?
+          Vous savez faire quelque chose ? Les clients vous cherchent.
         </h1>
         <p className="mt-3 max-w-2xl text-base text-muted">
-          Inscrivez-vous gratuitement. Après vérification, vous recevez les
-          demandes des clients proches de votre quartier.
+          Mécanicien, plombier, électricien, technicien, infirmier, coiffeur,
+          traducteur, taxi, moto-taxi… Inscrivez vos services et vos zones.
+          Vérification sous 24 h.
         </p>
 
         <div className="mt-6">
@@ -75,7 +76,7 @@ export default function PrestatairePage() {
         <div className="mt-8 rounded-2xl border border-line bg-surface p-5">
           <h2 className="font-semibold">Comment se passe l’inscription ?</h2>
           <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-muted">
-            <li>Vous remplissez le formulaire en 2 minutes.</li>
+            <li>Vous choisissez vos services et vos zones d’intervention.</li>
             <li>L’administrateur vérifie votre profil sous 24 h.</li>
             <li>
               Une fois validé, vous recevez les demandes par WhatsApp et vous

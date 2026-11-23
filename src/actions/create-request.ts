@@ -1,13 +1,18 @@
 'use server';
 
-import { getCategory } from '@/lib/constants';
 import { normalizeCmPhone } from '@/lib/phone';
-import { getSupabaseAdmin } from '@/lib/supabase/admin';
+import { createRequestRecord } from '@/lib/request-service';
 import { createRequestSchema, firstZodError } from '@/lib/validation';
 
 export type CreateRequestResult =
   | { ok: true; token: string }
   | { ok: false; error: string };
+
+function numberOrNull(value: FormDataEntryValue | null): number | null {
+  if (typeof value !== 'string' || value.trim() === '') return null;
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
 
 export async function createRequest(
   formData: FormData,
@@ -25,10 +30,15 @@ export async function createRequest(
 
   const parsed = createRequestSchema.safeParse({
     categorie: formData.get('categorie'),
-    probleme: formData.get('probleme'),
+    sous_categorie_id: numberOrNull(formData.get('sous_categorie_id')),
+    probleme: formData.get('probleme') ?? '',
     description: formData.get('description') ?? '',
     tel_client: formData.get('tel_client'),
-    quartier: formData.get('quartier'),
+    region_id: numberOrNull(formData.get('region_id')),
+    departement_id: numberOrNull(formData.get('departement_id')),
+    arrondissement_id: numberOrNull(formData.get('arrondissement_id')),
+    quartier_id: numberOrNull(formData.get('quartier_id')),
+    quartier: formData.get('quartier') ?? '',
     latitude,
     longitude,
     site_web: formData.get('site_web') ?? '',
@@ -51,13 +61,14 @@ export async function createRequest(
     };
   }
 
-  const category = getCategory(input.categorie);
+  if ((latitude === null) !== (longitude === null)) {
+    return { ok: false, error: 'Position incomplète.' };
+  }
 
-  if (!category || !category.problems.includes(input.probleme)) {
-    return {
-      ok: false,
-      error: 'Ce problème ne correspond pas à la catégorie choisie.',
-    };
+  const phone = normalizeCmPhone(input.tel_client);
+
+  if (!phone) {
+    return { ok: false, error: 'Numéro camerounais invalide.' };
   }
 
   if (
@@ -71,67 +82,18 @@ export async function createRequest(
     };
   }
 
-  const phone = normalizeCmPhone(input.tel_client);
-
-  if (!phone) {
-    return { ok: false, error: 'Numéro camerounais invalide.' };
-  }
-
-  if ((latitude === null) !== (longitude === null)) {
-    return { ok: false, error: 'Position incomplète.' };
-  }
-
-  try {
-    const supabase = getSupabaseAdmin();
-
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-
-    const { count } = await supabase
-      .from('requests')
-      .select('id', { count: 'exact', head: true })
-      .eq('tel_client', phone)
-      .gte('cree_le', oneHourAgo);
-
-    if ((count ?? 0) >= 3) {
-      return {
-        ok: false,
-        error:
-          'Vous avez déjà envoyé 3 demandes cette heure-ci. Réessayez plus tard ou écrivez-nous sur WhatsApp.',
-      };
-    }
-
-    const { data, error } = await supabase
-      .from('requests')
-      .insert({
-        ville: 'Douala',
-        categorie: input.categorie,
-        probleme: input.probleme,
-        description: input.description.trim() || null,
-        tel_client: phone,
-        latitude,
-        longitude,
-        quartier: input.quartier,
-        statut: 'nouvelle',
-      })
-      .select('token')
-      .single();
-
-    if (error || !data?.token) {
-      console.error('[createRequest]', error?.message);
-      return {
-        ok: false,
-        error:
-          'La demande n’a pas pu être enregistrée. Réessayez dans un instant.',
-      };
-    }
-
-    return { ok: true, token: data.token as string };
-  } catch (error) {
-    console.error('[createRequest]', error);
-    return {
-      ok: false,
-      error:
-        'Le service est momentanément indisponible. Réessayez dans un instant.',
-    };
-  }
+  return createRequestRecord({
+    categorie: input.categorie,
+    sousCategorieId: input.sous_categorie_id ?? null,
+    probleme: input.probleme,
+    description: input.description,
+    telClient: phone,
+    regionId: input.region_id,
+    departementId: input.departement_id ?? null,
+    arrondissementId: input.arrondissement_id ?? null,
+    quartierId: input.quartier_id ?? null,
+    quartierLibre: input.quartier,
+    latitude,
+    longitude,
+  });
 }

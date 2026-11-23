@@ -17,7 +17,7 @@ export function Logo() {
           LIFE CONNECT
         </span>
         <span className="block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted">
-          Help Me · Douala
+          Help Me · Cameroun
         </span>
       </span>
     </Link>

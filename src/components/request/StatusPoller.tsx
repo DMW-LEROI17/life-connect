@@ -89,13 +89,20 @@ export function StatusPoller({
   return (
     <div className="space-y-4">
       <div className="rounded-2xl border border-line bg-surface p-5 shadow-soft">
-        <div className="flex items-center justify-between gap-3">
-          <Badge className={STATUS_BADGE_CLASSES[data.statut]}>
-            {searching ? (
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Badge className={STATUS_BADGE_CLASSES[data.statut]}>
+              {searching ? (
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
+              ) : null}
+              {STATUS_LABELS[data.statut]}
+            </Badge>
+            {data.is_emergency ? (
+              <Badge className="border-urgent-500/40 bg-urgent-500 text-white">
+                URGENCE
+              </Badge>
             ) : null}
-            {STATUS_LABELS[data.statut]}
-          </Badge>
+          </div>
           <span className="text-xs font-semibold text-muted">
             Réf. {shortRef(token)}
           </span>
@@ -174,8 +181,12 @@ export function StatusPoller({
             <dd className="font-medium">{data.probleme}</dd>
           </div>
           <div>
-            <dt className="text-xs text-muted">Quartier</dt>
-            <dd className="font-medium">{data.quartier}</dd>
+            <dt className="text-xs text-muted">Zone</dt>
+            <dd className="font-medium">
+              {[data.quartier, data.arrondissement_nom, data.region_nom]
+                .filter(Boolean)
+                .join(' · ')}
+            </dd>
           </div>
         </dl>
 

@@ -5,14 +5,20 @@ import { Icon } from '@/components/Icons';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { ProviderForm } from '@/components/provider/ProviderForm';
+import { getCatalog } from '@/lib/catalog';
+import { getGeoTree } from '@/lib/geo';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Inscription prestataire',
+  title: 'Inscription prestataire — Cameroun',
   description:
-    'Créez votre profil de mécanicien, dépanneur ou technicien à Douala.',
+    'Créez votre profil de mécanicien, plombier, technicien, soignant, taxi ou autre professionnel dans les 10 régions du Cameroun.',
 };
 
-export default function InscriptionPage() {
+export default async function InscriptionPage() {
+  const [catalog, geo] = await Promise.all([getCatalog(), getGeoTree()]);
+
   return (
     <>
       <Header />
@@ -30,12 +36,12 @@ export default function InscriptionPage() {
           Créer mon profil prestataire
         </h1>
         <p className="mt-2 text-sm text-muted">
-          Remplissez ces informations. L’administrateur vérifie chaque profil
-          avant de le rendre visible.
+          Choisissez tous vos services et toutes vos zones d’intervention.
+          L’administrateur vérifie chaque profil avant de le rendre visible.
         </p>
 
         <div className="mt-6">
-          <ProviderForm />
+          <ProviderForm catalog={catalog} geo={geo} />
         </div>
       </main>
 

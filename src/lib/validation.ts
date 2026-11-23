@@ -1,19 +1,19 @@
 import { z } from 'zod';
 
-import { CATEGORY_SLUGS } from '@/lib/constants';
 import { normalizeCmPhone } from '@/lib/phone';
 
-const categorieSchema = z.enum(CATEGORY_SLUGS, {
-  errorMap: () => ({ message: 'Catégorie invalide.' }),
-});
-
 export const createRequestSchema = z.object({
-  categorie: categorieSchema,
+  categorie: z
+    .string({ required_error: 'Choisissez une catégorie.' })
+    .trim()
+    .min(2, 'Choisissez une catégorie.')
+    .max(80),
+  sous_categorie_id: z.number().int().positive().nullable().optional(),
   probleme: z
     .string({ required_error: 'Choisissez un problème.' })
     .trim()
-    .min(3, 'Choisissez un problème.')
-    .max(120, 'Le problème est trop long.'),
+    .min(2, 'Choisissez un problème.')
+    .max(160, 'Le problème est trop long.'),
   description: z
     .string()
     .trim()
@@ -28,11 +28,16 @@ export const createRequestSchema = z.object({
       (value) => normalizeCmPhone(value) !== null,
       'Numéro camerounais invalide (ex. 6 72 11 55 70).',
     ),
+  region_id: z.number().int().positive().nullable().optional(),
+  departement_id: z.number().int().positive().nullable().optional(),
+  arrondissement_id: z.number().int().positive().nullable().optional(),
+  quartier_id: z.number().int().positive().nullable().optional(),
   quartier: z
-    .string({ required_error: 'Indiquez votre quartier.' })
+    .string()
     .trim()
-    .min(2, 'Indiquez votre quartier.')
-    .max(60, 'Le quartier est trop long.'),
+    .max(80, 'Le quartier est trop long.')
+    .optional()
+    .default(''),
   latitude: z.number().min(-90).max(90).nullable().optional(),
   longitude: z.number().min(-180).max(180).nullable().optional(),
   site_web: z.string().max(0, 'Requête invalide.').optional().default(''),
@@ -44,18 +49,12 @@ export const providerSchema = z.object({
     .trim()
     .min(2, 'Entrez votre nom.')
     .max(80, 'Le nom est trop long.'),
-  metier: categorieSchema,
   specialite: z
     .string()
     .trim()
-    .max(60, 'La spécialité est trop longue.')
+    .max(80, 'La spécialité est trop longue.')
     .optional()
     .default(''),
-  quartier: z
-    .string({ required_error: 'Indiquez votre quartier.' })
-    .trim()
-    .min(2, 'Indiquez votre quartier.')
-    .max(60, 'Le quartier est trop long.'),
   whatsapp: z
     .string({ required_error: 'Entrez votre numéro WhatsApp.' })
     .trim()

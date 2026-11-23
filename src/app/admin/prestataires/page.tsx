@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/Badge';
 import { requireAdmin } from '@/lib/auth';
 import { isSupabaseConfigured } from '@/lib/config';
 import {
-  getCategory,
+  labelFromSlug,
   PROVIDER_STATUS_LABELS,
 } from '@/lib/constants';
 import {
@@ -144,8 +144,6 @@ export default async function AdminProvidersPage({
                 </thead>
                 <tbody className="divide-y divide-line">
                   {providers.map((provider) => {
-                    const category = getCategory(provider.metier);
-
                     return (
                       <tr key={provider.id} className="align-middle">
                         <td className="px-4 py-3">
@@ -172,7 +170,8 @@ export default async function AdminProvidersPage({
                           </div>
                         </td>
                         <td className="px-4 py-3 text-xs">
-                          {category?.label ?? provider.metier}
+                          {provider.metier_nom ||
+                            labelFromSlug(provider.metier)}
                         </td>
                         <td className="px-4 py-3 text-xs">
                           {provider.quartier}
@@ -224,8 +223,6 @@ export default async function AdminProvidersPage({
 
             <div className="mt-4 grid gap-2 md:hidden">
               {providers.map((provider) => {
-                const category = getCategory(provider.metier);
-
                 return (
                   <div
                     key={provider.id}
@@ -248,7 +245,8 @@ export default async function AdminProvidersPage({
                       <div className="min-w-0 flex-1">
                         <p className="font-semibold">{provider.nom}</p>
                         <p className="text-xs text-muted">
-                          {category?.label ?? provider.metier} ·{' '}
+                          {provider.metier_nom ||
+                            labelFromSlug(provider.metier)} ·{' '}
                           {provider.quartier}
                         </p>
                         <p className="text-xs text-muted">

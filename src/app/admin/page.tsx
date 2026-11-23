@@ -10,8 +10,10 @@ import { Icon } from '@/components/Icons';
 import { SetupNotice } from '@/components/SetupNotice';
 import { requireAdmin } from '@/lib/auth';
 import { isSupabaseConfigured } from '@/lib/config';
-import { CATEGORIES, STATUS_LABELS } from '@/lib/constants';
+import { STATUS_LABELS } from '@/lib/constants';
+import { getCatalog } from '@/lib/catalog';
 import {
+  getAdminRegionStats,
   getAdminStats,
   getPendingProviderCount,
   listAdminRequests,
@@ -55,11 +57,14 @@ export default async function AdminPage({
     console.error('[expire_stale_requests]', error);
   }
 
-  const [stats, requests, pendingProviders] = await Promise.all([
-    getAdminStats(),
-    listAdminRequests({ statut, categorie, q }),
-    getPendingProviderCount(),
-  ]);
+  const [stats, requests, pendingProviders, regionStats, catalog] =
+    await Promise.all([
+      getAdminStats(),
+      listAdminRequests({ statut, categorie, q }),
+      getPendingProviderCount(),
+      getAdminRegionStats(),
+      getCatalog(),
+    ]);
 
   const hasFilters = Boolean(statut || categorie || q);
 
@@ -121,9 +126,9 @@ export default async function AdminPage({
             aria-label="Filtrer par catégorie"
           >
             <option value="">Toutes les catégories</option>
-            {CATEGORIES.map((category) => (
+            {catalog.map((category) => (
               <option key={category.slug} value={category.slug}>
-                {category.label}
+                {category.nom_fr}
               </option>
             ))}
           </select>
@@ -155,6 +160,28 @@ export default async function AdminPage({
         </form>
 
         <RequestsTable rows={requests} />
+
+        {regionStats.length > 0 ? (
+          <section className="mt-6">
+            <h2 className="text-sm font-bold">
+              Demandes par région — 30 derniers jours
+            </h2>
+            <div className="mt-2 grid gap-1.5 sm:grid-cols-2">
+              {regionStats.map((region) => (
+                <div
+                  key={region.region_nom}
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line bg-surface px-3 py-2 text-xs"
+                >
+                  <span className="font-semibold">{region.region_nom}</span>
+                  <span className="text-muted">
+                    {region.total} demandes · {region.en_attente} en attente ·{' '}
+                    {region.urgentes} urgences
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
       </main>
 
       <AutoRefresh />

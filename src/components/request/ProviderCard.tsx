@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Icon } from '@/components/Icons';
 import { ButtonLink } from '@/components/ui/Button';
 import { Stars } from '@/components/ui/Stars';
-import { getCategory } from '@/lib/constants';
+import { getCategory, labelFromSlug } from '@/lib/constants';
 import { formatKm, formatNote, initials } from '@/lib/format';
 import { waLink } from '@/lib/whatsapp';
 import type { PublicProvider } from '@/types/db';
@@ -17,7 +17,10 @@ export function ProviderCard({
 }) {
   const distance = formatKm(provider.distance_km);
   const message = `Bonjour ${provider.nom}, je vous contacte via LIFE CONNECT – HELP ME pour ma demande : ${probleme}.`;
-  const metier = getCategory(provider.metier)?.label ?? provider.metier;
+  const metier =
+    provider.metier_nom ||
+    getCategory(provider.metier)?.label ||
+    labelFromSlug(provider.metier);
 
   return (
     <div className="rounded-2xl border border-teal-500/30 bg-surface p-5 shadow-soft">

@@ -123,7 +123,15 @@ export function Icon({ name, size = 24, className, ...props }: IconProps) {
       focusable="false"
       {...props}
     >
-      {paths[name]}
+      {paths[name] ?? paths.spark}
     </svg>
   );
 }
+
+export function safeIcon(value: string | null | undefined): IconName {
+  if (value && value in paths) {
+    return value as IconName;
+  }
+  return 'spark';
+}
+

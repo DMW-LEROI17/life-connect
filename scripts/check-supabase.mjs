@@ -162,6 +162,82 @@ if (!stats.response.ok) {
 
 ok('Connexion Supabase et fonction admin_stats opérationnelles.');
 
+const regions = await check('/rest/v1/regions?select=id,nom&limit=20');
+
+if (regions.response?.status === 404) {
+  fail(
+    'La table regions est introuvable. Exécutez les scripts V2 (05 à 10) ou supabase/V2_ALL.sql.',
+  );
+  process.exit(1);
+}
+
+if (regions.response?.ok) {
+  try {
+    const rows = JSON.parse(regions.body);
+    if (rows.length < 10) {
+      fail(`Seulement ${rows.length} région(s) trouvée(s). Le seed 08 est incomplet.`);
+      process.exit(1);
+    }
+    ok(`${rows.length} régions chargées.`);
+  } catch {
+    warn('Nombre de régions illisible.');
+  }
+}
+
+const categories = await check('/rest/v1/categories?select=id&limit=1');
+
+if (categories.response?.status === 404) {
+  fail('La table categories est introuvable. Exécutez le script 05 puis 09.');
+  process.exit(1);
+}
+
+ok('Catalogue categories accessible.');
+
+const guides = await check('/rest/v1/emergency_guides?select=slug&limit=20');
+
+if (guides.response?.status === 404) {
+  fail('La table emergency_guides est introuvable. Exécutez le script 05 puis 10.');
+  process.exit(1);
+}
+
+if (guides.response?.ok) {
+  try {
+    const rows = JSON.parse(guides.body);
+    ok(`${rows.length} fiche(s) d’urgence chargée(s).`);
+  } catch {
+    warn('Fiches d’urgence illisibles.');
+  }
+}
+
+const providerFunction = await check('/rest/v1/rpc/providers_for_request', {
+  method: 'POST',
+  body: JSON.stringify({
+    p_request_id: '00000000-0000-4000-8000-000000000000',
+  }),
+});
+
+if (providerFunction.response?.status === 404) {
+  fail(
+    'La fonction providers_for_request est introuvable. Exécutez le script 06.',
+  );
+  process.exit(1);
+}
+
+ok('Fonction providers_for_request accessible.');
+
+const statsRegion = await check('/rest/v1/rpc/admin_stats_by_region', {
+  method: 'POST',
+  body: '{}',
+});
+
+if (statsRegion.response?.status === 404) {
+  fail('La fonction admin_stats_by_region est introuvable. Exécutez le script 06.');
+  process.exit(1);
+}
+
+ok('Statistiques par région accessibles.');
+
+
 const publicView = await check('/rest/v1/providers_public?select=id&limit=1');
 
 if (publicView.response?.status === 404) {

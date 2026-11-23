@@ -9,11 +9,11 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   ),
   title: {
-    default: 'LIFE CONNECT – HELP ME | Douala',
+    default: 'LIFE CONNECT – HELP ME | Cameroun',
     template: '%s | LIFE CONNECT',
   },
   description:
-    'Trouvez un mécanicien, un dépanneur ou un technicien vérifié à Douala en moins de 5 minutes. Sans compte, juste votre numéro.',
+    'Trouvez un mécanicien, un dépanneur, un technicien ou un professionnel de santé vérifié dans les 10 régions du Cameroun. Sans compte, juste votre numéro.',
   applicationName: 'LIFE CONNECT – HELP ME',
   manifest: '/manifest.webmanifest',
   icons: {
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'LIFE CONNECT – HELP ME',
     description:
-      'Un besoin. Une connexion. Une solution. Assistance locale à Douala.',
+      'Un besoin. Une connexion. Une solution. Assistance locale dans tout le Cameroun.',
     type: 'website',
     locale: 'fr_FR',
   },

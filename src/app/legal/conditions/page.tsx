@@ -118,7 +118,21 @@ export default function ConditionsPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-bold text-ink">9. Contact</h2>
+            <h2 className="text-base font-bold text-ink">
+              9. Santé, urgences et mineurs
+            </h2>
+            <p className="mt-2">
+              Les fiches de premiers gestes et les coordonnées d’établissements
+              sont des informations générales, pas un avis médical. La
+              vérification d’un prestataire ne vaut pas agrément médical. Pour un
+              mineur, le parent ou le tuteur doit consentir à la demande et
+              accompagner l’intervention. En cas d’urgence vitale, appelez
+              immédiatement le 117, le 118 ou le 119.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-base font-bold text-ink">10. Contact</h2>
             <p className="mt-2">
               dmwleroi17@gmail.com — WhatsApp : +237 672 115 570.
             </p>

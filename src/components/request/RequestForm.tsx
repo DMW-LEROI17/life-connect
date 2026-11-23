@@ -4,21 +4,39 @@ import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 
 import { createRequest } from '@/actions/create-request';
+import { LocationPicker } from '@/components/geo/LocationPicker';
 import { Icon } from '@/components/Icons';
 import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
 import { Spinner } from '@/components/ui/Spinner';
-import { QUARTIERS } from '@/lib/constants';
-import type { CategoryDef } from '@/types/db';
+import type {
+  CategoryWithSubs,
+  GeoTree,
+  LocationValue,
+} from '@/types/db';
 
-export function RequestForm({ category }: { category: CategoryDef }) {
+const EMPTY_LOCATION: LocationValue = {
+  regionId: null,
+  departementId: null,
+  arrondissementId: null,
+  quartierId: null,
+  freeText: '',
+};
+
+export function RequestForm({
+  category,
+  geo,
+}: {
+  category: CategoryWithSubs;
+  geo: GeoTree;
+}) {
   const router = useRouter();
 
-  const [probleme, setProbleme] = useState('');
+  const [subcategoryId, setSubcategoryId] = useState<number | null>(null);
+  const [customProblem, setCustomProblem] = useState('');
   const [description, setDescription] = useState('');
   const [tel, setTel] = useState('');
-  const [quartier, setQuartier] = useState('');
-  const [autreQuartier, setAutreQuartier] = useState('');
+  const [location, setLocation] = useState<LocationValue>(EMPTY_LOCATION);
   const [position, setPosition] = useState<{
     lat: number;
     lng: number;
@@ -31,6 +49,9 @@ export function RequestForm({ category }: { category: CategoryDef }) {
   const [siteWeb, setSiteWeb] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const selectedSubcategory =
+    category.subcategories.find((item) => item.id === subcategoryId) ?? null;
 
   function locate() {
     setGeoState('loading');
@@ -49,12 +70,12 @@ export function RequestForm({ category }: { category: CategoryDef }) {
           lng: result.coords.longitude,
         });
         setGeoState('ok');
-        setGeoMessage('Position ajoutée. Elle sert uniquement à trouver les pros proches.');
+        setGeoMessage('Position ajoutée. Elle aide à trouver les pros proches.');
       },
       () => {
         setGeoState('error');
         setGeoMessage(
-          'Position indisponible. Pas de problème : votre quartier suffit.',
+          'Position indisponible. Pas de problème : votre zone suffit.',
         );
       },
       { timeout: 8000, maximumAge: 60000, enableHighAccuracy: false },
@@ -65,14 +86,19 @@ export function RequestForm({ category }: { category: CategoryDef }) {
     event.preventDefault();
     setError('');
 
-    if (!probleme) {
-      setError('Choisissez votre problème.');
+    const problem = selectedSubcategory?.nom_fr || customProblem.trim();
+
+    if (!problem || problem.length < 2) {
+      setError('Choisissez votre problème ou décrivez-le en quelques mots.');
       return;
     }
 
-    if (probleme.startsWith('Autre') && description.trim().length < 10) {
+    if (
+      (problem.startsWith('Autre') || category.slug === 'autre_besoin') &&
+      description.trim().length < 10
+    ) {
       setError(
-        'Décrivez votre problème en quelques mots (10 caractères minimum).',
+        'Décrivez votre besoin en quelques mots (10 caractères minimum).',
       );
       return;
     }
@@ -82,13 +108,13 @@ export function RequestForm({ category }: { category: CategoryDef }) {
       return;
     }
 
-    if (!quartier) {
-      setError('Choisissez votre quartier.');
+    if (geo.length > 0 && !location.regionId) {
+      setError('Choisissez votre région.');
       return;
     }
 
-    if (quartier === '__autre__' && autreQuartier.trim().length < 2) {
-      setError('Indiquez le nom de votre quartier.');
+    if (!location.quartierId && location.freeText.trim().length < 2) {
+      setError('Indiquez votre quartier, votre village ou un repère connu.');
       return;
     }
 
@@ -101,13 +127,27 @@ export function RequestForm({ category }: { category: CategoryDef }) {
 
     const formData = new FormData();
     formData.set('categorie', category.slug);
-    formData.set('probleme', probleme);
+    formData.set(
+      'sous_categorie_id',
+      selectedSubcategory ? String(selectedSubcategory.id) : '',
+    );
+    formData.set('probleme', problem);
     formData.set('description', description);
     formData.set('tel_client', tel);
+    formData.set('region_id', location.regionId ? String(location.regionId) : '');
     formData.set(
-      'quartier',
-      quartier === '__autre__' ? autreQuartier.trim() : quartier,
+      'departement_id',
+      location.departementId ? String(location.departementId) : '',
     );
+    formData.set(
+      'arrondissement_id',
+      location.arrondissementId ? String(location.arrondissementId) : '',
+    );
+    formData.set(
+      'quartier_id',
+      location.quartierId ? String(location.quartierId) : '',
+    );
+    formData.set('quartier', location.freeText);
     formData.set('site_web', siteWeb);
     formData.set('consent', consent ? 'on' : '');
 
@@ -141,19 +181,18 @@ export function RequestForm({ category }: { category: CategoryDef }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-      <div>
-        <p className="text-sm font-semibold">Votre problème</p>
+      <fieldset>
+        <legend className="text-sm font-semibold">Votre problème</legend>
         <p className="mt-1 text-sm text-muted">
           Choisissez ce qui correspond le mieux à votre situation.
         </p>
 
         <div className="mt-3 grid gap-2">
-          {category.problems.map((item) => {
-            const selected = probleme === item;
-
+          {category.subcategories.map((subcategory) => {
+            const selected = subcategoryId === subcategory.id;
             return (
               <label
-                key={item}
+                key={subcategory.id}
                 className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-colors ${
                   selected
                     ? 'border-urgent-500 bg-urgent-50 dark:bg-urgent-500/10'
@@ -163,20 +202,49 @@ export function RequestForm({ category }: { category: CategoryDef }) {
                 <input
                   type="radio"
                   name="probleme"
-                  value={item}
                   checked={selected}
-                  onChange={() => setProbleme(item)}
+                  onChange={() => setSubcategoryId(subcategory.id)}
                   className="h-5 w-5 accent-urgent-500"
                 />
-                <span className="text-sm font-medium">{item}</span>
+                <span className="text-sm font-medium">{subcategory.nom_fr}</span>
               </label>
             );
           })}
+
+          <label
+            className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-colors ${
+              subcategoryId === 0
+                ? 'border-urgent-500 bg-urgent-50 dark:bg-urgent-500/10'
+                : 'border-line bg-surface hover:bg-surface2'
+            }`}
+          >
+            <input
+              type="radio"
+              name="probleme"
+              checked={subcategoryId === 0}
+              onChange={() => setSubcategoryId(0)}
+              className="h-5 w-5 accent-urgent-500"
+            />
+            <span className="text-sm font-medium">
+              Autre / je ne sais pas
+            </span>
+          </label>
         </div>
-      </div>
+
+        {subcategoryId === 0 || category.subcategories.length === 0 ? (
+          <input
+            type="text"
+            value={customProblem}
+            onChange={(event) => setCustomProblem(event.target.value)}
+            maxLength={160}
+            placeholder="Décrivez votre problème en quelques mots"
+            className="input-lc mt-2"
+          />
+        ) : null}
+      </fieldset>
 
       <Field
-        label="Décrivez en quelques mots"
+        label="Précisions"
         htmlFor="description"
         hint="Facultatif, sauf pour « Autre ». 600 caractères maximum."
       >
@@ -218,38 +286,14 @@ export function RequestForm({ category }: { category: CategoryDef }) {
         </div>
       </Field>
 
-      <Field
-        label="Où êtes-vous ?"
-        htmlFor="quartier"
-        hint="Votre quartier suffit. La position exacte est facultative."
-        required
-      >
-        <select
-          id="quartier"
-          value={quartier}
-          onChange={(event) => setQuartier(event.target.value)}
-          className="select-lc"
-        >
-          <option value="">Choisir mon quartier</option>
-          {QUARTIERS.map((item) => (
-            <option key={item} value={item}>
-              {item}
-            </option>
-          ))}
-          <option value="__autre__">Mon quartier n’est pas dans la liste</option>
-        </select>
-
-        {quartier === '__autre__' ? (
-          <input
-            type="text"
-            value={autreQuartier}
-            onChange={(event) => setAutreQuartier(event.target.value)}
-            maxLength={60}
-            placeholder="Nom de mon quartier"
-            className="input-lc mt-2"
-          />
-        ) : null}
-      </Field>
+      <div>
+        <p className="text-sm font-semibold">Où êtes-vous ? *</p>
+        <p className="mb-3 mt-1 text-sm text-muted">
+          Région, commune puis quartier. Le champ libre est là pour les villages
+          et les zones non listées.
+        </p>
+        <LocationPicker geo={geo} value={location} onChange={setLocation} />
+      </div>
 
       <div className="rounded-xl border border-line bg-surface p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -278,7 +322,9 @@ export function RequestForm({ category }: { category: CategoryDef }) {
         {geoMessage ? (
           <p
             className={`mt-2 text-xs ${
-              geoState === 'error' ? 'text-amber-700 dark:text-amber-300' : 'text-teal-600 dark:text-teal-400'
+              geoState === 'error'
+                ? 'text-amber-700 dark:text-amber-300'
+                : 'text-teal-600 dark:text-teal-400'
             }`}
             role="status"
           >
@@ -327,12 +373,7 @@ export function RequestForm({ category }: { category: CategoryDef }) {
         </p>
       ) : null}
 
-      <Button
-        type="submit"
-        size="lg"
-        className="w-full"
-        disabled={loading}
-      >
+      <Button type="submit" size="lg" className="w-full" disabled={loading}>
         {loading ? (
           <>
             <Spinner /> Envoi…
@@ -346,10 +387,7 @@ export function RequestForm({ category }: { category: CategoryDef }) {
 
       <p className="text-center text-xs text-muted">
         En envoyant, vous acceptez les{' '}
-        <a
-          href="/legal/conditions"
-          className="underline underline-offset-2"
-        >
+        <a href="/legal/conditions" className="underline underline-offset-2">
           conditions d’utilisation
         </a>
         .

@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Stars } from '@/components/ui/Stars';
 import { requireAdmin } from '@/lib/auth';
 import { isSupabaseConfigured } from '@/lib/config';
-import { getCategory } from '@/lib/constants';
+import { labelFromSlug } from '@/lib/constants';
 import {
   formatDateTime,
   formatKm,
@@ -23,7 +23,7 @@ import {
   shortRef,
 } from '@/lib/format';
 import { formatCmPhone } from '@/lib/phone';
-import { getNearbyForRequest, getRequestDetail } from '@/lib/queries';
+import { getProvidersForRequest, getRequestDetail } from '@/lib/queries';
 import { waLink } from '@/lib/whatsapp';
 import type { NearbyProvider } from '@/types/db';
 
@@ -32,6 +32,14 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Détail de la demande',
   robots: { index: false, follow: false },
+};
+
+const ZONE_LABELS: Record<number, string> = {
+  100: 'Même quartier',
+  80: 'Même commune',
+  60: 'Même département',
+  40: 'Même région',
+  0: 'Hors zone déclarée',
 };
 
 export default async function DemandePage({
@@ -56,22 +64,30 @@ export default async function DemandePage({
     notFound();
   }
 
-  const providers = await getNearbyForRequest(request);
-  const category = getCategory(request.categorie);
+  const providers = await getProvidersForRequest(request.id);
+  const categoryName = request.categorie_nom || labelFromSlug(request.categorie);
   const rating = request.ratings?.[0];
   const assigned = request.providers;
   const requestToken = request.token;
   const requestProbleme = request.probleme;
-  const requestQuartier = request.quartier;
+
+  const zonePath = [
+    request.quartier,
+    request.arrondissement_nom,
+    request.departement_nom,
+    request.region_nom,
+  ]
+    .filter(Boolean)
+    .join(' › ');
 
   function alertHref(provider: NearbyProvider): string {
     const distance =
       provider.distance_km != null
         ? ` (${formatKm(provider.distance_km)} de vous)`
-        : ' (quartier indiqué par le client)';
+        : '';
 
-    const message = `Bonjour ${provider.nom}, ici LIFE CONNECT – HELP ME (Douala).
-Demande ${shortRef(requestToken)} : ${requestProbleme} — quartier ${requestQuartier}${distance}.
+    const message = `Bonjour ${provider.nom}, ici LIFE CONNECT – HELP ME (Cameroun).
+Demande ${shortRef(requestToken)} : ${requestProbleme} — ${zonePath}${distance}.
 Le client attend sur place. Pouvez-vous intervenir maintenant ?
 Répondez OUI pour accepter. Merci.`;
 
@@ -96,6 +112,11 @@ Répondez OUI pour accepter. Merci.`;
             <div className="rounded-2xl border border-line bg-surface p-5 shadow-soft">
               <div className="flex flex-wrap items-center gap-2">
                 <StatusBadge statut={request.statut} />
+                {request.is_emergency ? (
+                  <Badge className="border-urgent-500/40 bg-urgent-500 text-white">
+                    URGENCE
+                  </Badge>
+                ) : null}
                 {request.est_demo ? (
                   <Badge className="border-violet-500/30 bg-violet-500/10 text-violet-500">
                     DÉMO
@@ -110,9 +131,15 @@ Répondez OUI pour accepter. Merci.`;
                 {request.probleme}
               </h1>
               <p className="mt-1 text-sm text-muted">
-                {category?.label ?? request.categorie} · {request.quartier} ·{' '}
+                {categoryName} · {zonePath || 'Zone non renseignée'} ·{' '}
                 {formatDateTime(request.cree_le)}
               </p>
+
+              {request.needs_transport ? (
+                <p className="mt-2 inline-flex rounded-full bg-urgent-50 px-2.5 py-1 text-xs font-semibold text-urgent-600 dark:bg-urgent-500/10">
+                  Transport urgent demandé
+                </p>
+              ) : null}
 
               <div className="mt-4 rounded-xl bg-surface2 p-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted">
@@ -164,7 +191,7 @@ Répondez OUI pour accepter. Merci.`;
                       </a>
                     ) : (
                       <span className="text-muted">
-                        Non partagée — quartier : {request.quartier}
+                        Non partagée — zone : {zonePath}
                       </span>
                     )}
                   </dd>
@@ -224,7 +251,8 @@ Répondez OUI pour accepter. Merci.`;
                 <h2 className="text-sm font-bold">Prestataire assigné</h2>
                 <p className="mt-2 font-semibold">{assigned.nom}</p>
                 <p className="text-sm text-muted">
-                  {assigned.specialite || assigned.metier} · {assigned.quartier}
+                  {assigned.metier_nom || labelFromSlug(assigned.metier)} ·{' '}
+                  {assigned.quartier}
                 </p>
                 <p className="mt-1 text-sm">
                   {formatNote(assigned.note_moyenne)}/5 ·{' '}
@@ -234,7 +262,7 @@ Répondez OUI pour accepter. Merci.`;
                 <a
                   href={waLink(
                     assigned.whatsapp,
-                    `Bonjour ${assigned.nom}, voici les coordonnées du client : ${request.tel_client} — quartier ${request.quartier}. Problème : ${request.probleme}. Merci.`,
+                    `Bonjour ${assigned.nom}, voici les coordonnées du client : ${request.tel_client} — ${zonePath}. Problème : ${request.probleme}. Merci.`,
                   )}
                   target="_blank"
                   rel="noreferrer"
@@ -249,16 +277,14 @@ Répondez OUI pour accepter. Merci.`;
             <div className="rounded-2xl border border-line bg-surface p-5">
               <h2 className="text-sm font-bold">Prestataires à alerter</h2>
               <p className="mt-1 text-xs text-muted">
-                {request.latitude != null
-                  ? 'Triés par distance par rapport au client.'
-                  : 'Position du client non partagée : triés par note.'}
+                Même quartier d’abord, puis commune, département et région.
               </p>
 
               <div className="mt-3 space-y-2">
                 {providers.length === 0 ? (
                   <p className="rounded-xl border border-dashed border-line p-4 text-xs text-muted">
-                    Aucun prestataire validé dans cette catégorie. Validez-en un
-                    depuis l’onglet Prestataires.
+                    Aucun prestataire validé pour cette catégorie. Validez-en un
+                    depuis l’onglet Prestataires, ou ajoutez des services.
                   </p>
                 ) : null}
 
@@ -295,11 +321,10 @@ Répondez OUI pour accepter. Merci.`;
                             {distance ? ` · ${distance}` : ''}
                           </p>
                           <p className="text-[11px] text-muted">
+                            {ZONE_LABELS[provider.zone_score] ?? 'Zone'} ·{' '}
                             {formatNote(provider.note_moyenne)}/5 ·{' '}
                             {provider.nombre_avis} avis
-                            {provider.disponible
-                              ? ' · disponible'
-                              : ' · indisponible'}
+                            {provider.disponible ? '' : ' · indisponible'}
                           </p>
                         </div>
 

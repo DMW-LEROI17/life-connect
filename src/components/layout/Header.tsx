@@ -12,8 +12,15 @@ export function Header() {
 
         <div className="flex items-center gap-1.5">
           <Link
+            href="/urgence"
+            className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-urgent-500 px-2.5 text-xs font-black tracking-wide text-white shadow-soft transition-colors hover:bg-urgent-600 sm:px-3.5 sm:text-sm"
+          >
+            <Icon name="alert" size={16} />
+            URGENCE
+          </Link>
+          <Link
             href="/prestataire"
-            className="hidden items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-surface2 hover:text-ink sm:inline-flex"
+            className="hidden items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-surface2 hover:text-ink md:inline-flex"
           >
             <Icon name="user" size={18} />
             Prestataire

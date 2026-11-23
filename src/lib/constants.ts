@@ -105,8 +105,13 @@ export const PROVIDER_STATUS_BADGE_CLASSES: Record<ProviderStatus, string> = {
   suspendu: 'border-line bg-surface2 text-muted',
 };
 
+const DEFAULT_TONE = {
+  iconBox: 'bg-surface2 text-muted',
+  badge: 'bg-surface2 text-muted',
+};
+
 export const CATEGORY_TONE: Record<
-  Categorie,
+  string,
   { iconBox: string; badge: string }
 > = {
   mecanicien: {
@@ -123,6 +128,10 @@ export const CATEGORY_TONE: Record<
   },
 };
 
+export function categoryTone(slug: string) {
+  return CATEGORY_TONE[slug] ?? DEFAULT_TONE;
+}
+
 export function getCategory(slug: string): CategoryDef | undefined {
   return CATEGORIES.find((category) => category.slug === slug);
 }
@@ -131,4 +140,45 @@ export function isCategorie(value: string): value is Categorie {
   return (CATEGORY_SLUGS as readonly string[]).includes(value);
 }
 
+export function labelFromSlug(slug: string): string {
+  if (!slug) return 'Service';
+  const text = slug.replace(/_/g, ' ');
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 export const ADMIN_WHATSAPP = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP || '237672115570';
+
+/**
+ * Numéros d'urgence officiels utilisés au Cameroun.
+ * Sources : police secours 117, pompiers 118, SAMU 119.
+ * Le 112 n'est pas le numéro principal : ne pas l'afficher comme tel.
+ */
+export const EMERGENCY_NUMBERS = [
+  {
+    label: 'Police secours',
+    number: '117',
+    description: 'Agression, accident, danger immédiat.',
+    icon: 'shield' as const,
+  },
+  {
+    label: 'Pompiers',
+    number: '118',
+    description: 'Incendie, accident, secours.',
+    icon: 'alert' as const,
+  },
+  {
+    label: 'SAMU / ambulance',
+    number: '119',
+    description: 'Urgence médicale, blessé grave.',
+    icon: 'phone' as const,
+  },
+];
+
+export const FACILITY_LABELS: Record<string, string> = {
+  hopital: 'Hôpital',
+  clinique: 'Clinique',
+  centre_sante: 'Centre de santé',
+  pharmacie: 'Pharmacie',
+  ambulance: 'Ambulance',
+  protection_civile: 'Protection civile',
+};
