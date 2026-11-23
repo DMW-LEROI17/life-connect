@@ -77,6 +77,22 @@ create table if not exists public.group_members (
   primary key (group_id, user_id)
 );
 
+-- Fonction SECURITY DEFINER : évite la récursion des policies groups <-> group_members.
+create or replace function public.is_group_member(p_group_id uuid, p_user_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+  select exists (
+    select 1 from public.group_members
+    where group_id = p_group_id and user_id = p_user_id
+  );
+$$;
+
+grant execute on function public.is_group_member(uuid, uuid) to anon, authenticated, service_role;
+
 alter table public.groups enable row level security;
 
 drop policy if exists groups_select_public on public.groups;
@@ -85,10 +101,7 @@ create policy groups_select_public on public.groups
   using (
     visibility = 'publique'
     or owner_id = auth.uid()
-    or exists (
-      select 1 from public.group_members m
-      where m.group_id = groups.id and m.user_id = auth.uid()
-    )
+    or public.is_group_member(groups.id, auth.uid())
   );
 
 drop policy if exists groups_insert_own on public.groups;
@@ -110,14 +123,7 @@ alter table public.group_members enable row level security;
 drop policy if exists group_members_select on public.group_members;
 create policy group_members_select on public.group_members
   for select to authenticated
-  using (
-    user_id = auth.uid()
-    or exists (
-      select 1 from public.groups g
-      where g.id = group_members.group_id
-        and (g.visibility = 'publique' or g.owner_id = auth.uid())
-    )
-  );
+  using (user_id = auth.uid());
 
 drop policy if exists group_members_insert_self on public.group_members;
 create policy group_members_insert_self on public.group_members
@@ -129,6 +135,7 @@ create policy group_members_delete_self on public.group_members
 
 revoke all on public.group_members from anon, authenticated;
 grant select, insert, delete on public.group_members to authenticated;
+grant select on public.group_members to anon;
 
 create table if not exists public.group_posts (
   id uuid primary key default gen_random_uuid(),
@@ -146,30 +153,14 @@ alter table public.group_posts enable row level security;
 drop policy if exists group_posts_select on public.group_posts;
 create policy group_posts_select on public.group_posts
   for select to authenticated
-  using (
-    exists (
-      select 1 from public.groups g
-      where g.id = group_posts.group_id
-        and (
-          g.visibility = 'publique'
-          or g.owner_id = auth.uid()
-          or exists (
-            select 1 from public.group_members m
-            where m.group_id = g.id and m.user_id = auth.uid()
-          )
-        )
-    )
-  );
+  using (public.is_group_member(group_posts.group_id, auth.uid()));
 
 drop policy if exists group_posts_insert on public.group_posts;
 create policy group_posts_insert on public.group_posts
   for insert to authenticated
   with check (
     author_id = auth.uid()
-    and exists (
-      select 1 from public.group_members m
-      where m.group_id = group_posts.group_id and m.user_id = auth.uid()
-    )
+    and public.is_group_member(group_posts.group_id, auth.uid())
   );
 
 revoke all on public.group_posts from anon, authenticated;

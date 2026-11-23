@@ -11,36 +11,35 @@ sont pas exécutées :
 - les pages régions, catalogue, urgences détaillées et LIFE CONNECT restent
   vides ou partielles.
 
-Quatre scripts suffisent :
+Le plus simple est un **reset complet** avec un seul fichier :
 
-1. `supabase/V2_ALL.sql` (géographie, catalogue, urgences, zones)
-2. `supabase/V3_ALL.sql` (comptes, profils, demandes/offres, propositions)
-3. `supabase/V4_ALL.sql` (chat, GPS, wallet, notifications, modération)
-4. `supabase/V5_ALL.sql` (market, community, exchange, radar)
+- `supabase/LIFE_CONNECT_COMPLET.sql`
+
+Il supprime tout le schéma `public`, recrée les 30 tables dans le bon ordre,
+ajoute les policies RLS, les buckets Storage, les fonctions et les données de
+base (régions, catégories, urgences). Les comptes `auth.users` ne sont pas
+supprimés.
 
 ---
 
-## 2. Exécuter les migrations
+## 2. Exécuter le reset complet
 
 Dans Supabase → **SQL Editor** :
 
-1. Ouvre `supabase/V2_ALL.sql`, `Ctrl+A`, `Ctrl+C`, colle et **Run**.
-2. Attends le message **Success**.
-3. Ouvre `supabase/V3_ALL.sql`, même opération.
-4. Ouvre `supabase/V4_ALL.sql`, même opération.
-5. Ouvre `supabase/V5_ALL.sql`, même opération.
-6. Exécute :
+1. Ouvre `supabase/LIFE_CONNECT_COMPLET.sql`.
+2. `Ctrl+A`, `Ctrl+C`.
+3. Colle dans l’éditeur et clique **Run** une seule fois.
+4. Attends **Success**.
+5. Vérifie avec :
 
-```sql
-notify pgrst, 'reload schema';
+```powershell
+node scripts/check-supabase.mjs
 ```
 
-Si l’éditeur refuse le fichier V2 complet (il est long), exécute les fichiers
-05 à 10 un par un, dans l’ordre, puis 11.
+Le script contient déjà `notify pgrst, 'reload schema';`.
 
-> Les scripts sont prévus pour ne pas supprimer les demandes existantes. Ils
-> ajoutent des tables et des colonnes. Le seed V2 supprime uniquement les
-> prestataires marqués `est_demo = true` avant de les recréer.
+> Si tu préfères ne pas supprimer l’existant, tu peux exécuter séparément
+> `V2_ALL.sql`, `V3_ALL.sql`, `V4_ALL.sql`, `V5_ALL.sql` dans cet ordre.
 
 ---
 

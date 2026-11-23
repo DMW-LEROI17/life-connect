@@ -62,6 +62,13 @@ Le projet existant a été conservé et étendu, sans réinitialisation.
 
 ## 3. Base de données
 
+### Reset complet (recommandé)
+
+Un seul fichier : `supabase/LIFE_CONNECT_COMPLET.sql`.
+
+Il supprime le schéma `public` et recrée tables, RLS, fonctions, buckets et
+données de base. Les comptes `auth.users` sont conservés.
+
 ### Nouveau projet
 
 Exécuter dans Supabase → SQL Editor, dans cet ordre :
