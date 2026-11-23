@@ -3,22 +3,22 @@
 @tailwind utilities;
 
 :root {
-  --lc-bg: #f6f8fb;
+  --lc-bg: #f5f5f5;
   --lc-surface: #ffffff;
-  --lc-surface-2: #eef3f9;
-  --lc-ink: #0f172a;
-  --lc-muted: #5b6b82;
-  --lc-line: #e3e9f2;
+  --lc-surface-2: #eef2ee;
+  --lc-ink: #111827;
+  --lc-muted: #6b7280;
+  --lc-line: #e5e7eb;
   color-scheme: light;
 }
 
 .dark {
-  --lc-bg: #07121f;
-  --lc-surface: #0d1e33;
-  --lc-surface-2: #10243d;
-  --lc-ink: #eaf1fa;
-  --lc-muted: #9fb0c7;
-  --lc-line: #1c3350;
+  --lc-bg: #0b0f0c;
+  --lc-surface: #121a14;
+  --lc-surface-2: #1a261d;
+  --lc-ink: #f3f4f6;
+  --lc-muted: #a7b0a9;
+  --lc-line: #26332a;
   color-scheme: dark;
 }
 
@@ -33,12 +33,12 @@
   }
 
   ::selection {
-    background-color: #12b3a6;
+    background-color: #1fa34a;
     color: #ffffff;
   }
 
   :focus-visible {
-    outline: 3px solid #12b3a6;
+    outline: 3px solid #1fa34a;
     outline-offset: 2px;
   }
 
@@ -60,15 +60,15 @@
   }
 
   .input-lc {
-    @apply h-12 w-full rounded-xl border border-line bg-surface px-3 text-base text-ink placeholder:text-muted focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/30;
+    @apply h-12 w-full rounded-xl border border-line bg-surface px-3 text-base text-ink placeholder:text-muted focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/25;
   }
 
   .textarea-lc {
-    @apply min-h-28 w-full rounded-xl border border-line bg-surface px-3 py-3 text-base text-ink placeholder:text-muted focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/30;
+    @apply min-h-28 w-full rounded-xl border border-line bg-surface px-3 py-3 text-base text-ink placeholder:text-muted focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/25;
   }
 
   .select-lc {
-    @apply h-12 w-full appearance-none rounded-xl border border-line bg-surface px-3 pr-10 text-base text-ink focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/30;
+    @apply h-12 w-full appearance-none rounded-xl border border-line bg-surface px-3 pr-10 text-base text-ink focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/25;
   }
 }
 

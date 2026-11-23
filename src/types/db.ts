@@ -158,6 +158,7 @@ export interface RequestDetailRow {
   arrondissement_nom: string | null;
   statut: RequestStatus;
   provider_id: string | null;
+  provider_access_token: string | null;
   is_emergency: boolean;
   emergency_type: string | null;
   needs_transport: boolean;
@@ -352,6 +353,11 @@ export interface ProfileRow {
   avatar_url: string | null;
   country: string;
   city: string | null;
+  notify_messages: boolean;
+  notify_requests: boolean;
+  notify_payments: boolean;
+  language: 'fr' | 'en';
+  is_suspended: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -388,4 +394,96 @@ export interface ProposalRow {
   price: string | null;
   status: 'envoyee' | 'acceptee' | 'refusee' | 'retiree';
   created_at: string;
+}
+
+// -----------------------------------------------------------------------------
+// V4 — chat, suivi, portefeuille, notifications
+// -----------------------------------------------------------------------------
+export interface ConversationRow {
+  id: string;
+  post_id: string | null;
+  request_id: string | null;
+  client_id: string;
+  provider_id: string;
+  client_name: string;
+  provider_name: string;
+  client_phone: string | null;
+  provider_phone: string | null;
+  post_title: string | null;
+  status: 'ouverte' | 'fermee';
+  last_message_at: string;
+  created_at: string;
+}
+
+export interface MessageRow {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  sender_name: string;
+  body: string | null;
+  kind: 'texte' | 'localisation' | 'image' | 'systeme';
+  latitude: number | null;
+  longitude: number | null;
+  attachment_url: string | null;
+  created_at: string;
+}
+
+export interface NotificationRow {
+  id: string;
+  user_id: string;
+  type: 'message' | 'demande' | 'paiement' | 'systeme' | 'sos';
+  title: string;
+  body: string | null;
+  link: string | null;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface WalletRow {
+  user_id: string;
+  balance_fcfa: number;
+  updated_at: string;
+}
+
+export interface WalletTransactionRow {
+  id: string;
+  user_id: string;
+  type: 'recharge' | 'retrait' | 'paiement' | 'remboursement';
+  amount: number;
+  status: 'en_attente' | 'confirme' | 'echoue' | 'annule';
+  provider: 'orange_money' | 'mtn_momo' | 'especes' | 'systeme';
+  phone: string | null;
+  reference: string | null;
+  note: string | null;
+  created_at: string;
+}
+
+export interface RequestTracking {
+  ok: boolean;
+  error?: string;
+  statut?: RequestStatus;
+  probleme?: string;
+  quartier?: string;
+  client_latitude?: number | null;
+  client_longitude?: number | null;
+  provider_id?: string | null;
+  provider_nom?: string | null;
+  provider_whatsapp?: string | null;
+  provider_latitude?: number | null;
+  provider_longitude?: number | null;
+  location_updated_at?: string | null;
+}
+
+export interface MissionData {
+  ok: boolean;
+  error?: string;
+  request_id?: string;
+  statut?: RequestStatus;
+  probleme?: string;
+  description?: string | null;
+  quartier?: string;
+  region_nom?: string | null;
+  tel_client?: string;
+  client_latitude?: number | null;
+  client_longitude?: number | null;
 }

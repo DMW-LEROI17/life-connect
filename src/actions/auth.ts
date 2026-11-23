@@ -1,5 +1,6 @@
 'use server';
 
+import { randomUUID } from 'node:crypto';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -152,8 +153,7 @@ export async function signOutAction() {
 
 export async function updateProfileAction(
   formData: FormData,
-): Promise<AuthResult> {
-  const current = await getCurrentUser();
+): Promise<AuthResult> {  const current = await getCurrentUser();
 
   if (!current) {
     return { ok: false, error: 'Session expirée. Reconnectez-vous.' };
@@ -195,6 +195,131 @@ export async function updateProfileAction(
     return { ok: true, message: 'Profil mis à jour.' };
   } catch (error) {
     console.error('[updateProfileAction]', error);
+    return { ok: false, error: 'Le service est momentanément indisponible.' };
+  }
+}
+
+export async function updateSettingsAction(
+  formData: FormData,
+): Promise<AuthResult> {
+  const current = await getCurrentUser();
+  if (!current) return { ok: false, error: 'Connectez-vous.' };
+
+  const language = String(formData.get('language') ?? 'fr');
+
+  if (language !== 'fr' && language !== 'en') {
+    return { ok: false, error: 'Langue invalide.' };
+  }
+
+  try {
+    const supabase = createSupabaseServerClient();
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        notify_messages: formData.get('notify_messages') === 'on',
+        notify_requests: formData.get('notify_requests') === 'on',
+        notify_payments: formData.get('notify_payments') === 'on',
+        language,
+      })
+      .eq('id', current.user.id);
+
+    if (error) {
+      console.error('[updateSettingsAction]', error.message);
+      return { ok: false, error: 'Les paramètres n’ont pas pu être enregistrés.' };
+    }
+
+    revalidatePath('/parametres');
+    revalidatePath('/compte');
+    return { ok: true, message: 'Paramètres enregistrés.' };
+  } catch (error) {
+    console.error('[updateSettingsAction]', error);
+    return { ok: false, error: 'Le service est momentanément indisponible.' };
+  }
+}
+
+export async function changePasswordAction(
+  formData: FormData,
+): Promise<AuthResult> {
+  const current = await getCurrentUser();
+  if (!current) return { ok: false, error: 'Connectez-vous.' };
+
+  const password = String(formData.get('password') ?? '');
+  const confirm = String(formData.get('confirm') ?? '');
+
+  if (password.length < 8) {
+    return { ok: false, error: 'Le mot de passe doit contenir 8 caractères minimum.' };
+  }
+
+  if (password !== confirm) {
+    return { ok: false, error: 'Les deux mots de passe ne correspondent pas.' };
+  }
+
+  try {
+    const supabase = createSupabaseServerClient();
+    const { error } = await supabase.auth.updateUser({ password });
+
+    if (error) {
+      console.error('[changePasswordAction]', error.message);
+      return { ok: false, error: 'Le mot de passe n’a pas pu être modifié.' };
+    }
+
+    return { ok: true, message: 'Mot de passe modifié.' };
+  } catch (error) {
+    console.error('[changePasswordAction]', error);
+    return { ok: false, error: 'Le service est momentanément indisponible.' };
+  }
+}
+
+export async function uploadAvatarAction(
+  formData: FormData,
+): Promise<AuthResult> {
+  const current = await getCurrentUser();
+  if (!current) return { ok: false, error: 'Connectez-vous.' };
+
+  const file = formData.get('avatar');
+
+  if (!(file instanceof File) || file.size === 0) {
+    return { ok: false, error: 'Choisissez une image.' };
+  }
+
+  if (file.size > 1024 * 1024) {
+    return { ok: false, error: 'Image trop lourde (1 Mo max).' };
+  }
+
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    return { ok: false, error: 'Format non accepté (JPEG, PNG ou WebP).' };
+  }
+
+  try {
+    const supabase = createSupabaseServerClient();
+    const extension = file.type.split('/')[1] ?? 'jpg';
+    const path = `${current.user.id}/${randomUUID()}.${extension}`;
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(path, buffer, { contentType: file.type, upsert: true });
+
+    if (uploadError) {
+      console.error('[uploadAvatarAction]', uploadError.message);
+      return { ok: false, error: 'L’image n’a pas pu être envoyée.' };
+    }
+
+    const publicUrl = supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ avatar_url: publicUrl })
+      .eq('id', current.user.id);
+
+    if (error) {
+      return { ok: false, error: 'Le profil n’a pas pu être mis à jour.' };
+    }
+
+    revalidatePath('/compte');
+    return { ok: true, message: 'Photo de profil mise à jour.' };
+  } catch (error) {
+    console.error('[uploadAvatarAction]', error);
     return { ok: false, error: 'Le service est momentanément indisponible.' };
   }
 }

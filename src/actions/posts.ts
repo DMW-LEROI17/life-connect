@@ -4,10 +4,13 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { getCurrentUser } from '@/lib/auth-user';
+import { ensureConversationForProposal } from '@/lib/chat';
+import { notifyUser } from '@/lib/notifications';
+import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export type PostActionResult =
-  | { ok: true; message?: string }
+  | { ok: true; message?: string; conversationId?: string }
   | { ok: false; error: string };
 
 export async function createPostAction(
@@ -140,6 +143,22 @@ export async function createProposalAction(
       return { ok: false, error: 'Votre réponse n’a pas pu être envoyée.' };
     }
 
+    const { data: post } = await supabase
+      .from('posts')
+      .select('author_id, title')
+      .eq('id', postId)
+      .maybeSingle();
+
+    if (post?.author_id) {
+      await notifyUser({
+        userId: post.author_id,
+        type: 'demande',
+        title: 'Nouvelle proposition',
+        body: `${current.profile.full_name || 'Un membre'} a répondu à « ${post.title} ».`,
+        link: `/connect/${postId}`,
+      });
+    }
+
     revalidatePath(`/connect/${postId}`);
     return { ok: true, message: 'Votre réponse a été envoyée.' };
   } catch (error) {
@@ -189,6 +208,8 @@ async function decideProposal(
       return { ok: false, error: 'La mise à jour a échoué.' };
     }
 
+    let conversationId: string | undefined;
+
     if (decision === 'acceptee') {
       await supabase
         .from('proposals')
@@ -201,6 +222,54 @@ async function decideProposal(
         .from('posts')
         .update({ status: 'en_cours' })
         .eq('id', proposal.post_id);
+
+      try {
+        const admin = getSupabaseAdmin();
+        const [{ data: clientProfile }, { data: providerProfile }, { data: postRow }] =
+          await Promise.all([
+            admin.from('profiles').select('*').eq('id', current.user.id).maybeSingle(),
+            admin.from('profiles').select('*').eq('id', proposal.author_id).maybeSingle(),
+            admin
+              .from('posts')
+              .select('id, title, author_id, author_name, description')
+              .eq('id', proposal.post_id)
+              .maybeSingle(),
+          ]);
+
+        if (clientProfile && providerProfile && postRow) {
+          const created = await ensureConversationForProposal({
+            post: {
+              ...(postRow as any),
+              created_at: new Date().toISOString(),
+            },
+            proposal: {
+              id: proposalId,
+              post_id: proposal.post_id,
+              author_id: proposal.author_id,
+              author_name: providerProfile.full_name || 'Prestataire',
+              message: '',
+              price: null,
+              status: 'acceptee',
+              created_at: new Date().toISOString(),
+            },
+            client: clientProfile as any,
+            provider: providerProfile as any,
+          });
+
+          if (created) {
+            conversationId = created;
+            await notifyUser({
+              userId: proposal.author_id,
+              type: 'demande',
+              title: 'Proposition acceptée',
+              body: `Votre proposition pour « ${postRow.title} » a été acceptée.`,
+              link: `/messages/${created}`,
+            });
+          }
+        }
+      } catch (conversationError) {
+        console.error('[decideProposal:conversation]', conversationError);
+      }
     }
 
     revalidatePath(`/connect/${proposal.post_id}`);
@@ -211,6 +280,7 @@ async function decideProposal(
         decision === 'acceptee'
           ? 'Proposition acceptée. La demande passe en cours.'
           : 'Proposition refusée.',
+      conversationId,
     };
   } catch (error) {
     console.error('[decideProposal]', error);

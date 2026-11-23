@@ -11,10 +11,11 @@ sont pas exécutées :
 - les pages régions, catalogue, urgences détaillées et LIFE CONNECT restent
   vides ou partielles.
 
-Deux scripts suffisent :
+Trois scripts suffisent :
 
 1. `supabase/V2_ALL.sql` (géographie, catalogue, urgences, zones)
 2. `supabase/V3_ALL.sql` (comptes, profils, demandes/offres, propositions)
+3. `supabase/V4_ALL.sql` (chat, GPS, wallet, notifications, modération)
 
 ---
 
@@ -25,7 +26,8 @@ Dans Supabase → **SQL Editor** :
 1. Ouvre `supabase/V2_ALL.sql`, `Ctrl+A`, `Ctrl+C`, colle et **Run**.
 2. Attends le message **Success**.
 3. Ouvre `supabase/V3_ALL.sql`, même opération.
-4. Exécute :
+4. Ouvre `supabase/V4_ALL.sql`, même opération.
+5. Exécute :
 
 ```sql
 notify pgrst, 'reload schema';
@@ -148,6 +150,35 @@ npm run dev
 3. Vérifier les établissements et le lien itinéraire.
 4. Tester « Envoyer ma position à un proche ».
 
+### F. LIFE CHAT
+
+1. Accepter une proposition depuis `/connect/[id]`.
+2. La conversation s’ouvre dans `/messages`.
+3. Envoyer un message, une image et une position.
+4. Vérifier l’arrivée en temps réel dans un second navigateur.
+5. Clôturer la mission.
+
+### G. Suivi GPS
+
+1. Dans l’admin, ouvrir une demande assignée.
+2. Cliquer « Lien GPS prestataire » et ouvrir le lien sur un téléphone.
+3. Partager la position.
+4. Côté client, ouvrir `/suivi/[token]/carte` : la position se met à jour.
+
+### H. Wallet et notifications
+
+1. `/wallet` : demander une recharge.
+2. Admin → Paiements : confirmer.
+3. Vérifier le solde et la notification.
+4. `/notifications` : marquer tout comme lu.
+
+### I. Admin
+
+1. `/admin/utilisateurs` : suspendre/réactiver un compte.
+2. `/admin/publications` : masquer une publication.
+3. `/admin/sos` : voir les alertes.
+4. `/admin/paiements` : confirmer/annuler.
+
 ---
 
 ## 7. GitHub et Vercel
@@ -187,6 +218,7 @@ Sur Vercel :
 - Tester `/api/health`.
 - Créer un compte réel, publier, répondre.
 - Vérifier que `/compte` redirige vers `/connexion` sans session.
+- Vérifier que `/messages`, `/wallet`, `/notifications` redirigent sans session.
 - Vérifier que `/admin` reste protégé par le mot de passe.
 - Supprimer les données de démonstration :
 
@@ -217,14 +249,17 @@ delete from public.providers where est_demo = true;
 
 ## 10. Prochaines étapes
 
-Modules non commencés, dans l’ordre recommandé :
+Modules déjà ajoutés : chat, suivi GPS, wallet, notifications, profil/paramètres,
+admin utilisateurs/publications/SOS/paiements.
 
-1. LIFE CHAT (conversations, messages, images).
-2. LIFE MARKET (annonces produits).
-3. LIFE PEOPLE / RADAR / COMMUNITY.
-4. OTP SMS et notifications.
-5. Paiement / abonnements prestataires.
-6. Bilingue FR/EN et multi-pays.
+Restent à développer :
+
+1. LIFE MARKET (annonces produits, images, modération).
+2. LIFE PEOPLE / RADAR / COMMUNITY / EXCHANGE.
+3. OTP SMS/WhatsApp et notifications push.
+4. Paiement réel Orange Money / MTN MoMo via un agrégateur officiel.
+5. Traduction complète FR/EN et multi-pays.
+6. 2FA administrateur et sauvegardes automatisées.
 
 Chaque module doit être ajouté avec sa migration SQL, ses politiques RLS et ses
 tests, sans casser HELP ME.

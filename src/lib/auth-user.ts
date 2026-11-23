@@ -57,6 +57,10 @@ export async function getCurrentUser(): Promise<{
       return null;
     }
 
+    if ((profile as ProfileRow).is_suspended) {
+      return null;
+    }
+
     return { user, profile: profile as ProfileRow };
   } catch {
     return null;

@@ -271,6 +271,25 @@ Répondez OUI pour accepter. Merci.`;
                   <Icon name="whatsapp" size={16} />
                   Envoyer les coordonnées
                 </a>
+
+                {request.provider_access_token ? (
+                  <div className="mt-2 grid gap-1.5">
+                    <Link
+                      href={`/mission/${request.provider_access_token}`}
+                      className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-line px-2.5 text-[11px] font-semibold"
+                    >
+                      <Icon name="mapPin" size={14} />
+                      Lien GPS prestataire
+                    </Link>
+                    <Link
+                      href={`/suivi/${request.token}/carte`}
+                      className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-line px-2.5 text-[11px] font-semibold"
+                    >
+                      <Icon name="search" size={14} />
+                      Suivi client
+                    </Link>
+                  </div>
+                ) : null}
               </div>
             ) : null}
 

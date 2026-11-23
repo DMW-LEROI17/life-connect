@@ -26,6 +26,22 @@ export function formatDate(value: string | null | undefined): string {
   }).format(date);
 }
 
+export function formatTime(value: string | null | undefined): string {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Intl.DateTimeFormat('fr-FR', {
+    timeZone: 'Africa/Douala',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date);
+}
+
+export function formatFcfa(value: number | null | undefined): string {
+  if (value == null) return '0 FCFA';
+  return `${new Intl.NumberFormat('fr-FR').format(value)} FCFA`;
+}
+
 export function formatDuration(seconds: number | null | undefined): string {
   if (seconds == null || Number.isNaN(seconds)) return '—';
   if (seconds < 60) return `${seconds} s`;

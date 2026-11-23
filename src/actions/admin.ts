@@ -411,3 +411,72 @@ export async function toggleSubcategory(
     return { ok: false, error: 'Le service est momentanément indisponible.' };
   }
 }
+
+// -----------------------------------------------------------------------------
+// V4 — modération utilisateurs et publications
+// -----------------------------------------------------------------------------
+export async function setUserSuspended(
+  userId: string,
+  suspended: boolean,
+): Promise<AdminActionResult> {
+  const denied = await guard();
+  if (denied) return denied;
+
+  if (!isUuid(userId)) {
+    return { ok: false, error: 'Identifiant invalide.' };
+  }
+
+  try {
+    const supabase = getSupabaseAdmin();
+    const { error } = await supabase
+      .from('profiles')
+      .update({ is_suspended: suspended })
+      .eq('id', userId);
+
+    if (error) {
+      console.error('[setUserSuspended]', error.message);
+      return { ok: false, error: 'La mise à jour a échoué.' };
+    }
+
+    revalidatePath('/admin/utilisateurs');
+    return { ok: true };
+  } catch (error) {
+    console.error('[setUserSuspended]', error);
+    return { ok: false, error: 'Le service est momentanément indisponible.' };
+  }
+}
+
+export async function setPostHidden(
+  postId: string,
+  hidden: boolean,
+): Promise<AdminActionResult> {
+  const denied = await guard();
+  if (denied) return denied;
+
+  if (!isUuid(postId)) {
+    return { ok: false, error: 'Identifiant invalide.' };
+  }
+
+  try {
+    const supabase = getSupabaseAdmin();
+    const { error } = await supabase
+      .from('posts')
+      .update({
+        is_hidden: hidden,
+        moderation_note: hidden ? 'Masquée par l’administrateur.' : null,
+      })
+      .eq('id', postId);
+
+    if (error) {
+      console.error('[setPostHidden]', error.message);
+      return { ok: false, error: 'La mise à jour a échoué.' };
+    }
+
+    revalidatePath('/admin/publications');
+    revalidatePath('/connect');
+    return { ok: true };
+  } catch (error) {
+    console.error('[setPostHidden]', error);
+    return { ok: false, error: 'Le service est momentanément indisponible.' };
+  }
+}

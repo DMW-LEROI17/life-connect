@@ -9,6 +9,7 @@ import { Header } from '@/components/layout/Header';
 import { ButtonLink } from '@/components/ui/Button';
 import { getCatalog, getFamilies } from '@/lib/catalog';
 import { getRegions } from '@/lib/geo';
+import { getFeaturedProviders } from '@/lib/search';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,10 +32,11 @@ const TRUST = [
 ];
 
 export default async function HomePage() {
-  const [families, catalog, regions] = await Promise.all([
+  const [families, catalog, regions, featuredProviders] = await Promise.all([
     getFamilies(),
     getCatalog(),
     getRegions(),
+    getFeaturedProviders(),
   ]);
 
   const counts = new Map<string, number>();
@@ -266,6 +268,74 @@ export default async function HomePage() {
                 >
                   {region.nom}
                 </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {featuredProviders.length > 0 ? (
+          <section className="container-lc py-6">
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <h2 className="text-xl font-bold">Prestataires vérifiés</h2>
+                <p className="mt-1 text-sm text-muted">
+                  Des professionnels disponibles, notés par les clients.
+                </p>
+              </div>
+              <Link
+                href="/match"
+                className="text-sm font-semibold text-teal-700 hover:underline dark:text-teal-300"
+              >
+                Voir plus
+              </Link>
+            </div>
+
+            <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {featuredProviders.map((provider) => (
+                <div
+                  key={provider.id}
+                  className="rounded-2xl border border-line bg-surface p-4 shadow-soft"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-teal-50 text-sm font-bold text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
+                      {provider.nom
+                        .split(/\s+/)
+                        .slice(0, 2)
+                        .map((part) => part[0]?.toUpperCase())
+                        .join('')}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-bold">{provider.nom}</p>
+                      <p className="truncate text-[11px] text-muted">
+                        {provider.metier_nom ?? provider.metier} ·{' '}
+                        {provider.quartier}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-2 flex items-center gap-1 text-[11px]">
+                    <span className="font-bold">
+                      {Number(provider.note_moyenne).toFixed(1).replace('.', ',')}
+                    </span>
+                    <span className="text-amber-500">★</span>
+                    <span className="text-muted">
+                      ({provider.nombre_avis} avis)
+                    </span>
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-1.5">
+                    <Link
+                      href={`/prestataires/${provider.id}`}
+                      className="inline-flex min-h-9 items-center justify-center rounded-lg border border-line px-2 text-[11px] font-semibold"
+                    >
+                      Profil
+                    </Link>
+                    <Link
+                      href={`/aide/${provider.metier}`}
+                      className="inline-flex min-h-9 items-center justify-center rounded-lg bg-teal-500 px-2 text-[11px] font-semibold text-white"
+                    >
+                      Demander
+                    </Link>
+                  </div>
+                </div>
               ))}
             </div>
           </section>

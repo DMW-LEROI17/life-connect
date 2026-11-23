@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { AccountMenu } from '@/components/layout/AccountMenu';
+import { NotificationBell } from '@/components/layout/NotificationBell';
 import { Icon } from '@/components/Icons';
 import { Logo } from '@/components/layout/Logo';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
@@ -9,6 +10,7 @@ const NAV = [
   { href: '/aide', label: 'Services' },
   { href: '/connect', label: 'Demandes' },
   { href: '/match', label: 'Trouver' },
+  { href: '/messages', label: 'Messages' },
   { href: '/regions', label: 'Régions' },
 ];
 
@@ -47,6 +49,7 @@ export function Header() {
             Prestataire
           </Link>
 
+          <NotificationBell />
           <AccountMenu />
           <ThemeToggle />
         </div>

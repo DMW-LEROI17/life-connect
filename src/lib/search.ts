@@ -18,6 +18,20 @@ export async function searchProviders(input: {
   regionId: number | null;
   keywords: string[];
 }): Promise<ProviderSearchResult[]> {
+  const rows = await loadProviderRows();
+  return filterProviders(rows, input);
+}
+
+export async function getFeaturedProviders(): Promise<ProviderSearchResult[]> {
+  const rows = await loadProviderRows();
+  return filterProviders(rows, {
+    categorySlugs: [],
+    regionId: null,
+    keywords: [],
+  }).slice(0, 6);
+}
+
+async function loadProviderRows(): Promise<Record<string, unknown>[]> {
   try {
     const supabase = getSupabaseAdmin();
 
@@ -29,28 +43,18 @@ export async function searchProviders(input: {
       .eq('statut', 'valide')
       .limit(200);
 
-    if (error) {
-      // Base V1 : la colonne region_id / metier_nom n'existe pas.
-      const fallback = await supabase
-        .from('providers')
-        .select('*')
-        .eq('statut', 'valide')
-        .limit(200);
+    if (!error) return (data ?? []) as Record<string, unknown>[];
 
-      if (fallback.error || !fallback.data) return [];
+    // Base V1 : la colonne region_id / metier_nom n'existe pas.
+    const fallback = await supabase
+      .from('providers')
+      .select('*')
+      .eq('statut', 'valide')
+      .limit(200);
 
-      return filterProviders(
-        fallback.data as Record<string, unknown>[],
-        input,
-      );
-    }
-
-    return filterProviders(
-      (data ?? []) as Record<string, unknown>[],
-      input,
-    );
+    return (fallback.data ?? []) as Record<string, unknown>[];
   } catch (error) {
-    console.error('[searchProviders]', error);
+    console.error('[loadProviderRows]', error);
     return [];
   }
 }

@@ -20,6 +20,12 @@ Le projet existant a été conservé et étendu, sans réinitialisation.
 - **Prestataires** : plusieurs services, plusieurs zones, validation admin.
 - **Comptes** : inscription/connexion Supabase Auth, profils, rôles (particulier, professionnel, commerçant, entreprise), modération/admin.
 - **LIFE CONNECT / REQUEST** : publication de besoins et d’offres, propositions, acceptation/refus, clôture.
+- **LIFE CHAT** : messagerie temps réel, images, partage de position, appel, clôture de mission.
+- **Suivi GPS** : lien mission prestataire, position en direct, distance et temps d’arrivée estimé.
+- **LIFE WALLET** : solde FCFA, recharge/retrait Orange Money et MTN MoMo (demandes en attente, confirmation admin).
+- **Notifications** : messages, propositions, paiements, alertes SOS.
+- **Admin V4** : utilisateurs, publications, alertes SOS, paiements, catégories, prestataires, demandes.
+- **Profil & paramètres** : avatar, préférences de notifications, mot de passe.
 - **LIFE MATCH** : recherche en langage naturel (règles locales, IA optionnelle), résultats réels uniquement.
 - **LIFE SERVICES** : profil public de prestataire, sans numéro exposé.
 - **Admin** : demandes, prestataires, catégories, statistiques par région, export CSV.
@@ -27,12 +33,11 @@ Le projet existant a été conservé et étendu, sans réinitialisation.
 
 ### Partiel / à venir
 
-- **LIFE CHAT** : non commencé (messagerie, images, fichiers).
 - **LIFE MARKET** : non commencé (annonces produits).
 - **LIFE PEOPLE / RADAR / COMMUNITY / EXCHANGE / ANTICIPATION** : non commencés.
 - **OTP SMS/WhatsApp** : non branché (nécessite un fournisseur).
-- **Paiement / Orange Money / MTN MoMo** : non branché (agrégateur officiel requis).
-- **Bilingue FR/EN** : interface française pour l’instant.
+- **Paiement réel** : les demandes Wallet sont enregistrées et confirmées par l’admin ; aucun agrégateur Orange/MTN n’est encore branché.
+- **Bilingue FR/EN** : préférence stockée, traduction complète de l’interface à poursuivre.
 - **2FA admin** : non activée.
 - **PWA hors-ligne** : manifeste présent, pas de service worker.
 
@@ -62,6 +67,7 @@ Exécuter dans Supabase → SQL Editor, dans cet ordre :
 4. `supabase/04_seed.sql`
 5. `supabase/V2_ALL.sql` (ou 05 à 10)
 6. `supabase/V3_ALL.sql` (ou 11)
+7. `supabase/V4_ALL.sql` (ou 12)
 
 ### Projet existant (V1 déjà en place)
 
@@ -69,6 +75,7 @@ Exécuter :
 
 1. `supabase/V2_ALL.sql`
 2. `supabase/V3_ALL.sql`
+3. `supabase/V4_ALL.sql`
 
 Puis :
 
@@ -87,6 +94,7 @@ Dans **Authentication → Providers → Email** :
 ### Bucket
 
 Storage → bucket `providers` : public, 2 Mo max, `image/jpeg`, `image/png`, `image/webp`.
+La migration V4 crée aussi les buckets `chat` et `avatars`.
 
 ---
 
@@ -163,6 +171,12 @@ Le script vérifie les clés, les fonctions et les tables V2/V3, le bucket et la
 | `/inscription`, `/connexion` | Comptes |
 | `/compte` | Profil, publications, réponses |
 | `/regions`, `/regions/[slug]` | SEO régional |
+| `/suivi/[token]/carte` | Suivi GPS client |
+| `/mission/[token]` | Lien GPS prestataire |
+| `/messages` | Chat temps réel |
+| `/wallet` | Portefeuille FCFA |
+| `/notifications` | Alertes |
+| `/parametres` | Notifications et sécurité |
 | `/admin` | Administration |
 
 ---
@@ -173,6 +187,10 @@ Le script vérifie les clés, les fonctions et les tables V2/V3, le bucket et la
 - `profiles` : lecture/écriture de son propre profil ; le rôle est protégé par trigger.
 - `posts` : lecture publique des publications ouvertes ; écriture par l’auteur.
 - `proposals` : visibles uniquement par l’auteur de la demande et l’auteur de la réponse.
+- `conversations` / `messages` : réservés aux participants ; Realtime activé.
+- `wallets` / `wallet_transactions` : lecture par le propriétaire ; confirmation admin.
+- `notifications` : lecture et mise à jour par le destinataire uniquement.
+- Le suivi GPS passe par des RPC à token, jamais par une lecture publique de la table.
 - Le numéro WhatsApp d’un prestataire n’est jamais public.
 - `SUPABASE_SERVICE_ROLE_KEY` reste côté serveur.
 - L’administration utilise un cookie JWT séparé (`jose`), pas le rôle Supabase.

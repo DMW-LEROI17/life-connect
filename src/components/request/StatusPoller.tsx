@@ -204,6 +204,17 @@ export function StatusPoller({
         <ProviderCard provider={data.provider} probleme={data.probleme} />
       ) : null}
 
+      {data.statut === 'assignee' && data.provider ? (
+        <ButtonLink
+          href={`/suivi/${token}/carte`}
+          variant="outline"
+          className="w-full"
+        >
+          <Icon name="mapPin" size={18} />
+          Suivre le prestataire sur la carte
+        </ButtonLink>
+      ) : null}
+
       {data.statut === 'assignee' && data.provider && !data.note_donnee ? (
         <div className="rounded-2xl border border-line bg-surface p-4 text-center">
           <p className="text-sm text-muted">

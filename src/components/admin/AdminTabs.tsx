@@ -7,7 +7,14 @@ export function AdminTabs({
   pendingRequests,
   pendingProviders,
 }: {
-  active: 'requests' | 'providers' | 'categories';
+  active:
+    | 'requests'
+    | 'providers'
+    | 'categories'
+    | 'users'
+    | 'posts'
+    | 'sos'
+    | 'payments';
   pendingRequests: number;
   pendingProviders: number;
 }) {
@@ -35,6 +42,34 @@ export function AdminTabs({
       key: 'categories' as const,
       href: '/admin/categories',
       label: 'Catégories',
+      badge: 0,
+      badgeClass: '',
+    },
+    {
+      key: 'users' as const,
+      href: '/admin/utilisateurs',
+      label: 'Utilisateurs',
+      badge: 0,
+      badgeClass: '',
+    },
+    {
+      key: 'posts' as const,
+      href: '/admin/publications',
+      label: 'Publications',
+      badge: 0,
+      badgeClass: '',
+    },
+    {
+      key: 'sos' as const,
+      href: '/admin/sos',
+      label: 'SOS',
+      badge: 0,
+      badgeClass: '',
+    },
+    {
+      key: 'payments' as const,
+      href: '/admin/paiements',
+      label: 'Paiements',
       badge: 0,
       badgeClass: '',
     },

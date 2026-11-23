@@ -131,7 +131,7 @@ export default async function ConnectPage({
             </p>
             <Link
               href="/connect/nouveau"
-              className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-urgent-500 px-4 text-sm font-semibold text-white"
+              className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-teal-500 px-4 text-sm font-semibold text-white"
             >
               Publier maintenant
             </Link>

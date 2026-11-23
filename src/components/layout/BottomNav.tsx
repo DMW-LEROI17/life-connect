@@ -9,7 +9,7 @@ const ITEMS = [
   { href: '/', label: 'Accueil', icon: 'spark' as const },
   { href: '/aide', label: 'Aide', icon: 'search' as const },
   { href: '/connect', label: 'Demandes', icon: 'send' as const },
-  { href: '/match', label: 'Trouver', icon: 'star' as const },
+  { href: '/messages', label: 'Messages', icon: 'whatsapp' as const },
   { href: '/compte', label: 'Compte', icon: 'user' as const },
 ];
 

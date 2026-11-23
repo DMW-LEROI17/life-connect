@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { signOutAction } from '@/actions/auth';
@@ -66,9 +67,19 @@ export default async function ComptePage() {
       <main id="contenu" className="container-lc max-w-4xl py-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span className="grid h-16 w-16 place-items-center rounded-full bg-navy-900 text-xl font-bold text-white">
-              {initials(current.profile.full_name || current.user.email || 'LC')}
-            </span>
+            {current.profile.avatar_url ? (
+              <Image
+                src={current.profile.avatar_url}
+                alt=""
+                width={64}
+                height={64}
+                className="h-16 w-16 rounded-full object-cover"
+              />
+            ) : (
+              <span className="grid h-16 w-16 place-items-center rounded-full bg-navy-900 text-xl font-bold text-white">
+                {initials(current.profile.full_name || current.user.email || 'LC')}
+              </span>
+            )}
             <div>
               <h1 className="text-2xl font-bold tracking-tight">
                 {current.profile.full_name || 'Mon compte'}
@@ -88,10 +99,31 @@ export default async function ComptePage() {
           <div className="flex flex-wrap gap-2">
             <Link
               href="/connect/nouveau"
-              className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-urgent-500 px-3 text-xs font-semibold text-white"
+              className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-teal-500 px-3 text-xs font-semibold text-white"
             >
               <Icon name="send" size={16} />
               Publier un besoin
+            </Link>
+            <Link
+              href="/wallet"
+              className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-line bg-surface px-3 text-xs font-semibold"
+            >
+              <Icon name="send" size={16} />
+              Portefeuille
+            </Link>
+            <Link
+              href="/messages"
+              className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-line bg-surface px-3 text-xs font-semibold"
+            >
+              <Icon name="whatsapp" size={16} />
+              Messages
+            </Link>
+            <Link
+              href="/parametres"
+              className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-line bg-surface px-3 text-xs font-semibold"
+            >
+              <Icon name="shield" size={16} />
+              Paramètres
             </Link>
             {current.profile.role === 'admin' ||
             current.profile.role === 'moderateur' ? (

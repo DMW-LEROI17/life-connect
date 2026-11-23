@@ -64,10 +64,16 @@ export async function middleware(request: NextRequest) {
   const response = NextResponse.next({ request });
   const connected = await refreshSupabaseSession(request, response);
 
-  const protectedPath =
-    pathname === '/compte' ||
-    pathname.startsWith('/compte/') ||
-    pathname === '/connect/nouveau';
+  const protectedPath = [
+    '/compte',
+    '/messages',
+    '/wallet',
+    '/notifications',
+    '/parametres',
+    '/connect/nouveau',
+  ].some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
 
   if (protectedPath && !connected) {
     const url = request.nextUrl.clone();

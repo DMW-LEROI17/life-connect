@@ -15,11 +15,13 @@ Exécuter **dans cet ordre** dans Supabase → SQL Editor :
 9. `09_v2_catalog_seed.sql` — 11 familles, 63 catégories, sous-services.
 10. `10_v2_emergency_seed.sql` — 10 fiches d’urgence et établissements.
 11. `11_v3_accounts_posts.sql` — comptes, profils, rôles, demandes/offres, propositions.
+12. `12_v4_chat_tracking_wallet.sql` — chat, GPS, wallet, notifications, modération.
 
 Ou, plus simple :
 
 - exécuter `V2_ALL.sql` (regroupe 05 à 10) ;
-- puis `V3_ALL.sql` (regroupe 11).
+- puis `V3_ALL.sql` (regroupe 11) ;
+- puis `V4_ALL.sql` (regroupe 12).
 
 ## Bucket Storage
 

@@ -27,7 +27,11 @@ export function ProposalActions({
 
   async function run(
     key: string,
-    action: () => Promise<{ ok: boolean; error?: string }>,
+    action: () => Promise<{
+      ok: boolean;
+      error?: string;
+      conversationId?: string;
+    }>,
   ) {
     setLoading(key);
     setError('');
@@ -36,6 +40,11 @@ export function ProposalActions({
     if (!result.ok) {
       setError(result.error ?? 'Action impossible.');
       setLoading(null);
+      return;
+    }
+
+    if (result.conversationId) {
+      router.push(`/messages/${result.conversationId}`);
       return;
     }
 

@@ -279,6 +279,70 @@ if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
 
 ok('Clé anon présente (comptes et sessions).');
 
+const conversations = await check('/rest/v1/conversations?select=id&limit=1');
+
+if (conversations.response?.status === 404) {
+  fail(
+    'La table conversations est introuvable. Exécutez supabase/12_v4_chat_tracking_wallet.sql ou V4_ALL.sql.',
+  );
+  process.exit(1);
+}
+
+ok('Table conversations accessible.');
+
+const messagesTable = await check('/rest/v1/messages?select=id&limit=1');
+
+if (messagesTable.response?.status === 404) {
+  fail('La table messages est introuvable. Exécutez la migration V4.');
+  process.exit(1);
+}
+
+ok('Table messages accessible.');
+
+const wallets = await check('/rest/v1/wallets?select=user_id&limit=1');
+
+if (wallets.response?.status === 404) {
+  fail('La table wallets est introuvable. Exécutez la migration V4.');
+  process.exit(1);
+}
+
+ok('Table wallets accessible.');
+
+const notifications = await check('/rest/v1/notifications?select=id&limit=1');
+
+if (notifications.response?.status === 404) {
+  fail('La table notifications est introuvable. Exécutez la migration V4.');
+  process.exit(1);
+}
+
+ok('Table notifications accessible.');
+
+const trackingRpc = await check('/rest/v1/rpc/get_request_tracking', {
+  method: 'POST',
+  body: JSON.stringify({
+    p_token: '00000000-0000-4000-8000-000000000000',
+  }),
+});
+
+if (trackingRpc.response?.status === 404) {
+  fail(
+    'La fonction get_request_tracking est introuvable. Exécutez la migration V4.',
+  );
+  process.exit(1);
+}
+
+ok('Suivi GPS accessible.');
+
+const chatBucket = await check('/storage/v1/bucket/chat');
+
+if (chatBucket.response?.status === 404) {
+  fail('Le bucket chat est introuvable. Exécutez la migration V4.');
+  process.exit(1);
+}
+
+ok('Bucket chat présent.');
+
+
 
 
 const publicView = await check('/rest/v1/providers_public?select=id&limit=1');
