@@ -36,6 +36,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = [
     '',
     '/aide',
+    '/connect',
+    '/match',
     '/urgence',
     '/urgence/transport',
     '/regions',

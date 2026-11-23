@@ -237,6 +237,49 @@ if (statsRegion.response?.status === 404) {
 
 ok('Statistiques par région accessibles.');
 
+const profiles = await check('/rest/v1/profiles?select=id&limit=1');
+
+if (profiles.response?.status === 404) {
+  fail(
+    'La table profiles est introuvable. Exécutez supabase/11_v3_accounts_posts.sql ou V3_ALL.sql.',
+  );
+  process.exit(1);
+}
+
+ok('Table profiles accessible.');
+
+const posts = await check('/rest/v1/posts?select=id&limit=1');
+
+if (posts.response?.status === 404) {
+  fail(
+    'La table posts est introuvable. Exécutez supabase/11_v3_accounts_posts.sql.',
+  );
+  process.exit(1);
+}
+
+ok('Table posts accessible.');
+
+const proposalTable = await check('/rest/v1/proposals?select=id&limit=1');
+
+if (proposalTable.response?.status === 404) {
+  fail(
+    'La table proposals est introuvable. Exécutez supabase/11_v3_accounts_posts.sql.',
+  );
+  process.exit(1);
+}
+
+ok('Table proposals accessible.');
+
+if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  fail(
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY est manquante : les comptes et la connexion ne fonctionneront pas.',
+  );
+  process.exit(1);
+}
+
+ok('Clé anon présente (comptes et sessions).');
+
+
 
 const publicView = await check('/rest/v1/providers_public?select=id&limit=1');
 

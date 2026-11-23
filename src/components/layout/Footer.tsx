@@ -34,6 +34,16 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/connect" className="hover:text-ink">
+                Demandes & offres
+              </Link>
+            </li>
+            <li>
+              <Link href="/match" className="hover:text-ink">
+                Trouver une solution
+              </Link>
+            </li>
+            <li>
               <Link href="/regions" className="hover:text-ink">
                 Les 10 régions
               </Link>

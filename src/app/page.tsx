@@ -84,6 +84,50 @@ export default async function HomePage() {
               URGENCE
             </ButtonLink>
           </div>
+
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
+            <Link href="/connect/nouveau" className="font-semibold text-teal-700 hover:underline dark:text-teal-300">
+              Publier un besoin
+            </Link>
+            <Link href="/connect" className="hover:text-ink">
+              Explorer les demandes
+            </Link>
+            <Link href="/match" className="hover:text-ink">
+              Trouver par description
+            </Link>
+          </div>
+        </section>
+
+        <section className="container-lc py-4">
+          <div className="grid gap-2 sm:grid-cols-3">
+            <Link
+              href="/connect"
+              className="rounded-2xl border border-line bg-surface p-4 hover:border-teal-500/40"
+            >
+              <p className="text-sm font-bold">LIFE CONNECT</p>
+              <p className="mt-1 text-xs text-muted">
+                Publiez un besoin ou une offre, recevez des propositions.
+              </p>
+            </Link>
+            <Link
+              href="/match"
+              className="rounded-2xl border border-line bg-surface p-4 hover:border-violet-500/40"
+            >
+              <p className="text-sm font-bold">LIFE MATCH</p>
+              <p className="mt-1 text-xs text-muted">
+                Décrivez votre besoin, on identifie les solutions réelles.
+              </p>
+            </Link>
+            <Link
+              href="/compte"
+              className="rounded-2xl border border-line bg-surface p-4 hover:border-teal-500/40"
+            >
+              <p className="text-sm font-bold">Mon espace</p>
+              <p className="mt-1 text-xs text-muted">
+                Profil, demandes publiées et réponses envoyées.
+              </p>
+            </Link>
+          </div>
         </section>
 
         <section className="container-lc py-5">
@@ -118,7 +162,7 @@ export default async function HomePage() {
 
         <section className="container-lc py-5">
           <form
-            action="/aide"
+            action="/match"
             method="get"
             className="flex flex-col gap-2 rounded-2xl border border-line bg-surface p-3 shadow-soft sm:flex-row"
           >
@@ -131,16 +175,16 @@ export default async function HomePage() {
               <input
                 type="search"
                 name="q"
-                placeholder="Plombier, moto, couture, infirmier, déménagement…"
+                placeholder="Décrivez votre besoin : plombier à Akwa, infirmière à Yaoundé…"
                 className="input-lc pl-10"
-                aria-label="Rechercher un service"
+                aria-label="Décrivez votre besoin"
               />
             </div>
             <button
               type="submit"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-navy-900 px-5 text-sm font-semibold text-white dark:bg-white dark:text-navy-900"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-violet-500 px-5 text-sm font-semibold text-white hover:bg-violet-500/90"
             >
-              Rechercher
+              Chercher
             </button>
           </form>
         </section>

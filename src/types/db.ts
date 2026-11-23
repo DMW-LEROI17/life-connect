@@ -330,3 +330,62 @@ export interface LocationValue {
   quartierId: number | null;
   freeText: string;
 }
+
+// -----------------------------------------------------------------------------
+// V3 — comptes, profils, LIFE CONNECT / REQUEST
+// -----------------------------------------------------------------------------
+export type UserRole =
+  | 'particulier'
+  | 'professionnel'
+  | 'commercant'
+  | 'entreprise'
+  | 'moderateur'
+  | 'admin';
+
+export interface ProfileRow {
+  id: string;
+  full_name: string;
+  role: UserRole;
+  email: string | null;
+  phone: string | null;
+  bio: string | null;
+  avatar_url: string | null;
+  country: string;
+  city: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type PostKind = 'besoin' | 'offre';
+export type PostStatus = 'ouverte' | 'en_cours' | 'close' | 'expiree';
+
+export interface PostRow {
+  id: string;
+  author_id: string;
+  author_name: string;
+  author_role: string | null;
+  kind: PostKind;
+  title: string;
+  description: string;
+  category_id: number | null;
+  region_id: number | null;
+  city: string | null;
+  quartier: string | null;
+  budget: string | null;
+  deadline: string | null;
+  status: PostStatus;
+  visibility: 'publique' | 'membres';
+  created_at: string;
+  categories: { nom_fr: string } | null;
+}
+
+export interface ProposalRow {
+  id: string;
+  post_id: string;
+  author_id: string;
+  author_name: string;
+  message: string;
+  price: string | null;
+  status: 'envoyee' | 'acceptee' | 'refusee' | 'retiree';
+  created_at: string;
+}

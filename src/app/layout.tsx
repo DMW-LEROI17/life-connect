@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 
 import { ThemeScript } from '@/components/layout/ThemeScript';
+import { BottomNav } from '@/components/layout/BottomNav';
 
 import './globals.css';
 
@@ -51,7 +52,7 @@ export default function RootLayout({
       <head>
         <ThemeScript />
       </head>
-      <body className="min-h-dvh bg-bg font-sans text-ink antialiased">
+      <body className="min-h-dvh bg-bg pb-16 font-sans text-ink antialiased md:pb-0">
         <a
           href="#contenu"
           className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-navy-900 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
@@ -59,6 +60,7 @@ export default function RootLayout({
           Aller au contenu
         </a>
         {children}
+        <BottomNav />
       </body>
     </html>
   );

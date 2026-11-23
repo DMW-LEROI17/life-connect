@@ -182,3 +182,26 @@ export const FACILITY_LABELS: Record<string, string> = {
   ambulance: 'Ambulance',
   protection_civile: 'Protection civile',
 };
+
+export const ROLE_LABELS: Record<string, string> = {
+  particulier: 'Particulier',
+  professionnel: 'Professionnel',
+  commercant: 'Commerçant',
+  entreprise: 'Entreprise',
+  moderateur: 'Modérateur',
+  admin: 'Administrateur',
+};
+
+export const POST_STATUS_LABELS: Record<string, string> = {
+  ouverte: 'Ouverte',
+  en_cours: 'En cours',
+  close: 'Clôturée',
+  expiree: 'Expirée',
+};
+
+export const PROPOSAL_STATUS_LABELS: Record<string, string> = {
+  envoyee: 'Envoyée',
+  acceptee: 'Acceptée',
+  refusee: 'Refusée',
+  retiree: 'Retirée',
+};
