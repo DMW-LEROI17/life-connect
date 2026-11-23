@@ -11,11 +11,12 @@ sont pas exécutées :
 - les pages régions, catalogue, urgences détaillées et LIFE CONNECT restent
   vides ou partielles.
 
-Trois scripts suffisent :
+Quatre scripts suffisent :
 
 1. `supabase/V2_ALL.sql` (géographie, catalogue, urgences, zones)
 2. `supabase/V3_ALL.sql` (comptes, profils, demandes/offres, propositions)
 3. `supabase/V4_ALL.sql` (chat, GPS, wallet, notifications, modération)
+4. `supabase/V5_ALL.sql` (market, community, exchange, radar)
 
 ---
 
@@ -27,7 +28,8 @@ Dans Supabase → **SQL Editor** :
 2. Attends le message **Success**.
 3. Ouvre `supabase/V3_ALL.sql`, même opération.
 4. Ouvre `supabase/V4_ALL.sql`, même opération.
-5. Exécute :
+5. Ouvre `supabase/V5_ALL.sql`, même opération.
+6. Exécute :
 
 ```sql
 notify pgrst, 'reload schema';
@@ -179,6 +181,31 @@ npm run dev
 3. `/admin/sos` : voir les alertes.
 4. `/admin/paiements` : confirmer/annuler.
 
+### J. LIFE MARKET
+
+1. `/market` : parcourir et filtrer.
+2. `/market/nouveau` : publier avec photo.
+3. Ouvrir l’annonce, contacter le vendeur.
+4. Propriétaire : marquer comme vendu.
+
+### K. LIFE PEOPLE & SERVICES
+
+1. `/people` : rechercher par nom, ville, rôle.
+2. Ouvrir un profil, envoyer un message.
+3. Vérifier la section « Professionnels vérifiés ».
+
+### L. LIFE COMMUNITY & EXCHANGE
+
+1. `/community/nouveau` : créer un groupe.
+2. Ouvrir le groupe, rejoindre, publier.
+3. `/exchange/nouveau` : publier une compétence.
+
+### M. LIFE RADAR
+
+1. `/radar` : filtrer par type.
+2. `/radar/nouveau` : publier une opportunité.
+3. Vérifier la date limite et le lien externe.
+
 ---
 
 ## 7. GitHub et Vercel
@@ -250,16 +277,15 @@ delete from public.providers where est_demo = true;
 ## 10. Prochaines étapes
 
 Modules déjà ajoutés : chat, suivi GPS, wallet, notifications, profil/paramètres,
-admin utilisateurs/publications/SOS/paiements.
+admin, market, people, community, exchange, radar et LIFE AI.
 
 Restent à développer :
 
-1. LIFE MARKET (annonces produits, images, modération).
-2. LIFE PEOPLE / RADAR / COMMUNITY / EXCHANGE.
-3. OTP SMS/WhatsApp et notifications push.
-4. Paiement réel Orange Money / MTN MoMo via un agrégateur officiel.
-5. Traduction complète FR/EN et multi-pays.
-6. 2FA administrateur et sauvegardes automatisées.
+1. LIFE ANTICIPATION (suggestions avec consentement).
+2. OTP SMS/WhatsApp et notifications push.
+3. Paiement réel Orange Money / MTN MoMo via un agrégateur officiel.
+4. Traduction complète FR/EN et multi-pays.
+5. 2FA administrateur et sauvegardes automatisées.
 
 Chaque module doit être ajouté avec sa migration SQL, ses politiques RLS et ses
 tests, sans casser HELP ME.

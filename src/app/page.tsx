@@ -341,6 +341,34 @@ export default async function HomePage() {
           </section>
         ) : null}
 
+        <section className="container-lc py-6">
+          <h2 className="text-xl font-bold">Tous les modules</h2>
+          <p className="mt-1 text-sm text-muted">
+            Un besoin. Une connexion. Une solution.
+          </p>
+          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+            {[
+              { href: '/market', label: 'MARKET', text: 'Produits' },
+              { href: '/people', label: 'PEOPLE', text: 'Annuaire' },
+              { href: '/community', label: 'COMMUNITY', text: 'Groupes' },
+              { href: '/exchange', label: 'EXCHANGE', text: 'Compétences' },
+              { href: '/radar', label: 'RADAR', text: 'Opportunités' },
+              { href: '/match', label: 'LIFE AI', text: 'Recherche' },
+            ].map((module) => (
+              <Link
+                key={module.href}
+                href={module.href}
+                className="rounded-2xl border border-line bg-surface p-3 shadow-soft transition-colors hover:border-teal-500/40"
+              >
+                <p className="text-[10px] font-black tracking-wide text-teal-600 dark:text-teal-300">
+                  {module.label}
+                </p>
+                <p className="mt-1 text-xs text-muted">{module.text}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
         <HowItWorks />
 
         <section className="container-lc py-8">

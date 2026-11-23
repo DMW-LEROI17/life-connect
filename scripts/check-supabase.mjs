@@ -342,6 +342,38 @@ if (chatBucket.response?.status === 404) {
 
 ok('Bucket chat présent.');
 
+const v5Tables = [
+  'market_listings',
+  'groups',
+  'group_members',
+  'group_posts',
+  'exchange_listings',
+  'opportunities',
+];
+
+for (const table of v5Tables) {
+  const response = await check(`/rest/v1/${table}?select=*&limit=1`);
+
+  if (response.response?.status === 404) {
+    fail(
+      `La table ${table} est introuvable. Exécutez supabase/13_v5_market_community_radar.sql ou V5_ALL.sql.`,
+    );
+    process.exit(1);
+  }
+}
+
+ok('Tables V5 (market, community, exchange, radar) accessibles.');
+
+const marketBucket = await check('/storage/v1/bucket/market');
+
+if (marketBucket.response?.status === 404) {
+  fail('Le bucket market est introuvable. Exécutez la migration V5.');
+  process.exit(1);
+}
+
+ok('Bucket market présent.');
+
+
 
 
 

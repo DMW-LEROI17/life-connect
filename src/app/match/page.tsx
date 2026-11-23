@@ -15,7 +15,7 @@ import { searchProviders } from '@/lib/search';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Trouver une solution — LIFE MATCH',
+  title: 'Trouver une solution — LIFE AI',
   description:
     'Décrivez votre besoin en français simple. LIFE CONNECT identifie la catégorie, la zone et les professionnels réellement enregistrés.',
 };
@@ -77,11 +77,11 @@ export default async function MatchPage({
     <>
       <Header />
       <main id="contenu" className="container-lc max-w-4xl py-8">
-        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-violet-500">
-          LIFE MATCH
+        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-teal-600 dark:text-teal-300">
+          LIFE AI
         </p>
         <h1 className="mt-1 text-3xl font-bold tracking-tight">
-          Décrivez votre besoin. On cherche pour vous.
+          LIFE AI — Décrivez votre besoin.
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted">
           Écrivez comme vous parlez. La recherche identifie la catégorie, la zone
@@ -102,7 +102,7 @@ export default async function MatchPage({
           />
           <button
             type="submit"
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-violet-500 px-5 text-sm font-semibold text-white hover:bg-violet-500/90"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-teal-500 px-5 text-sm font-semibold text-white hover:bg-teal-500/90"
           >
             <Icon name="search" size={18} />
             Chercher
@@ -127,7 +127,7 @@ export default async function MatchPage({
         ) : (
           <>
             <div className="mt-5 flex flex-wrap items-center gap-1.5">
-              <Badge className="border-violet-500/30 bg-violet-500/10 text-violet-500">
+              <Badge className="border-violet-500/30 bg-teal-500/10 text-teal-600 dark:text-teal-300">
                 {need?.source === 'ia' ? 'LIFE AI' : 'Recherche intelligente'}
               </Badge>
               {need?.categorySlugs.map((slug) => {

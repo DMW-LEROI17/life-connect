@@ -71,6 +71,10 @@ export async function middleware(request: NextRequest) {
     '/notifications',
     '/parametres',
     '/connect/nouveau',
+    '/market/nouveau',
+    '/community/nouveau',
+    '/exchange/nouveau',
+    '/radar/nouveau',
   ].some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );

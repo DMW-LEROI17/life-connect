@@ -9,9 +9,10 @@ import { ThemeToggle } from '@/components/layout/ThemeToggle';
 const NAV = [
   { href: '/aide', label: 'Services' },
   { href: '/connect', label: 'Demandes' },
-  { href: '/match', label: 'Trouver' },
-  { href: '/messages', label: 'Messages' },
-  { href: '/regions', label: 'Régions' },
+  { href: '/market', label: 'Market' },
+  { href: '/people', label: 'People' },
+  { href: '/community', label: 'Communauté' },
+  { href: '/radar', label: 'Radar' },
 ];
 
 export function Header() {

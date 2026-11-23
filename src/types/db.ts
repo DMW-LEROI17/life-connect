@@ -487,3 +487,83 @@ export interface MissionData {
   client_latitude?: number | null;
   client_longitude?: number | null;
 }
+
+// -----------------------------------------------------------------------------
+// V5 — market, community, exchange, radar
+// -----------------------------------------------------------------------------
+export interface MarketListingRow {
+  id: string;
+  seller_id: string;
+  seller_name: string;
+  title: string;
+  description: string;
+  price_fcfa: number | null;
+  condition: 'neuf' | 'occasion' | 'service';
+  category_id: number | null;
+  city: string | null;
+  quartier: string | null;
+  image_url: string | null;
+  status: 'active' | 'vendue' | 'archivee';
+  created_at: string;
+  categories?: { nom_fr: string } | null;
+}
+
+export interface CommunityGroupRow {
+  id: string;
+  owner_id: string;
+  owner_name: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  category_id: number | null;
+  city: string | null;
+  visibility: 'publique' | 'privee';
+  created_at: string;
+  member_count?: number;
+}
+
+export interface GroupPostRow {
+  id: string;
+  group_id: string;
+  author_id: string;
+  author_name: string;
+  body: string;
+  created_at: string;
+}
+
+export interface ExchangeListingRow {
+  id: string;
+  user_id: string;
+  user_name: string;
+  title: string;
+  description: string;
+  kind: 'offre' | 'recherche';
+  skill: string | null;
+  city: string | null;
+  status: 'active' | 'close';
+  created_at: string;
+}
+
+export interface OpportunityRow {
+  id: string;
+  author_id: string | null;
+  author_name: string;
+  title: string;
+  description: string;
+  kind: 'emploi' | 'stage' | 'evenement' | 'partenariat' | 'projet';
+  city: string | null;
+  deadline: string | null;
+  link: string | null;
+  created_at: string;
+}
+
+export interface PublicPersonRow {
+  id: string;
+  full_name: string;
+  role: UserRole;
+  bio: string | null;
+  avatar_url: string | null;
+  city: string | null;
+  country: string;
+  created_at: string;
+}

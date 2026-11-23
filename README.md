@@ -26,15 +26,20 @@ Le projet existant a été conservé et étendu, sans réinitialisation.
 - **Notifications** : messages, propositions, paiements, alertes SOS.
 - **Admin V4** : utilisateurs, publications, alertes SOS, paiements, catégories, prestataires, demandes.
 - **Profil & paramètres** : avatar, préférences de notifications, mot de passe.
-- **LIFE MATCH** : recherche en langage naturel (règles locales, IA optionnelle), résultats réels uniquement.
+- **LIFE MATCH / LIFE AI** : recherche en langage naturel (règles locales, IA optionnelle), résultats réels uniquement.
+- **LIFE MARKET** : annonces produits avec photo, prix, état, contact vendeur et clôture de l’annonce.
+- **LIFE PEOPLE & SERVICES** : annuaire des membres, professionnels et entreprises, contact par messagerie.
+- **LIFE COMMUNITY** : groupes publics/privés, adhésion, publications internes.
+- **LIFE EXCHANGE** : offres et recherches de compétences.
+- **LIFE RADAR** : emplois, stages, événements, projets et partenariats.
 - **LIFE SERVICES** : profil public de prestataire, sans numéro exposé.
 - **Admin** : demandes, prestataires, catégories, statistiques par région, export CSV.
 - **SEO / légal** : pages régions, urgences, FAQ, à propos, contact, sitemap, confidentialité, conditions.
 
 ### Partiel / à venir
 
-- **LIFE MARKET** : non commencé (annonces produits).
-- **LIFE PEOPLE / RADAR / COMMUNITY / EXCHANGE / ANTICIPATION** : non commencés.
+- **LIFE ANTICIPATION** : non commencé.
+- **LIFE AI avancée** : la recherche fonctionne avec règles locales ; l’API IA externe reste optionnelle.
 - **OTP SMS/WhatsApp** : non branché (nécessite un fournisseur).
 - **Paiement réel** : les demandes Wallet sont enregistrées et confirmées par l’admin ; aucun agrégateur Orange/MTN n’est encore branché.
 - **Bilingue FR/EN** : préférence stockée, traduction complète de l’interface à poursuivre.
@@ -68,6 +73,7 @@ Exécuter dans Supabase → SQL Editor, dans cet ordre :
 5. `supabase/V2_ALL.sql` (ou 05 à 10)
 6. `supabase/V3_ALL.sql` (ou 11)
 7. `supabase/V4_ALL.sql` (ou 12)
+8. `supabase/V5_ALL.sql` (ou 13)
 
 ### Projet existant (V1 déjà en place)
 
@@ -76,6 +82,7 @@ Exécuter :
 1. `supabase/V2_ALL.sql`
 2. `supabase/V3_ALL.sql`
 3. `supabase/V4_ALL.sql`
+4. `supabase/V5_ALL.sql`
 
 Puis :
 
@@ -177,6 +184,12 @@ Le script vérifie les clés, les fonctions et les tables V2/V3, le bucket et la
 | `/wallet` | Portefeuille FCFA |
 | `/notifications` | Alertes |
 | `/parametres` | Notifications et sécurité |
+| `/market` | LIFE MARKET |
+| `/people` | LIFE PEOPLE & SERVICES |
+| `/community` | LIFE COMMUNITY |
+| `/exchange` | LIFE EXCHANGE |
+| `/radar` | LIFE RADAR |
+| `/match` | LIFE AI |
 | `/admin` | Administration |
 
 ---

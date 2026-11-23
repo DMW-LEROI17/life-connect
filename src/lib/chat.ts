@@ -64,6 +64,59 @@ export async function ensureConversationForProposal(input: {
   }
 }
 
+export async function ensureConversationBetweenUsers(input: {
+  client: ProfileRow;
+  provider: ProfileRow;
+  title: string;
+}): Promise<string | null> {
+  try {
+    const admin = getSupabaseAdmin();
+
+    const { data: existing } = await admin
+      .from('conversations')
+      .select('id')
+      .eq('client_id', input.client.id)
+      .eq('provider_id', input.provider.id)
+      .eq('post_title', input.title)
+      .maybeSingle();
+
+    if (existing?.id) return existing.id as string;
+
+    const { data, error } = await admin
+      .from('conversations')
+      .insert({
+        client_id: input.client.id,
+        provider_id: input.provider.id,
+        client_name: input.client.full_name || 'Membre',
+        provider_name: input.provider.full_name || 'Membre',
+        client_phone: input.client.phone,
+        provider_phone: input.provider.phone,
+        post_title: input.title,
+        status: 'ouverte',
+      })
+      .select('id')
+      .single();
+
+    if (error || !data?.id) {
+      console.error('[ensureConversationBetweenUsers]', error?.message);
+      return null;
+    }
+
+    await admin.from('messages').insert({
+      conversation_id: data.id,
+      sender_id: input.client.id,
+      sender_name: input.client.full_name || 'Membre',
+      body: `Conversation ouverte : ${input.title}`,
+      kind: 'systeme',
+    });
+
+    return data.id as string;
+  } catch (error) {
+    console.error('[ensureConversationBetweenUsers]', error);
+    return null;
+  }
+}
+
 export async function getConversations(userId: string): Promise<ConversationRow[]> {
   try {
     const supabase = createSupabaseServerClient();
