@@ -152,6 +152,13 @@ Répondez OUI pour accepter. Merci.`;
 
               <dl className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div>
+                  <dt className="text-xs text-muted">Client</dt>
+                  <dd className="mt-1 text-sm font-semibold">
+                    {request.client_name || 'Nom non renseigné'}
+                  </dd>
+                </div>
+
+                <div>
                   <dt className="text-xs text-muted">Téléphone</dt>
                   <dd className="mt-1 flex flex-wrap gap-2">
                     <a

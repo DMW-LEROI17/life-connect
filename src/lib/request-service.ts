@@ -6,6 +6,7 @@ export interface CreateRequestRecordInput {
   probleme: string;
   description: string;
   telClient: string;
+  clientName?: string;
   regionId?: number | null;
   departementId?: number | null;
   arrondissementId?: number | null;
@@ -188,6 +189,7 @@ export async function createRequestRecord(
           probleme: input.probleme.trim().slice(0, 120),
           description: input.description.trim() || null,
           tel_client: input.telClient,
+          client_name: input.clientName?.trim().slice(0, 80) || null,
           quartier: quartier.slice(0, 60),
           latitude: input.latitude ?? null,
           longitude: input.longitude ?? null,
@@ -279,6 +281,7 @@ export async function createRequestRecord(
         probleme: probleme.slice(0, 160),
         description: input.description.trim() || null,
         tel_client: input.telClient,
+        client_name: input.clientName?.trim().slice(0, 80) || null,
         region_id: location.region.id,
         region_nom: location.region.nom,
         departement_id: location.departement?.id ?? null,

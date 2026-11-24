@@ -32,6 +32,7 @@ export function RequestForm({
 }) {
   const router = useRouter();
 
+  const [nom, setNom] = useState('');
   const [subcategoryId, setSubcategoryId] = useState<number | null>(null);
   const [customProblem, setCustomProblem] = useState('');
   const [description, setDescription] = useState('');
@@ -88,6 +89,11 @@ export function RequestForm({
 
     const problem = selectedSubcategory?.nom_fr || customProblem.trim();
 
+    if (nom.trim().length < 2) {
+      setError('Entrez votre nom complet.');
+      return;
+    }
+
     if (!problem || problem.length < 2) {
       setError('Choisissez votre problème ou décrivez-le en quelques mots.');
       return;
@@ -127,6 +133,7 @@ export function RequestForm({
 
     const formData = new FormData();
     formData.set('categorie', category.slug);
+    formData.set('nom_client', nom.trim());
     formData.set(
       'sous_categorie_id',
       selectedSubcategory ? String(selectedSubcategory.id) : '',
@@ -181,6 +188,25 @@ export function RequestForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+      <Field
+        label="Votre nom complet"
+        htmlFor="nom_client"
+        hint="L’administrateur et le prestataire verront ce nom."
+        required
+      >
+        <input
+          id="nom_client"
+          name="nom_client"
+          type="text"
+          value={nom}
+          onChange={(event) => setNom(event.target.value)}
+          maxLength={80}
+          autoComplete="name"
+          className="input-lc"
+          placeholder="Ex. : Jean Mbarga"
+        />
+      </Field>
+
       <fieldset>
         <legend className="text-sm font-semibold">Votre problème</legend>
         <p className="mt-1 text-sm text-muted">

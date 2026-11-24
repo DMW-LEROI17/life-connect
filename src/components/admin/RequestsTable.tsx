@@ -52,6 +52,9 @@ export function RequestsTable({ rows }: { rows: RequestListRow[] }) {
                     </span>
                   </div>
                   <p className="mt-0.5 font-medium">{row.probleme}</p>
+                  <p className="text-[11px] font-semibold text-ink">
+                    {row.client_name || 'Client'}
+                  </p>
                   <p className="text-[11px] text-muted">
                     Réf. {shortRef(row.token)}
                   </p>
@@ -81,9 +84,9 @@ export function RequestsTable({ rows }: { rows: RequestListRow[] }) {
                     </Link>
                     <WhatsAppAlert
                       token={row.token}
-                      categorie={row.categorie_nom || row.categorie}
+                      probleme={row.probleme}
                       quartier={row.quartier}
-                      region={row.region_nom}
+                      clientName={row.client_name}
                     />
                   </div>
                 </td>
@@ -121,7 +124,8 @@ export function RequestsTable({ rows }: { rows: RequestListRow[] }) {
                 {row.region_nom ? ` · ${row.region_nom}` : ''}
               </p>
               <p className="mt-1 text-[11px] text-muted">
-                {formatCmPhone(row.tel_client)} · Réf. {shortRef(row.token)}
+                {row.client_name || 'Client'} · {formatCmPhone(row.tel_client)} · Réf.{' '}
+                {shortRef(row.token)}
                 {row.providers?.nom ? ` · ${row.providers.nom}` : ''}
               </p>
             </Link>
@@ -129,9 +133,9 @@ export function RequestsTable({ rows }: { rows: RequestListRow[] }) {
             <div className="mt-2">
               <WhatsAppAlert
                 token={row.token}
-                categorie={row.categorie_nom || row.categorie}
+                probleme={row.probleme}
                 quartier={row.quartier}
-                region={row.region_nom}
+                clientName={row.client_name}
               />
             </div>
           </div>

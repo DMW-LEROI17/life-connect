@@ -62,6 +62,7 @@ export interface RequestPublic {
   ok: true;
   token: string;
   ville: string;
+  client_name?: string | null;
   categorie: Categorie;
   categorie_nom?: string | null;
   probleme: string;
@@ -123,6 +124,7 @@ export interface RatingRow {
 export interface RequestListRow {
   id: string;
   token: string;
+  client_name: string | null;
   categorie: Categorie;
   categorie_nom: string | null;
   probleme: string;
@@ -140,6 +142,7 @@ export interface RequestDetailRow {
   id: string;
   token: string;
   ville: string;
+  client_name: string | null;
   categorie: Categorie;
   categorie_nom: string | null;
   probleme: string;

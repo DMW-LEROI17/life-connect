@@ -3,6 +3,11 @@ import { z } from 'zod';
 import { normalizeCmPhone } from '@/lib/phone';
 
 export const createRequestSchema = z.object({
+  nom_client: z
+    .string({ required_error: 'Entrez votre nom complet.' })
+    .trim()
+    .min(2, 'Entrez votre nom complet.')
+    .max(80, 'Le nom est trop long.'),
   categorie: z
     .string({ required_error: 'Choisissez une catégorie.' })
     .trim()

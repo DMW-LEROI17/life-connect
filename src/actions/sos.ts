@@ -85,6 +85,7 @@ export async function createSosAlertAction(
         description ||
         'Alerte SOS envoyée depuis la page /sos. Le client attend un contact immédiat.',
       tel_client: phone,
+      client_name: nom || null,
       quartier: quartier || 'Position GPS',
       latitude,
       longitude,
@@ -107,6 +108,7 @@ export async function createSosAlertAction(
           description ||
           'Alerte SOS envoyée depuis la page /sos. Le client attend un contact immédiat.',
         tel_client: phone,
+        client_name: nom || null,
         quartier: quartier || 'Position GPS',
         latitude,
         longitude,

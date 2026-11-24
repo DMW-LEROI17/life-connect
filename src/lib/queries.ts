@@ -108,7 +108,7 @@ export async function listAdminRequests(
   }
 
   const newColumns =
-    'id, token, categorie, categorie_nom, probleme, quartier, region_nom, tel_client, statut, is_emergency, cree_le, assigne_le, providers(nom)';
+    'id, token, client_name, categorie, categorie_nom, probleme, quartier, region_nom, tel_client, statut, is_emergency, cree_le, assigne_le, providers(nom)';
   const legacyColumns =
     'id, token, categorie, probleme, quartier, tel_client, statut, cree_le, assigne_le, providers(nom)';
 
@@ -129,6 +129,7 @@ export async function listAdminRequests(
   return ((data ?? []) as Record<string, unknown>[]).map((row) => ({
     id: String(row.id),
     token: String(row.token),
+    client_name: (row.client_name as string | null) ?? null,
     categorie: String(row.categorie),
     categorie_nom: (row.categorie_nom as string | null) ?? null,
     probleme: String(row.probleme),

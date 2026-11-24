@@ -48,6 +48,7 @@ create table if not exists public.requests (
   probleme text not null check (char_length(probleme) between 3 and 120),
   description text check (description is null or char_length(description) <= 600),
   tel_client text not null check (tel_client ~ '^[+]2376[0-9]{8}$'),
+  client_name text,
   latitude double precision check (latitude is null or (latitude >= -90 and latitude <= 90)),
   longitude double precision check (longitude is null or (longitude >= -180 and longitude <= 180)),
   quartier text not null check (char_length(quartier) between 2 and 60),

@@ -29,6 +29,7 @@ export async function createRequest(
       : null;
 
   const parsed = createRequestSchema.safeParse({
+    nom_client: formData.get('nom_client') ?? '',
     categorie: formData.get('categorie'),
     sous_categorie_id: numberOrNull(formData.get('sous_categorie_id')),
     probleme: formData.get('probleme') ?? '',
@@ -88,6 +89,7 @@ export async function createRequest(
     probleme: input.probleme,
     description: input.description,
     telClient: phone,
+    clientName: input.nom_client,
     regionId: input.region_id,
     departementId: input.departement_id ?? null,
     arrondissementId: input.arrondissement_id ?? null,

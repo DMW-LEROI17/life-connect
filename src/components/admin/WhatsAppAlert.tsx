@@ -1,24 +1,28 @@
-import { getAppUrl } from '@/lib/config';
-
 export function WhatsAppAlert({
   href,
   token,
-  categorie = '',
+  probleme = '',
   quartier = '',
-  region = null,
+  clientName = null,
 }: {
   href?: string;
   token?: string;
-  categorie?: string;
+  probleme?: string;
   quartier?: string;
-  region?: string | null;
+  clientName?: string | null;
 }) {
+  const appUrl =
+    process.env.NEXT_PUBLIC_APP_URL || 'https://life-connect-vert.vercel.app';
+  const displayName = clientName?.trim();
+
   const message = [
-    `Bonjour, un client a besoin d'un ${categorie} à ${quartier}${
-      region ? ` (${region})` : ''
-    }.`,
-    `Détails : ${getAppUrl()}/suivi/${token}`,
-  ].join(' ');
+    `Bonjour, un client a besoin de vous à ${quartier || 'votre zone'}.`,
+    `Problème : ${probleme || 'demande LIFE CONNECT'}.`,
+    displayName ? `Client : ${displayName}.` : '',
+    `Cliquez ici pour voir les détails et accepter : ${appUrl}/suivi/${token}`,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   const link =
     href ??
