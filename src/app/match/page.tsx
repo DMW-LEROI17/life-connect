@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { PostCard } from '@/components/connect/PostCard';
+import { GeoFilter } from '@/components/geo/GeoFilter';
 import { Icon } from '@/components/Icons';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
@@ -15,13 +16,18 @@ import { searchProviders } from '@/lib/search';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Trouver une solution — LIFE AI',
+  title: 'LIFE AI — Trouver une solution',
   description:
-    'Décrivez votre besoin en français simple. LIFE CONNECT identifie la catégorie, la zone et les professionnels réellement enregistrés.',
+    'Décrivez votre besoin ou filtrez par catégorie, région et commune. LIFE CONNECT interroge les professionnels réellement enregistrés.',
 };
 
 function first(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
+}
+
+function numberOrNull(value: string | undefined): number | null {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
 }
 
 const EXAMPLES = [
@@ -37,14 +43,42 @@ export default async function MatchPage({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const q = first(searchParams.q)?.trim() ?? '';
+  const categorie = first(searchParams.categorie)?.trim() ?? '';
+  const city = first(searchParams.ville)?.trim() ?? '';
+  const regionId = numberOrNull(first(searchParams.region));
+  const departementId = numberOrNull(first(searchParams.departement));
+  const arrondissementId = numberOrNull(first(searchParams.arrondissement));
 
   const [catalog, geo] = await Promise.all([getCatalog(), getGeoTree()]);
+  const selectedCategory = catalog.find((item) => item.slug === categorie) ?? null;
   const need = q ? await extractNeed(q, catalog, geo) : null;
 
-  const allPosts = q ? await listPosts({}) : [];
+  const hasFilters = Boolean(
+    q || categorie || city || regionId || departementId || arrondissementId,
+  );
+
+  const categorySlugs = selectedCategory
+    ? [selectedCategory.slug]
+    : need?.categorySlugs ?? [];
+  const effectiveRegionId = regionId ?? need?.regionId ?? null;
+  const keywords = q ? need?.keywords ?? q.split(/\s+/).filter(Boolean) : [];
+
+  const providers = hasFilters
+    ? await searchProviders({
+        categorySlugs,
+        regionId: effectiveRegionId,
+        departementId,
+        arrondissementId,
+        city,
+        keywords,
+        limit: 30,
+      })
+    : [];
+
+  const allPosts = hasFilters ? await listPosts({}) : [];
   const categoryNames = new Set(
     catalog
-      .filter((category) => need?.categorySlugs.includes(category.slug))
+      .filter((category) => categorySlugs.includes(category.slug))
       .map((category) => category.nom_fr),
   );
 
@@ -53,25 +87,19 @@ export default async function MatchPage({
       if (!categoryNames.has(post.categories.nom_fr)) return false;
     }
 
-    if (need?.regionId && post.region_id && post.region_id !== need.regionId) {
+    if (effectiveRegionId && post.region_id && post.region_id !== effectiveRegionId) {
       return false;
     }
 
-    if (need && need.keywords.length > 0) {
-      const haystack = `${post.title} ${post.description} ${post.city ?? ''} ${
-        post.quartier ?? ''
-      }`.toLowerCase();
-
-      if (!need.keywords.some((keyword) => haystack.includes(keyword))) {
-        return false;
-      }
+    if (city) {
+      const haystack = `${post.city ?? ''} ${post.quartier ?? ''}`.toLowerCase();
+      if (!haystack.includes(city.toLowerCase())) return false;
     }
 
     return true;
   });
 
-  const providers = need ? await searchProviders(need) : [];
-  const regionName = geo.find((region) => region.id === need?.regionId)?.nom;
+  const regionName = geo.find((region) => region.id === effectiveRegionId)?.nom;
 
   return (
     <>
@@ -81,35 +109,76 @@ export default async function MatchPage({
           LIFE AI
         </p>
         <h1 className="mt-1 text-3xl font-bold tracking-tight">
-          LIFE AI — Décrivez votre besoin.
+          Décrivez votre besoin. Filtrez la zone.
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted">
-          Écrivez comme vous parlez. La recherche identifie la catégorie, la zone
-          et les professionnels réellement enregistrés. Aucun résultat inventé.
+          Recherche en langage naturel + filtres connectés à Supabase. Aucun
+          prestataire inventé.
         </p>
 
         <form
           action="/match"
           method="get"
-          className="mt-5 flex flex-col gap-2 rounded-2xl border border-line bg-surface p-3 shadow-soft sm:flex-row"
+          className="mt-5 space-y-3 rounded-2xl border border-line bg-surface p-3 shadow-soft"
         >
+          <div className="grid gap-2 sm:grid-cols-[1fr_180px_auto]">
+            <input
+              name="q"
+              defaultValue={q}
+              placeholder="Ex. : mécanicien à Douala"
+              className="input-lc"
+              aria-label="Décrivez votre besoin"
+            />
+            <select
+              name="categorie"
+              defaultValue={categorie}
+              className="select-lc"
+              aria-label="Catégorie"
+            >
+              <option value="">Toutes les catégories</option>
+              {catalog.map((item) => (
+                <option key={item.id} value={item.slug}>
+                  {item.nom_fr}
+                </option>
+              ))}
+            </select>
+            <button
+              type="submit"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-teal-500 px-5 text-sm font-semibold text-white"
+            >
+              <Icon name="search" size={18} />
+              Chercher
+            </button>
+          </div>
+
+          <GeoFilter geo={geo} />
+
+          <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+            <input
+              name="ville"
+              defaultValue={city}
+              placeholder="Ville ou quartier (ex. Douala, Akwa)"
+              className="input-lc h-10 text-sm"
+              aria-label="Ville ou quartier"
+            />
+            <button
+              type="submit"
+              className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-line px-4 text-xs font-semibold"
+            >
+              Appliquer
+            </button>
+          </div>
+
+          <input type="hidden" name="region" value={regionId ?? ''} />
+          <input type="hidden" name="departement" value={departementId ?? ''} />
           <input
-            name="q"
-            defaultValue={q}
-            placeholder="Ex. : je cherche un plombier à Akwa pour une fuite"
-            className="input-lc flex-1"
-            aria-label="Décrivez votre besoin"
+            type="hidden"
+            name="arrondissement"
+            value={arrondissementId ?? ''}
           />
-          <button
-            type="submit"
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-teal-500 px-5 text-sm font-semibold text-white hover:bg-teal-500/90"
-          >
-            <Icon name="search" size={18} />
-            Chercher
-          </button>
         </form>
 
-        {!q ? (
+        {!hasFilters ? (
           <div className="mt-5 rounded-2xl border border-line bg-surface p-5">
             <p className="text-sm font-semibold">Exemples</p>
             <div className="mt-2 flex flex-col gap-1.5">
@@ -127,33 +196,24 @@ export default async function MatchPage({
         ) : (
           <>
             <div className="mt-5 flex flex-wrap items-center gap-1.5">
-              <Badge className="border-violet-500/30 bg-teal-500/10 text-teal-600 dark:text-teal-300">
-                {need?.source === 'ia' ? 'LIFE AI' : 'Recherche intelligente'}
+              <Badge className="border-teal-500/30 bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
+                {need?.source === 'ia' ? 'LIFE AI' : 'Recherche connectée'}
               </Badge>
-              {need?.categorySlugs.map((slug) => {
-                const category = catalog.find((item) => item.slug === slug);
-                return category ? (
-                  <span
-                    key={slug}
-                    className="rounded-full bg-surface2 px-2.5 py-1 text-xs text-muted"
-                  >
-                    {category.nom_fr}
-                  </span>
-                ) : null;
-              })}
+              {selectedCategory ? (
+                <span className="rounded-full bg-surface2 px-2.5 py-1 text-xs text-muted">
+                  {selectedCategory.nom_fr}
+                </span>
+              ) : null}
               {regionName ? (
                 <span className="rounded-full bg-surface2 px-2.5 py-1 text-xs text-muted">
                   {regionName}
                 </span>
               ) : null}
-              {need?.keywords.slice(0, 4).map((keyword) => (
-                <span
-                  key={keyword}
-                  className="rounded-full bg-surface2 px-2.5 py-1 text-xs text-muted"
-                >
-                  {keyword}
+              {city ? (
+                <span className="rounded-full bg-surface2 px-2.5 py-1 text-xs text-muted">
+                  {city}
                 </span>
-              ))}
+              ) : null}
             </div>
 
             <section className="mt-6">
@@ -162,8 +222,8 @@ export default async function MatchPage({
               </h2>
               {providers.length === 0 ? (
                 <p className="mt-2 rounded-xl border border-dashed border-line p-4 text-sm text-muted">
-                  Aucun prestataire vérifié ne correspond encore. Essayez une
-                  autre catégorie ou publiez une demande.
+                  Aucun prestataire trouvé dans cette zone. Essayez une autre
+                  catégorie, élargissez la zone ou publiez une demande.
                 </p>
               ) : (
                 <div className="mt-3 grid gap-2 sm:grid-cols-2">

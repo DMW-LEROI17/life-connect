@@ -5,6 +5,9 @@ export async function listOpportunities(input: {
   q?: string;
   kind?: string;
   city?: string;
+  regionId?: number | null;
+  departementId?: number | null;
+  arrondissementId?: number | null;
 }): Promise<OpportunityRow[]> {
   try {
     const supabase = createSupabaseServerClient();
@@ -16,6 +19,11 @@ export async function listOpportunities(input: {
 
     if (input.kind) query = query.eq('kind', input.kind);
     if (input.city) query = query.ilike('city', `%${input.city}%`);
+    if (input.regionId) query = query.eq('region_id', input.regionId);
+    if (input.departementId) query = query.eq('departement_id', input.departementId);
+    if (input.arrondissementId) {
+      query = query.eq('arrondissement_id', input.arrondissementId);
+    }
 
     const { data, error } = await query;
 

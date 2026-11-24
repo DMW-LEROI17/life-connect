@@ -4,13 +4,24 @@ import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 
 import { createOpportunityAction } from '@/actions/radar';
+import { LocationPicker } from '@/components/geo/LocationPicker';
 import { Icon } from '@/components/Icons';
 import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
 import { Spinner } from '@/components/ui/Spinner';
+import type { GeoTree, LocationValue } from '@/types/db';
 
-export function OpportunityForm() {
+const EMPTY_LOCATION: LocationValue = {
+  regionId: null,
+  departementId: null,
+  arrondissementId: null,
+  quartierId: null,
+  freeText: '',
+};
+
+export function OpportunityForm({ geo }: { geo: GeoTree }) {
   const router = useRouter();
+  const [location, setLocation] = useState<LocationValue>(EMPTY_LOCATION);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -18,7 +29,21 @@ export function OpportunityForm() {
     event.preventDefault();
     setLoading(true);
     setError('');
-    const result = await createOpportunityAction(new FormData(event.currentTarget));
+
+    const formData = new FormData(event.currentTarget);
+    formData.set('region_id', location.regionId ? String(location.regionId) : '');
+    formData.set(
+      'departement_id',
+      location.departementId ? String(location.departementId) : '',
+    );
+    formData.set(
+      'arrondissement_id',
+      location.arrondissementId
+        ? String(location.arrondissementId)
+        : '',
+    );
+
+    const result = await createOpportunityAction(formData);
 
     if (!result.ok) {
       setError(result.error);
@@ -67,6 +92,11 @@ export function OpportunityForm() {
         <Field label="Lien (optionnel)" htmlFor="link">
           <input id="link" name="link" type="url" className="input-lc" placeholder="https://" />
         </Field>
+      </div>
+
+      <div>
+        <p className="mb-2 text-sm font-semibold">Zone concernée</p>
+        <LocationPicker geo={geo} value={location} onChange={setLocation} />
       </div>
       {error ? (
         <p className="rounded-xl border border-urgent-500/30 bg-urgent-50 p-2.5 text-xs font-medium text-urgent-600 dark:bg-urgent-500/10">

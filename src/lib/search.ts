@@ -16,7 +16,11 @@ export interface ProviderSearchResult {
 export async function searchProviders(input: {
   categorySlugs: string[];
   regionId: number | null;
+  departementId?: number | null;
+  arrondissementId?: number | null;
+  city?: string;
   keywords: string[];
+  limit?: number;
 }): Promise<ProviderSearchResult[]> {
   const rows = await loadProviderRows();
   return filterProviders(rows, input);
@@ -28,7 +32,8 @@ export async function getFeaturedProviders(): Promise<ProviderSearchResult[]> {
     categorySlugs: [],
     regionId: null,
     keywords: [],
-  }).slice(0, 6);
+    limit: 6,
+  });
 }
 
 async function loadProviderRows(): Promise<Record<string, unknown>[]> {
@@ -38,7 +43,7 @@ async function loadProviderRows(): Promise<Record<string, unknown>[]> {
     const { data, error } = await supabase
       .from('providers')
       .select(
-        'id, nom, metier, metier_nom, specialite, quartier, region_id, note_moyenne, nombre_avis, photo_url, disponible',
+        'id, nom, metier, metier_nom, specialite, quartier, region_id, departement_id, arrondissement_id, note_moyenne, nombre_avis, photo_url, disponible',
       )
       .eq('statut', 'valide')
       .limit(200);
@@ -64,10 +69,15 @@ function filterProviders(
   input: {
     categorySlugs: string[];
     regionId: number | null;
+    departementId?: number | null;
+    arrondissementId?: number | null;
+    city?: string;
     keywords: string[];
+    limit?: number;
   },
 ): ProviderSearchResult[] {
   const categories = new Set(input.categorySlugs);
+  const city = input.city?.trim().toLowerCase();
 
   const candidates = rows.filter((row) => {
     if (
@@ -77,6 +87,23 @@ function filterProviders(
     ) {
       return false;
     }
+
+    if (
+      input.departementId &&
+      typeof row.departement_id === 'number' &&
+      row.departement_id !== input.departementId
+    ) {
+      return false;
+    }
+
+    if (
+      input.arrondissementId &&
+      typeof row.arrondissement_id === 'number' &&
+      row.arrondissement_id !== input.arrondissementId
+    ) {
+      return false;
+    }
+
     return true;
   });
 
@@ -112,12 +139,16 @@ function filterProviders(
         }
       }
 
+      if (city && !provider.quartier.toLowerCase().includes(city)) {
+        return false;
+      }
+
       return true;
     })
     .sort((a, b) => {
       if (a.disponible !== b.disponible) return a.disponible ? -1 : 1;
       return b.note_moyenne - a.note_moyenne;
     })
-    .slice(0, 12);
+    .slice(0, input.limit ?? 12);
 }
 

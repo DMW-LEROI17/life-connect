@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { GeoFilter } from '@/components/geo/GeoFilter';
 import { Icon } from '@/components/Icons';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { Badge } from '@/components/ui/Badge';
 import { formatDate } from '@/lib/format';
+import { getGeoTree } from '@/lib/geo';
 import { listOpportunities } from '@/lib/radar';
 
 export const dynamic = 'force-dynamic';
@@ -36,12 +38,20 @@ const KIND_LABELS: Record<string, string> = {
 export default async function RadarPage({
   searchParams,
 }: {
-  searchParams: { q?: string; kind?: string; city?: string };
+  searchParams: { q?: string; kind?: string; city?: string; region?: string; departement?: string; arrondissement?: string };
 }) {
+  const geo = await getGeoTree();
+  const regionId = Number(searchParams.region) || null;
+  const departementId = Number(searchParams.departement) || null;
+  const arrondissementId = Number(searchParams.arrondissement) || null;
+
   const opportunities = await listOpportunities({
     q: searchParams.q,
     kind: searchParams.kind,
     city: searchParams.city,
+    regionId,
+    departementId,
+    arrondissementId,
   });
 
   return (
@@ -104,7 +114,19 @@ export default async function RadarPage({
             <Icon name="search" size={18} />
             Filtrer
           </button>
+
+          <input type="hidden" name="region" value={regionId ?? ''} />
+          <input type="hidden" name="departement" value={departementId ?? ''} />
+          <input
+            type="hidden"
+            name="arrondissement"
+            value={arrondissementId ?? ''}
+          />
         </form>
+
+        <div className="mt-3">
+          <GeoFilter geo={geo} />
+        </div>
 
         <div className="mt-3 flex flex-wrap gap-1.5">
           {KINDS.map((kind) => (

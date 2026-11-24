@@ -50,20 +50,20 @@ export async function getGeoTree(): Promise<GeoTree> {
         supabase.from('quartiers').select('id, arrondissement_id, nom').order('nom', { ascending: true }),
       ]);
 
-    if (
-      regionsResult.error ||
-      departementsResult.error ||
-      arrondissementsResult.error ||
-      quartiersResult.error
-    ) {
+    if (regionsResult.error || departementsResult.error) {
       console.error(
         '[getGeoTree]',
-        regionsResult.error?.message ||
-          departementsResult.error?.message ||
-          arrondissementsResult.error?.message ||
-          quartiersResult.error?.message,
+        regionsResult.error?.message || departementsResult.error?.message,
       );
       return [];
+    }
+
+    if (arrondissementsResult.error) {
+      console.error('[getGeoTree:arrondissements]', arrondissementsResult.error.message);
+    }
+
+    if (quartiersResult.error) {
+      console.error('[getGeoTree:quartiers]', quartiersResult.error.message);
     }
 
     const regions = (regionsResult.data ?? []) as RegionDb[];

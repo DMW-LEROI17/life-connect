@@ -9,6 +9,12 @@ export type RadarActionResult =
   | { ok: true; message?: string }
   | { ok: false; error: string };
 
+function numberOrNull(value: FormDataEntryValue | null): number | null {
+  if (typeof value !== 'string' || value.trim() === '') return null;
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
 export async function createOpportunityAction(
   formData: FormData,
 ): Promise<RadarActionResult> {
@@ -47,6 +53,9 @@ export async function createOpportunityAction(
       description,
       kind,
       city: city || current.profile.city,
+      region_id: numberOrNull(formData.get('region_id')),
+      departement_id: numberOrNull(formData.get('departement_id')),
+      arrondissement_id: numberOrNull(formData.get('arrondissement_id')),
       deadline: deadline || null,
       link: link || null,
     });

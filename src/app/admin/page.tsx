@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 
 import { AdminHeader } from '@/components/admin/AdminHeader';
+import { AdminRequestFilters } from '@/components/admin/AdminRequestFilters';
 import { AdminTabs } from '@/components/admin/AdminTabs';
 import { AutoRefresh } from '@/components/admin/AutoRefresh';
 import { RequestsTable } from '@/components/admin/RequestsTable';
@@ -10,7 +10,6 @@ import { Icon } from '@/components/Icons';
 import { SetupNotice } from '@/components/SetupNotice';
 import { requireAdmin } from '@/lib/auth';
 import { isSupabaseConfigured } from '@/lib/config';
-import { STATUS_LABELS } from '@/lib/constants';
 import { getCatalog } from '@/lib/catalog';
 import {
   getAdminRegionStats,
@@ -66,8 +65,6 @@ export default async function AdminPage({
       getCatalog(),
     ]);
 
-  const hasFilters = Boolean(statut || categorie || q);
-
   return (
     <div className="min-h-dvh bg-bg">
       <AdminHeader />
@@ -101,64 +98,7 @@ export default async function AdminPage({
           pendingProviders={pendingProviders}
         />
 
-        <form
-          method="get"
-          action="/admin"
-          className="mt-4 flex flex-wrap items-center gap-2"
-        >
-          <select
-            name="statut"
-            defaultValue={statut ?? ''}
-            className="select-lc h-10 w-auto min-w-40 text-sm"
-            aria-label="Filtrer par statut"
-          >
-            <option value="">Tous les statuts</option>
-            {Object.entries(STATUS_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-
-          <select
-            name="categorie"
-            defaultValue={categorie ?? ''}
-            className="select-lc h-10 w-auto min-w-40 text-sm"
-            aria-label="Filtrer par catégorie"
-          >
-            <option value="">Toutes les catégories</option>
-            {catalog.map((category) => (
-              <option key={category.slug} value={category.slug}>
-                {category.nom_fr}
-              </option>
-            ))}
-          </select>
-
-          <input
-            name="q"
-            defaultValue={q ?? ''}
-            placeholder="Téléphone, quartier, problème"
-            className="input-lc h-10 w-full text-sm sm:w-64"
-            aria-label="Rechercher"
-          />
-
-          <button
-            type="submit"
-            className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-navy-900 px-4 text-xs font-semibold text-white dark:bg-white dark:text-navy-900"
-          >
-            <Icon name="search" size={16} />
-            Filtrer
-          </button>
-
-          {hasFilters ? (
-            <Link
-              href="/admin"
-              className="text-xs font-medium text-muted underline underline-offset-2 hover:text-ink"
-            >
-              Réinitialiser
-            </Link>
-          ) : null}
-        </form>
+        <AdminRequestFilters categories={catalog} />
 
         <RequestsTable rows={requests} />
 

@@ -6,6 +6,7 @@ import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { OpportunityForm } from '@/components/radar/OpportunityForm';
 import { requireUser } from '@/lib/auth-user';
+import { getGeoTree } from '@/lib/geo';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
 
 export default async function NewOpportunityPage() {
   await requireUser('/radar/nouveau');
+  const geo = await getGeoTree();
 
   return (
     <>
@@ -35,7 +37,7 @@ export default async function NewOpportunityPage() {
           Emploi, stage, événement, projet ou partenariat.
         </p>
         <div className="mt-5 rounded-2xl border border-line bg-surface p-5 shadow-soft">
-          <OpportunityForm />
+          <OpportunityForm geo={geo} />
         </div>
       </main>
       <Footer />
