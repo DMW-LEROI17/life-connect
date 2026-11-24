@@ -113,14 +113,27 @@ create table if not exists public.provider_zones (
   departement_id bigint references public.departements(id) on delete cascade,
   arrondissement_id bigint references public.arrondissements(id) on delete cascade,
   quartier_id bigint references public.quartiers(id) on delete cascade,
-  cree_le timestamptz not null default now(),
-  constraint provider_zones_scope_check check (
-    (scope = 'region' and region_id is not null and departement_id is null and arrondissement_id is null and quartier_id is null)
-    or (scope = 'departement' and departement_id is not null and region_id is null and arrondissement_id is null and quartier_id is null)
-    or (scope = 'arrondissement' and arrondissement_id is not null and region_id is null and departement_id is null and quartier_id is null)
-    or (scope = 'quartier' and quartier_id is not null and region_id is null and departement_id is null and arrondissement_id is null)
-  )
+  cree_le timestamptz not null default now()
 );
+
+-- Contrainte ajoutée de façon idempotente (évite le doublon si la table existe déjà).
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'provider_zones_scope_check'
+      and conrelid = 'public.provider_zones'::regclass
+  ) then
+    alter table public.provider_zones
+      add constraint provider_zones_scope_check check (
+        (scope = 'region' and region_id is not null and departement_id is null and arrondissement_id is null and quartier_id is null)
+        or (scope = 'departement' and departement_id is not null and region_id is null and arrondissement_id is null and quartier_id is null)
+        or (scope = 'arrondissement' and arrondissement_id is not null and region_id is null and departement_id is null and quartier_id is null)
+        or (scope = 'quartier' and quartier_id is not null and region_id is null and departement_id is null and arrondissement_id is null)
+      );
+  end if;
+end $$;
 
 -- -----------------------------------------------------------------------------
 -- Urgences : guides de premiers gestes et établissements

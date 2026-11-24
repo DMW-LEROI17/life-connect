@@ -632,6 +632,7 @@ values
 -- À exécuter dans Supabase > SQL Editor, APRÈS les scripts 01 à 04.
 -- Ce fichier regroupe 05 à 10. Il ne supprime aucune donnée existante.
 -- =============================================================================
+
 -- =============================================================================
 -- FICHIER : supabase\05_v2_schema.sql
 -- =============================================================================
@@ -750,14 +751,27 @@ create table if not exists public.provider_zones (
   departement_id bigint references public.departements(id) on delete cascade,
   arrondissement_id bigint references public.arrondissements(id) on delete cascade,
   quartier_id bigint references public.quartiers(id) on delete cascade,
-  cree_le timestamptz not null default now(),
-  constraint provider_zones_scope_check check (
-    (scope = 'region' and region_id is not null and departement_id is null and arrondissement_id is null and quartier_id is null)
-    or (scope = 'departement' and departement_id is not null and region_id is null and arrondissement_id is null and quartier_id is null)
-    or (scope = 'arrondissement' and arrondissement_id is not null and region_id is null and departement_id is null and quartier_id is null)
-    or (scope = 'quartier' and quartier_id is not null and region_id is null and departement_id is null and arrondissement_id is null)
-  )
+  cree_le timestamptz not null default now()
 );
+
+-- Contrainte ajoutée de façon idempotente (évite le doublon si la table existe déjà).
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'provider_zones_scope_check'
+      and conrelid = 'public.provider_zones'::regclass
+  ) then
+    alter table public.provider_zones
+      add constraint provider_zones_scope_check check (
+        (scope = 'region' and region_id is not null and departement_id is null and arrondissement_id is null and quartier_id is null)
+        or (scope = 'departement' and departement_id is not null and region_id is null and arrondissement_id is null and quartier_id is null)
+        or (scope = 'arrondissement' and arrondissement_id is not null and region_id is null and departement_id is null and quartier_id is null)
+        or (scope = 'quartier' and quartier_id is not null and region_id is null and departement_id is null and arrondissement_id is null)
+      );
+  end if;
+end $$;
 
 -- -----------------------------------------------------------------------------
 -- Urgences : guides de premiers gestes et établissements
@@ -3240,7 +3254,6 @@ create policy providers_authenticated_insert on storage.objects
 
 -- =============================================================================
 -- CONSERVER LES COMPTES AUTH EXISTANTS
--- (les comptes auth.users ne sont pas supprimés par le reset)
 -- =============================================================================
 insert into public.profiles (id, full_name, role, email, phone, country, city)
 select
@@ -3269,8 +3282,6 @@ on conflict (user_id) do nothing;
 -- =============================================================================
 -- DROITS FINAUX
 -- =============================================================================
--- Nécessaire pour la sous-requête de la policy publique des groupes.
--- RLS reste actif : aucun membre n'est visible par anon sans policy dédiée.
 grant select on public.group_members to anon;
 grant usage, select on all sequences in schema public to service_role;
 grant all on all tables in schema public to service_role;
