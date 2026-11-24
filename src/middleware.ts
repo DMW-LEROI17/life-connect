@@ -66,6 +66,7 @@ export async function middleware(request: NextRequest) {
 
   const protectedPath = [
     '/compte',
+    '/dashboard-aideur',
     '/messages',
     '/wallet',
     '/notifications',

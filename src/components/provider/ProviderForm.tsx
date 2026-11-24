@@ -123,8 +123,15 @@ export function ProviderForm({
           WhatsApp sous 24 h.
         </p>
         <Link
+          href="/dashboard-aideur"
+          className="mt-3 inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-teal-500 px-5 text-sm font-semibold text-white"
+        >
+          <Icon name="user" size={18} />
+          Ouvrir mon tableau de bord
+        </Link>
+        <Link
           href="/"
-          className="mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl bg-navy-900 px-5 text-sm font-semibold text-white dark:bg-white dark:text-navy-900"
+          className="mt-2 inline-flex min-h-12 items-center justify-center rounded-2xl border border-line px-5 text-sm font-semibold"
         >
           Retour à l’accueil
         </Link>

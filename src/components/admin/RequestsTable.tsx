@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { StatusBadge } from '@/components/admin/StatusBadge';
+import { WhatsAppAlert } from '@/components/admin/WhatsAppAlert';
 import { Badge } from '@/components/ui/Badge';
 import { formatCmPhone } from '@/lib/phone';
 import { formatDateTime, shortRef } from '@/lib/format';
@@ -71,12 +72,20 @@ export function RequestsTable({ rows }: { rows: RequestListRow[] }) {
                   {row.providers?.nom ?? '—'}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <Link
-                    href={`/admin/demandes/${row.id}`}
-                    className="inline-flex min-h-9 items-center rounded-lg border border-line px-3 text-xs font-semibold hover:bg-surface2"
-                  >
-                    Ouvrir
-                  </Link>
+                  <div className="flex flex-col items-end gap-1.5">
+                    <Link
+                      href={`/admin/demandes/${row.id}`}
+                      className="inline-flex min-h-9 items-center rounded-lg border border-line px-3 text-xs font-semibold hover:bg-surface2"
+                    >
+                      Ouvrir
+                    </Link>
+                    <WhatsAppAlert
+                      token={row.token}
+                      categorie={row.categorie_nom || row.categorie}
+                      quartier={row.quartier}
+                      region={row.region_nom}
+                    />
+                  </div>
                 </td>
               </tr>
             ))}
@@ -86,36 +95,46 @@ export function RequestsTable({ rows }: { rows: RequestListRow[] }) {
 
       <div className="mt-4 grid gap-2 md:hidden">
         {rows.map((row) => (
-          <Link
+          <div
             key={row.id}
-            href={`/admin/demandes/${row.id}`}
             className={`rounded-2xl border bg-surface p-4 ${
               row.is_emergency
                 ? 'border-urgent-500/40'
                 : 'border-line'
             }`}
           >
-            <div className="flex items-center justify-between gap-2">
-              <StatusBadge statut={row.statut} />
-              <span className="text-[11px] text-muted">
-                {formatDateTime(row.cree_le)}
-              </span>
-            </div>
-            {row.is_emergency ? (
-              <p className="mt-2 text-[10px] font-black tracking-wide text-urgent-600">
-                URGENCE
+            <Link href={`/admin/demandes/${row.id}`} className="block">
+              <div className="flex items-center justify-between gap-2">
+                <StatusBadge statut={row.statut} />
+                <span className="text-[11px] text-muted">
+                  {formatDateTime(row.cree_le)}
+                </span>
+              </div>
+              {row.is_emergency ? (
+                <p className="mt-2 text-[10px] font-black tracking-wide text-urgent-600">
+                  URGENCE
+                </p>
+              ) : null}
+              <p className="mt-1 font-semibold">{row.probleme}</p>
+              <p className="mt-0.5 text-xs text-muted">
+                {row.categorie_nom || row.categorie} · {row.quartier}
+                {row.region_nom ? ` · ${row.region_nom}` : ''}
               </p>
-            ) : null}
-            <p className="mt-1 font-semibold">{row.probleme}</p>
-            <p className="mt-0.5 text-xs text-muted">
-              {row.categorie_nom || row.categorie} · {row.quartier}
-              {row.region_nom ? ` · ${row.region_nom}` : ''}
-            </p>
-            <p className="mt-1 text-[11px] text-muted">
-              {formatCmPhone(row.tel_client)} · Réf. {shortRef(row.token)}
-              {row.providers?.nom ? ` · ${row.providers.nom}` : ''}
-            </p>
-          </Link>
+              <p className="mt-1 text-[11px] text-muted">
+                {formatCmPhone(row.tel_client)} · Réf. {shortRef(row.token)}
+                {row.providers?.nom ? ` · ${row.providers.nom}` : ''}
+              </p>
+            </Link>
+
+            <div className="mt-2">
+              <WhatsAppAlert
+                token={row.token}
+                categorie={row.categorie_nom || row.categorie}
+                quartier={row.quartier}
+                region={row.region_nom}
+              />
+            </div>
+          </div>
         ))}
       </div>
     </>

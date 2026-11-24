@@ -79,7 +79,8 @@ export default async function AdminPage({
               Tableau de bord
             </h1>
             <p className="text-sm text-muted">
-              Suivez et traitez les demandes en cours.
+              Suivez et traitez les demandes en cours. Actualisation automatique
+              toutes les 5 s.
             </p>
           </div>
 

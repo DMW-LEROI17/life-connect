@@ -17,6 +17,7 @@ export default function robots(): MetadataRoute.Robots {
           '/noter',
           '/api',
           '/compte',
+          '/dashboard-aideur',
           '/connexion',
           '/inscription',
           '/connect/nouveau',
