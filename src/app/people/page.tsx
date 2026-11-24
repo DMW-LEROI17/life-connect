@@ -53,13 +53,13 @@ export default async function PeoplePage({
         arrondissementId,
         city,
         keywords: q ? q.split(/\s+/).filter(Boolean) : [],
-        limit: 60,
+        limit: 200,
       })
     : await searchProviders({
         categorySlugs: [],
         regionId: null,
         keywords: [],
-        limit: 60,
+        limit: 200,
       });
 
   return (
