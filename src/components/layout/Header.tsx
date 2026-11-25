@@ -7,12 +7,11 @@ import { Logo } from '@/components/layout/Logo';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 
 const NAV = [
-  { href: '/aide', label: 'Services' },
-  { href: '/connect', label: 'Demandes' },
-  { href: '/market', label: 'Market' },
-  { href: '/people', label: 'People' },
-  { href: '/community', label: 'Communauté' },
-  { href: '/radar', label: 'Radar' },
+  { href: '/', label: 'Accueil' },
+  { href: '/explorer', label: 'Explorer' },
+  { href: '/publier', label: 'Publier' },
+  { href: '/messages', label: 'Messages' },
+  { href: '/compte', label: 'Profil' },
 ];
 
 export function Header() {

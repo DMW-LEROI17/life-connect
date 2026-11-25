@@ -2,14 +2,14 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'LIFE CONNECT – HELP ME',
+    name: 'LIFE CONNECT — Everything. Everyone. Everywhere.',
     short_name: 'LIFE CONNECT',
     description:
-      'Trouvez un professionnel vérifié dans les 10 régions du Cameroun : santé, maison, auto, numérique, famille, transport.',
+      'Emploi, logement, services, produits, opportunités et communauté : trouve une solution à chaque besoin.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#F6F8FB',
-    theme_color: '#0A1A2F',
+    background_color: '#F5F5F5',
+    theme_color: '#1FA34A',
     lang: 'fr',
     orientation: 'portrait',
     icons: [

@@ -16,13 +16,38 @@ export function Footer() {
           <p className="mt-3 max-w-xs text-sm text-muted">
             Un besoin. Une connexion. Une solution.
             <br />
-            Tout le Cameroun, 10 régions.
+            Emploi, logement, services, market, communauté.
           </p>
         </div>
 
         <div>
-          <p className="text-sm font-semibold">Le service</p>
+          <p className="text-sm font-semibold">Explorer</p>
           <ul className="mt-3 space-y-2 text-sm text-muted">
+            <li>
+              <Link href="/market" className="hover:text-ink">
+                Market — acheter, vendre, louer
+              </Link>
+            </li>
+            <li>
+              <Link href="/radar" className="hover:text-ink">
+                Emplois, stages et opportunités
+              </Link>
+            </li>
+            <li>
+              <Link href="/people" className="hover:text-ink">
+                People — professionnels
+              </Link>
+            </li>
+            <li>
+              <Link href="/community" className="hover:text-ink">
+                Community — groupes
+              </Link>
+            </li>
+            <li>
+              <Link href="/exchange" className="hover:text-ink">
+                Exchange — compétences
+              </Link>
+            </li>
             <li>
               <Link href="/urgence" className="font-semibold text-urgent-600 hover:text-urgent-500">
                 Urgence 117 / 118 / 119
@@ -30,7 +55,7 @@ export function Footer() {
             </li>
             <li>
               <Link href="/aide" className="hover:text-ink">
-                Demander de l’aide
+                HELP ME — dépannage
               </Link>
             </li>
             <li>
@@ -40,42 +65,12 @@ export function Footer() {
             </li>
             <li>
               <Link href="/match" className="hover:text-ink">
-                Trouver une solution
-              </Link>
-            </li>
-            <li>
-              <Link href="/regions" className="hover:text-ink">
-                Les 10 régions
+                LIFE AI — trouver une solution
               </Link>
             </li>
             <li>
               <Link href="/prestataire" className="hover:text-ink">
                 Devenir prestataire
-              </Link>
-            </li>
-            <li>
-              <Link href="/a-propos" className="hover:text-ink">
-                À propos
-              </Link>
-            </li>
-            <li>
-              <Link href="/faq" className="hover:text-ink">
-                FAQ
-              </Link>
-            </li>
-            <li>
-              <Link href="/contact" className="hover:text-ink">
-                Contact
-              </Link>
-            </li>
-            <li>
-              <Link href="/legal/confidentialite" className="hover:text-ink">
-                Confidentialité
-              </Link>
-            </li>
-            <li>
-              <Link href="/legal/conditions" className="hover:text-ink">
-                Conditions d’utilisation
               </Link>
             </li>
           </ul>
@@ -111,14 +106,39 @@ export function Footer() {
                 Espace administration
               </Link>
             </li>
+            <li>
+              <Link href="/a-propos" className="hover:text-ink">
+                À propos
+              </Link>
+            </li>
+            <li>
+              <Link href="/faq" className="hover:text-ink">
+                FAQ
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="hover:text-ink">
+                Contact
+              </Link>
+            </li>
+            <li>
+              <Link href="/legal/confidentialite" className="hover:text-ink">
+                Confidentialité
+              </Link>
+            </li>
+            <li>
+              <Link href="/legal/conditions" className="hover:text-ink">
+                Conditions d’utilisation
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
 
       <div className="border-t border-line py-4">
         <p className="container-lc text-center text-xs text-muted">
-          © {year} LIFE CONNECT – HELP ME. Cameroun. Les secours officiels
-          restent le 117, le 118 et le 119.
+          © {year} LIFE CONNECT. Cameroun. Les secours officiels restent le
+          117, le 118 et le 119.
         </p>
       </div>
     </footer>

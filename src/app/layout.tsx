@@ -10,12 +10,12 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   ),
   title: {
-    default: 'LIFE CONNECT – HELP ME | Cameroun',
+    default: 'LIFE CONNECT — Un besoin. Une connexion. Une solution.',
     template: '%s | LIFE CONNECT',
   },
   description:
-    'Trouvez un mécanicien, un dépanneur, un technicien ou un professionnel de santé vérifié dans les 10 régions du Cameroun. Sans compte, juste votre numéro.',
-  applicationName: 'LIFE CONNECT – HELP ME',
+    'Emploi, logement, services, produits, partenariats, communauté : LIFE CONNECT rassemble les solutions au même endroit. Cameroun et international.',
+  applicationName: 'LIFE CONNECT',
   manifest: '/manifest.webmanifest',
   icons: {
     icon: '/icon.svg',
@@ -26,9 +26,9 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: 'LIFE CONNECT – HELP ME',
+    title: 'LIFE CONNECT — Everything. Everyone. Everywhere.',
     description:
-      'Un besoin. Une connexion. Une solution. Assistance locale dans tout le Cameroun.',
+      'Un besoin. Une connexion. Une solution. La plateforme qui rassemble emploi, logement, services, market, opportunités et communauté.',
     type: 'website',
     locale: 'fr_FR',
   },

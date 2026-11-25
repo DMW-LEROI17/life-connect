@@ -6,11 +6,11 @@ import { usePathname } from 'next/navigation';
 import { Icon } from '@/components/Icons';
 
 const ITEMS = [
-  { href: '/', label: 'Accueil', icon: 'spark' as const },
-  { href: '/market', label: 'Market', icon: 'search' as const },
-  { href: '/connect', label: 'Demandes', icon: 'send' as const },
-  { href: '/messages', label: 'Messages', icon: 'whatsapp' as const },
-  { href: '/compte', label: 'Compte', icon: 'user' as const },
+  { href: '/', label: 'Accueil', icon: 'spark' as const, accent: false },
+  { href: '/explorer', label: 'Explorer', icon: 'search' as const, accent: false },
+  { href: '/publier', label: 'Publier', icon: 'send' as const, accent: true },
+  { href: '/messages', label: 'Messages', icon: 'whatsapp' as const, accent: false },
+  { href: '/compte', label: 'Profil', icon: 'user' as const, accent: false },
 ];
 
 const HIDDEN_PREFIXES = ['/admin', '/suivi', '/noter', '/connexion', '/inscription'];
@@ -40,11 +40,25 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-[10px] font-semibold ${
-                active ? 'text-teal-600 dark:text-teal-300' : 'text-muted'
+                item.accent
+                  ? '-mt-4'
+                  : active
+                    ? 'text-teal-600 dark:text-teal-300'
+                    : 'text-muted'
               }`}
             >
-              <Icon name={item.icon} size={20} />
-              {item.label}
+              <span
+                className={`grid place-items-center ${
+                  item.accent
+                    ? 'h-11 w-11 rounded-full bg-teal-500 text-white shadow-soft'
+                    : ''
+                }`}
+              >
+                <Icon name={item.icon} size={item.accent ? 22 : 20} />
+              </span>
+              <span className={item.accent ? 'text-teal-600 dark:text-teal-300' : ''}>
+                {item.label}
+              </span>
             </Link>
           );
         })}
