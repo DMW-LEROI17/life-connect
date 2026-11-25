@@ -3,22 +3,22 @@
 @tailwind utilities;
 
 :root {
-  --lc-bg: #f5f5f5;
+  --lc-bg: #f3f6fc;
   --lc-surface: #ffffff;
-  --lc-surface-2: #eef2ee;
-  --lc-ink: #111827;
-  --lc-muted: #6b7280;
-  --lc-line: #e5e7eb;
+  --lc-surface-2: #eef3fb;
+  --lc-ink: #17233f;
+  --lc-muted: #73809b;
+  --lc-line: #e5eaf4;
   color-scheme: light;
 }
 
 .dark {
-  --lc-bg: #0b0f0c;
-  --lc-surface: #121a14;
-  --lc-surface-2: #1a261d;
-  --lc-ink: #f3f4f6;
-  --lc-muted: #a7b0a9;
-  --lc-line: #26332a;
+  --lc-bg: #0b1020;
+  --lc-surface: #121a30;
+  --lc-surface-2: #1a2440;
+  --lc-ink: #f4f7ff;
+  --lc-muted: #a2aec8;
+  --lc-line: #253150;
   color-scheme: dark;
 }
 
@@ -33,12 +33,12 @@
   }
 
   ::selection {
-    background-color: #1fa34a;
+    background-color: #1246d8;
     color: #ffffff;
   }
 
   :focus-visible {
-    outline: 3px solid #1fa34a;
+    outline: 3px solid #1246d8;
     outline-offset: 2px;
   }
 
@@ -57,6 +57,38 @@
 
   .card-lc {
     @apply rounded-2xl border border-line bg-surface shadow-soft;
+  }
+
+  .card-hover {
+    @apply transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-500/30 hover:shadow-lift;
+  }
+
+  .gradient-brand {
+    background-image: linear-gradient(135deg, #1246d8 0%, #2878ff 55%, #00c9c8 120%);
+  }
+
+  .gradient-night {
+    background-image: linear-gradient(145deg, #0b1330 0%, #101c45 45%, #1246d8 120%);
+  }
+
+  .gradient-violet {
+    background-image: linear-gradient(135deg, #7655e8 0%, #2878ff 100%);
+  }
+
+  .hero-mesh {
+    background-image:
+      radial-gradient(circle at 18% 15%, rgba(54, 217, 245, 0.28), transparent 34%),
+      radial-gradient(circle at 82% 10%, rgba(118, 85, 232, 0.35), transparent 38%),
+      radial-gradient(circle at 65% 95%, rgba(0, 201, 200, 0.22), transparent 36%),
+      linear-gradient(145deg, #0b1330 0%, #101c45 48%, #1246d8 130%);
+  }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
   }
 
   .input-lc {

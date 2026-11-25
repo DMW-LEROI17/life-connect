@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
       'Emploi, logement, services, produits, opportunités et communauté : trouve une solution à chaque besoin.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#F5F5F5',
-    theme_color: '#1FA34A',
+    background_color: '#F3F6FC',
+    theme_color: '#1246D8',
     lang: 'fr',
     orientation: 'portrait',
     icons: [

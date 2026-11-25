@@ -25,25 +25,27 @@ export default function PublierPage() {
   return (
     <>
       <Header />
-      <main id="contenu" className="container-lc max-w-3xl py-8">
-        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-teal-600 dark:text-teal-300">
-          PUBLIER
-        </p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight">
-          Que voulez-vous publier ?
-        </h1>
-        <p className="mt-1 text-sm text-muted">
-          Choisissez le format adapté à votre besoin.
-        </p>
+      <main id="contenu" className="container-lc max-w-3xl py-6 sm:py-8">
+        <div className="rounded-3xl gradient-night p-5 text-white shadow-lift sm:p-7">
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/60">
+            PUBLIER
+          </p>
+          <h1 className="mt-1 text-3xl font-black tracking-tight">
+            Que voulez-vous publier ?
+          </h1>
+          <p className="mt-1 text-sm text-white/70">
+            Choisissez le format adapté à votre besoin.
+          </p>
+        </div>
 
-        <div className="mt-6 grid gap-2 sm:grid-cols-2">
+        <div className="mt-5 grid gap-2.5 sm:grid-cols-2">
           {ACTIONS.map((action) => (
             <Link
               key={action.href}
               href={action.href}
-              className="rounded-2xl border border-line bg-surface p-4 shadow-soft transition-colors hover:border-teal-500/40"
+              className="card-hover rounded-2xl border border-line bg-surface p-4 shadow-soft"
             >
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
+              <span className="grid h-10 w-10 place-items-center rounded-xl gradient-brand text-white">
                 <Icon name={action.icon} size={20} />
               </span>
               <p className="mt-3 text-sm font-bold">{action.label}</p>

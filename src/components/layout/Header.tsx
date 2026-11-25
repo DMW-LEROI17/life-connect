@@ -1,36 +1,19 @@
 import Link from 'next/link';
 
 import { AccountMenu } from '@/components/layout/AccountMenu';
+import { HeaderNav } from '@/components/layout/HeaderNav';
 import { NotificationBell } from '@/components/layout/NotificationBell';
 import { Icon } from '@/components/Icons';
 import { Logo } from '@/components/layout/Logo';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 
-const NAV = [
-  { href: '/', label: 'Accueil' },
-  { href: '/explorer', label: 'Explorer' },
-  { href: '/publier', label: 'Publier' },
-  { href: '/messages', label: 'Messages' },
-  { href: '/compte', label: 'Profil' },
-];
-
 export function Header() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-bg backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-line/80 bg-surface/90 shadow-[0_4px_22px_rgba(18,70,216,0.06)] backdrop-blur-xl">
       <div className="container-lc flex h-16 items-center justify-between gap-2">
         <Logo />
 
-        <nav className="hidden items-center gap-1 lg:flex">
-          {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-xl px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-surface2 hover:text-ink"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <HeaderNav />
 
         <div className="flex items-center gap-1">
           <Link
@@ -43,7 +26,7 @@ export function Header() {
 
           <Link
             href="/prestataire"
-            className="hidden items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-surface2 hover:text-ink xl:inline-flex"
+            className="hidden items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold text-muted transition-colors hover:bg-surface2 hover:text-ink xl:inline-flex"
           >
             <Icon name="user" size={18} />
             Prestataire
@@ -51,7 +34,9 @@ export function Header() {
 
           <NotificationBell />
           <AccountMenu />
-          <ThemeToggle />
+          <div className="hidden sm:block">
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </header>

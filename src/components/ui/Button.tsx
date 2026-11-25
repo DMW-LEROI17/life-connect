@@ -8,14 +8,14 @@ type Variant = 'primary' | 'secondary' | 'whatsapp' | 'outline' | 'ghost';
 type Size = 'sm' | 'md' | 'lg';
 
 const base =
-  'inline-flex items-center justify-center gap-2 rounded-2xl font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 focus-visible:ring-offset-bg';
+  'inline-flex items-center justify-center gap-2 rounded-2xl font-semibold transition-all duration-200 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 focus-visible:ring-offset-bg';
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-teal-500 text-white shadow-soft hover:bg-teal-600',
+  primary: 'gradient-brand text-white shadow-soft hover:shadow-lift',
   secondary:
     'bg-navy-900 text-white hover:bg-navy-800 dark:bg-white dark:text-navy-900 dark:hover:bg-slate-100',
   whatsapp: 'bg-[#25D366] text-[#04331A] hover:bg-[#1FBE5B]',
-  outline: 'border border-line bg-surface text-ink hover:bg-surface2',
+  outline: 'border border-line bg-surface text-ink hover:border-teal-500/30 hover:bg-surface2',
   ghost: 'text-ink hover:bg-surface2',
 };
 

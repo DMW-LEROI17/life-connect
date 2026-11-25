@@ -31,32 +31,34 @@ export default async function MarketPage({
     <>
       <Header />
       <main id="contenu" className="container-lc py-8">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-teal-600 dark:text-teal-300">
-              LIFE MARKET
-            </p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight">
-              Acheter, vendre, louer
-            </h1>
-            <p className="mt-1 max-w-xl text-sm text-muted">
-              Des annonces réelles, publiées par les membres. Aucun produit
-              inventé, aucun faux prix.
-            </p>
+        <div className="rounded-3xl gradient-night p-5 text-white shadow-lift sm:p-7">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/60">
+                LIFE MARKET
+              </p>
+              <h1 className="mt-1 text-3xl font-black tracking-tight">
+                Acheter, vendre, louer
+              </h1>
+              <p className="mt-1 max-w-xl text-sm text-white/70">
+                Des annonces réelles, publiées par les membres. Aucun produit
+                inventé, aucun faux prix.
+              </p>
+            </div>
+            <Link
+              href="/market/nouveau"
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-white px-4 text-sm font-bold text-teal-700"
+            >
+              <Icon name="plus" size={18} />
+              Publier une annonce
+            </Link>
           </div>
-          <Link
-            href="/market/nouveau"
-            className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-teal-500 px-4 text-sm font-semibold text-white"
-          >
-            <Icon name="send" size={18} />
-            Publier une annonce
-          </Link>
         </div>
 
         <form
           action="/market"
           method="get"
-          className="mt-5 grid gap-2 rounded-2xl border border-line bg-surface p-3 shadow-soft sm:grid-cols-[1fr_180px_160px_auto]"
+          className="mt-4 grid gap-2 rounded-2xl border border-line bg-surface p-3 shadow-soft sm:grid-cols-[1fr_180px_160px_auto]"
         >
           <input
             name="q"

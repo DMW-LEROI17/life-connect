@@ -63,18 +63,20 @@ export default async function AidePage({
           Accueil
         </Link>
 
-        <h1 className="mt-4 text-3xl font-bold tracking-tight">
-          Quel service cherchez-vous ?
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm text-muted">
-          Tous les besoins de la vie quotidienne, dans tout le Cameroun.
-          Urgences, santé, maison, auto, numérique, famille, transport…
-        </p>
+        <div className="mt-3 rounded-3xl gradient-night p-5 text-white shadow-lift sm:p-7">
+          <h1 className="text-3xl font-black tracking-tight">
+            Quel service cherchez-vous ?
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm text-white/70">
+            Tous les besoins de la vie quotidienne, dans tout le Cameroun.
+            Urgences, santé, maison, auto, numérique, famille, transport…
+          </p>
+        </div>
 
         <form
           action="/aide"
           method="get"
-          className="mt-5 flex flex-col gap-2 rounded-2xl border border-line bg-surface p-3 shadow-soft sm:flex-row"
+          className="mt-4 flex flex-col gap-2 rounded-2xl border border-line bg-surface p-3 shadow-soft sm:flex-row"
         >
           <div className="relative flex-1">
             <Icon

@@ -42,30 +42,35 @@ export default async function ConnectPage({
     <>
       <Header />
       <main id="contenu" className="container-lc max-w-5xl py-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-teal-600 dark:text-teal-300">
-              LIFE CONNECT
-            </p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight">
-              Demandes et offres
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm text-muted">
-              Publiez un besoin, recevez des propositions, ou proposez vos
-              services. Les échanges restent sur la plateforme.
-            </p>
-          </div>
+        <div className="rounded-3xl gradient-night p-5 text-white shadow-lift sm:p-7">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/60">
+                LIFE CONNECT
+              </p>
+              <h1 className="mt-1 text-3xl font-black tracking-tight">
+                Demandes et offres
+              </h1>
+              <p className="mt-2 max-w-2xl text-sm text-white/70">
+                Publiez un besoin, recevez des propositions, ou proposez vos
+                services. Les échanges restent sur la plateforme.
+              </p>
+            </div>
 
-          <ButtonLink href="/connect/nouveau" size="md">
-            <Icon name="send" size={18} />
-            Publier
-          </ButtonLink>
+            <Link
+              href="/connect/nouveau"
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-white px-4 text-sm font-bold text-teal-700 shadow-soft"
+            >
+              <Icon name="plus" size={18} />
+              Publier
+            </Link>
+          </div>
         </div>
 
         <form
           method="get"
           action="/connect"
-          className="mt-5 grid gap-2 rounded-2xl border border-line bg-surface p-3 shadow-soft sm:grid-cols-2 lg:grid-cols-5"
+          className="mt-4 grid gap-2 rounded-2xl border border-line bg-surface p-3 shadow-soft sm:grid-cols-2 lg:grid-cols-5"
         >
           <select
             name="kind"

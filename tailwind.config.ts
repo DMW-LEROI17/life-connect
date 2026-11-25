@@ -7,29 +7,34 @@ const config: Config = {
     extend: {
       colors: {
         navy: {
-          950: '#07140D',
-          900: '#0B3B24',
-          800: '#14532D',
-          700: '#166534',
+          950: '#0B1330',
+          900: '#101C45',
+          800: '#16265A',
+          700: '#1E3275',
         },
         urgent: {
-          50: '#FCEBEB',
-          100: '#FAD7D7',
+          50: '#FFF1F1',
+          100: '#FFE0E0',
           500: '#D92B2B',
           600: '#B91F1F',
         },
         teal: {
-          50: '#E8F5EC',
-          100: '#D1EBD9',
-          500: '#1FA34A',
-          600: '#17853C',
-          700: '#146C31',
+          50: '#EEF4FF',
+          100: '#DCE8FF',
+          500: '#1246D8',
+          600: '#0F3BB8',
+          700: '#0C2F93',
         },
         violet: {
-          500: '#14532D',
+          50: '#F3F0FF',
+          500: '#7655E8',
         },
         coral: {
-          500: '#D97706',
+          500: '#FF9B45',
+        },
+        sky: {
+          400: '#36D9F5',
+          500: '#00C9C8',
         },
         bg: 'var(--lc-bg)',
         surface: 'var(--lc-surface)',
@@ -52,7 +57,26 @@ const config: Config = {
         ],
       },
       boxShadow: {
-        soft: '0 10px 30px rgba(15, 23, 42, 0.08)',
+        soft: '0 12px 32px rgba(18, 70, 216, 0.08)',
+        lift: '0 18px 45px rgba(16, 28, 69, 0.14)',
+      },
+      borderRadius: {
+        '2xl': '1.25rem',
+        '3xl': '1.5rem',
+      },
+      keyframes: {
+        rise: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        pulseSoft: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.55' },
+        },
+      },
+      animation: {
+        rise: 'rise 0.45s ease-out both',
+        'pulse-soft': 'pulseSoft 2.4s ease-in-out infinite',
       },
     },
   },

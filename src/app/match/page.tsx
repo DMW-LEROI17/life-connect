@@ -104,22 +104,24 @@ export default async function MatchPage({
   return (
     <>
       <Header />
-      <main id="contenu" className="container-lc max-w-4xl py-8">
-        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-teal-600 dark:text-teal-300">
-          LIFE AI
-        </p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight">
-          Décrivez votre besoin. Filtrez la zone.
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm text-muted">
-          Recherche en langage naturel + filtres connectés à Supabase. Aucun
-          prestataire inventé.
-        </p>
+      <main id="contenu" className="container-lc max-w-4xl py-6 sm:py-8">
+        <div className="rounded-3xl gradient-night p-5 text-white shadow-lift sm:p-7">
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/60">
+            LIFE MATCH · LIFE AI
+          </p>
+          <h1 className="mt-1 text-3xl font-black tracking-tight sm:text-4xl">
+            Trouvons ensemble la meilleure solution.
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm text-white/70">
+            Décrivez votre besoin simplement. LIFE CONNECT identifie les
+            possibilités réellement disponibles.
+          </p>
+        </div>
 
         <form
           action="/match"
           method="get"
-          className="mt-5 space-y-3 rounded-2xl border border-line bg-surface p-3 shadow-soft"
+          className="mt-4 space-y-3 rounded-2xl border border-line bg-surface p-3 shadow-soft"
         >
           <div className="grid gap-2 sm:grid-cols-[1fr_180px_auto]">
             <input

@@ -24,10 +24,10 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/95 safe-bottom backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 rounded-t-[1.5rem] border-t border-line bg-surface/95 shadow-[0_-10px_35px_rgba(16,28,69,0.10)] safe-bottom backdrop-blur-xl md:hidden"
       aria-label="Navigation principale"
     >
-      <div className="mx-auto grid max-w-md grid-cols-5">
+      <div className="mx-auto grid max-w-md grid-cols-5 px-1">
         {ITEMS.map((item) => {
           const active =
             item.href === '/'
@@ -39,9 +39,10 @@ export function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-[10px] font-semibold ${
+              aria-current={active ? 'page' : undefined}
+              className={`flex min-h-16 flex-col items-center justify-center gap-1 text-[10px] font-bold ${
                 item.accent
-                  ? '-mt-4'
+                  ? '-mt-5'
                   : active
                     ? 'text-teal-600 dark:text-teal-300'
                     : 'text-muted'
@@ -50,11 +51,13 @@ export function BottomNav() {
               <span
                 className={`grid place-items-center ${
                   item.accent
-                    ? 'h-11 w-11 rounded-full bg-teal-500 text-white shadow-soft'
-                    : ''
+                    ? 'h-12 w-12 rounded-full gradient-brand text-white shadow-lift'
+                    : active
+                      ? 'h-8 w-8 rounded-xl bg-teal-50 dark:bg-teal-500/10'
+                      : 'h-8 w-8'
                 }`}
               >
-                <Icon name={item.icon} size={item.accent ? 22 : 20} />
+                <Icon name={item.icon} size={item.accent ? 23 : 20} />
               </span>
               <span className={item.accent ? 'text-teal-600 dark:text-teal-300' : ''}>
                 {item.label}

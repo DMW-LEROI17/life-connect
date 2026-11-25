@@ -64,7 +64,9 @@ export default async function ComptePage() {
   return (
     <>
       <Header />
-      <main id="contenu" className="container-lc max-w-4xl py-8">
+      <main id="contenu" className="container-lc max-w-4xl py-6 sm:py-8">
+        <div className="mb-4 h-24 rounded-3xl gradient-night shadow-lift sm:h-28" />
+
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-center gap-3">
             {current.profile.avatar_url ? (
@@ -76,7 +78,7 @@ export default async function ComptePage() {
                 className="h-16 w-16 rounded-full object-cover"
               />
             ) : (
-              <span className="grid h-16 w-16 place-items-center rounded-full bg-navy-900 text-xl font-bold text-white">
+              <span className="grid h-16 w-16 place-items-center rounded-full gradient-brand text-xl font-black text-white shadow-soft">
                 {initials(current.profile.full_name || current.user.email || 'LC')}
               </span>
             )}
@@ -99,7 +101,7 @@ export default async function ComptePage() {
           <div className="flex flex-wrap gap-2">
             <Link
               href="/connect/nouveau"
-              className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-teal-500 px-3 text-xs font-semibold text-white"
+              className="inline-flex min-h-10 items-center gap-1.5 rounded-xl gradient-brand px-3 text-xs font-bold text-white"
             >
               <Icon name="send" size={16} />
               Publier un besoin
@@ -145,17 +147,17 @@ export default async function ComptePage() {
         </div>
 
         <div className="mt-6 grid gap-2 sm:grid-cols-3">
-          <div className="rounded-2xl border border-line bg-surface p-4">
+          <div className="rounded-2xl border border-line bg-surface p-4 shadow-soft">
             <p className="text-xs text-muted">Mes demandes</p>
-            <p className="mt-1 text-2xl font-bold">{posts.length}</p>
+            <p className="mt-1 text-2xl font-black">{posts.length}</p>
           </div>
-          <div className="rounded-2xl border border-line bg-surface p-4">
+          <div className="rounded-2xl border border-line bg-surface p-4 shadow-soft">
             <p className="text-xs text-muted">Mes réponses</p>
-            <p className="mt-1 text-2xl font-bold">{proposals.length}</p>
+            <p className="mt-1 text-2xl font-black">{proposals.length}</p>
           </div>
-          <div className="rounded-2xl border border-line bg-surface p-4">
-            <p className="text-xs text-muted">Statut</p>
-            <p className="mt-1 text-sm font-semibold">Compte actif</p>
+          <div className="rounded-2xl border border-line bg-gradient-to-br from-teal-500 to-sky-500 p-4 text-white shadow-soft">
+            <p className="text-xs text-white/75">Statut</p>
+            <p className="mt-1 text-sm font-black">Compte actif</p>
           </div>
         </div>
 
