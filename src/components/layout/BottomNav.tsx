@@ -8,7 +8,7 @@ import { Icon } from '@/components/Icons';
 const ITEMS = [
   { href: '/', label: 'Accueil', icon: 'spark' as const, accent: false },
   { href: '/explorer', label: 'Explorer', icon: 'search' as const, accent: false },
-  { href: '/publier', label: 'Publier', icon: 'send' as const, accent: true },
+  { href: '/publier', label: 'Publier', icon: 'plus' as const, accent: true },
   { href: '/messages', label: 'Messages', icon: 'whatsapp' as const, accent: false },
   { href: '/compte', label: 'Profil', icon: 'user' as const, accent: false },
 ];

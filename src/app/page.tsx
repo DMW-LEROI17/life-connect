@@ -1,119 +1,78 @@
 import Link from 'next/link';
 
 import { EmergencyNumbers } from '@/components/emergency/EmergencyNumbers';
+import { ModuleGrid } from '@/components/home/ModuleGrid';
+import { SuggestionCard, type SuggestionItem } from '@/components/home/SuggestionCard';
 import { UniversalSearch } from '@/components/home/UniversalSearch';
-import { Icon, safeIcon } from '@/components/Icons';
+import { Icon } from '@/components/Icons';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { ButtonLink } from '@/components/ui/Button';
-import { getFamilies } from '@/lib/catalog';
+import { listMarketListings } from '@/lib/market';
 import { getFeaturedProviders } from '@/lib/search';
 
 export const dynamic = 'force-dynamic';
 
-const MODULES = [
-  {
-    href: '/market',
-    label: 'MARKET',
-    title: 'Acheter, vendre, louer',
-    text: 'Produits, téléphones, meubles, véhicules et plus.',
-    icon: 'spark' as const,
-    color: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300',
-  },
-  {
-    href: '/radar?kind=emploi',
-    label: 'RADAR',
-    title: 'Emplois et stages',
-    text: 'Offres, partenariats, projets et appels à candidatures.',
-    icon: 'star' as const,
-    color: 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300',
-  },
-  {
-    href: '/market?q=logement',
-    label: 'LOGEMENT',
-    title: 'Appartements et terrains',
-    text: 'Louer, acheter ou publier un logement.',
-    icon: 'spark' as const,
-    color: 'bg-surface2 text-ink',
-  },
-  {
-    href: '/people',
-    label: 'SERVICES',
-    title: 'Professionnels et compétences',
-    text: 'Trouvez le bon profil, près de chez vous.',
-    icon: 'user' as const,
-    color: 'bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300',
-  },
-  {
-    href: '/community',
-    label: 'COMMUNITY',
-    title: 'Groupes et communautés',
-    text: 'Rejoignez des groupes locaux, métiers ou projets.',
-    icon: 'user' as const,
-    color: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300',
-  },
-  {
-    href: '/exchange',
-    label: 'EXCHANGE',
-    title: 'Échanger des compétences',
-    text: 'Un service contre un autre, sans argent.',
-    icon: 'wrench' as const,
-    color: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300',
-  },
-];
-
-const TRUST = [
-  {
-    icon: 'shield' as const,
-    title: 'Profils vérifiés',
-    text: 'Les professionnels sont validés avant publication.',
-  },
-  {
-    icon: 'search' as const,
-    title: 'Recherche connectée',
-    text: 'Les résultats viennent de la base réelle, jamais inventés.',
-  },
-  {
-    icon: 'phone' as const,
-    title: 'Contact direct',
-    text: 'Messagerie, téléphone ou WhatsApp selon votre choix.',
-  },
+const STATS = [
+  { value: '10', label: 'régions' },
+  { value: '360', label: 'communes' },
+  { value: '8', label: 'univers' },
 ];
 
 export default async function HomePage() {
-  const [families, providers] = await Promise.all([
-    getFamilies(),
+  const [providers, listings] = await Promise.all([
     getFeaturedProviders(),
+    listMarketListings({}),
   ]);
+
+  const suggestions: SuggestionItem[] = [
+    ...listings.slice(0, 3).map<SuggestionItem>((listing) => ({
+      kind: 'market',
+      listing,
+    })),
+    ...providers.slice(0, 3).map<SuggestionItem>((provider) => ({
+      kind: 'provider',
+      provider,
+    })),
+  ].slice(0, 3);
 
   return (
     <>
       <Header />
 
       <main id="contenu">
-        <section className="relative overflow-hidden border-b border-line bg-surface">
-          <div className="absolute inset-0 bg-gradient-to-br from-teal-50 via-bg to-surface dark:from-teal-950/30 dark:via-bg dark:to-surface" />
-          <div className="container-lc relative py-10 sm:py-14">
-            <div className="inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-surface px-3 py-1 text-[11px] font-bold text-teal-700 dark:text-teal-300">
-              <span className="h-2 w-2 rounded-full bg-teal-500" />
+        <section className="relative isolate overflow-hidden bg-navy-950 text-white">
+          <div
+            className="absolute inset-0 -z-20 bg-cover bg-center"
+            style={{ backgroundImage: "url('/hero-city.svg')" }}
+            aria-hidden="true"
+          />
+          <div
+            className="absolute inset-0 -z-10 bg-gradient-to-b from-navy-950/45 via-navy-950/55 to-navy-950"
+            aria-hidden="true"
+          />
+
+          <div className="container-lc pb-7 pt-8 sm:pb-10 sm:pt-12">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/90 backdrop-blur">
+              <span className="h-1.5 w-1.5 rounded-full bg-teal-400" />
               Everything. Everyone. Everywhere.
             </div>
 
-            <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-tight sm:text-5xl">
-              Un besoin. Une connexion.
+            <h1 className="mt-4 max-w-2xl text-[2.35rem] font-black leading-[1.05] tracking-tight sm:text-6xl">
+              Un besoin.
               <br />
-              <span className="text-teal-600 dark:text-teal-300">
-                Une solution.
-              </span>
+              Une connexion.
+              <br />
+              <span className="text-teal-300">Une solution.</span>
             </h1>
 
-            <p className="mt-3 max-w-2xl text-base text-muted sm:text-lg">
+            <p className="mt-3 max-w-xl text-sm text-white/80 sm:text-base">
               Emploi, logement, services, produits, partenariats, communauté :
-              LIFE CONNECT rassemble les solutions au même endroit.
+              trouve ce qu’il te faut, près de chez toi.
             </p>
 
-            <div className="mt-6 max-w-3xl">
-              <UniversalSearch />
+            <div className="mt-5 max-w-2xl">
+              <UniversalSearch tone="hero" />
             </div>
 
             <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -121,170 +80,163 @@ export default async function HomePage() {
                 <Icon name="send" size={19} />
                 Publier une demande
               </ButtonLink>
-              <ButtonLink href="/aide" size="lg" variant="outline">
-                <Icon name="wrench" size={19} />
-                HELP ME
-              </ButtonLink>
               <ButtonLink
-                href="/sos"
+                href="/aide"
                 size="lg"
                 variant="outline"
-                className="border-urgent-500/40 text-urgent-600"
+                className="border-white/30 bg-white/10 text-white hover:bg-white/20"
               >
                 <Icon name="alert" size={19} />
-                SOS
+                HELP ME
               </ButtonLink>
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-4 text-[11px] text-white/65">
+              {STATS.map((stat) => (
+                <span key={stat.label} className="inline-flex items-baseline gap-1">
+                  <strong className="text-lg font-black text-white">
+                    {stat.value}
+                  </strong>
+                  {stat.label}
+                </span>
+              ))}
             </div>
           </div>
         </section>
 
-        <section className="container-lc py-8 sm:py-10">
+        <section className="container-lc -mt-1 py-6 sm:py-8">
           <div className="flex items-end justify-between gap-3">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight">
-                Explorer les domaines
+              <h2 className="text-xl font-black tracking-tight sm:text-2xl">
+                Que cherchez-vous ?
               </h2>
               <p className="mt-1 text-sm text-muted">
-                Choisissez un univers, puis précisez votre besoin.
+                Huit univers, une seule plateforme.
               </p>
             </div>
             <Link
               href="/explorer"
-              className="hidden text-sm font-semibold text-teal-700 hover:underline sm:inline dark:text-teal-300"
+              className="text-sm font-semibold text-teal-700 hover:underline dark:text-teal-300"
             >
               Tout voir
             </Link>
           </div>
 
-          <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            {MODULES.map((module) => (
-              <Link
-                key={module.href}
-                href={module.href}
-                className="group rounded-2xl border border-line bg-surface p-4 shadow-soft transition-all hover:-translate-y-0.5 hover:border-teal-500/40"
-              >
-                <span
-                  className={`grid h-10 w-10 place-items-center rounded-xl ${module.color}`}
-                >
-                  <Icon name={module.icon} size={21} />
-                </span>
-                <p className="mt-3 text-[10px] font-black tracking-[0.16em] text-teal-600 dark:text-teal-300">
-                  {module.label}
-                </p>
-                <p className="mt-0.5 text-sm font-bold">{module.title}</p>
-                <p className="mt-1 text-xs text-muted">{module.text}</p>
-              </Link>
-            ))}
-
-            <Link
-              href="/aide"
-              className="rounded-2xl border border-urgent-500/30 bg-urgent-50 p-4 shadow-soft transition-all hover:-translate-y-0.5 hover:border-urgent-500 dark:bg-urgent-500/10 sm:col-span-2 lg:col-span-2"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-[10px] font-black tracking-[0.16em] text-urgent-600">
-                    HELP ME
-                  </p>
-                  <p className="mt-1 text-lg font-black text-urgent-700 dark:text-urgent-300">
-                    Un problème urgent ? Trouvez de l’aide maintenant.
-                  </p>
-                  <p className="mt-1 text-xs text-urgent-700/80 dark:text-urgent-300/80">
-                    Mécanicien, plombier, santé, transport, dépannage…
-                  </p>
-                </div>
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-urgent-500 text-white">
-                  <Icon name="alert" size={22} />
-                </span>
-              </div>
-            </Link>
+          <div className="mt-4">
+            <ModuleGrid />
           </div>
         </section>
 
-        {providers.length > 0 ? (
-          <section className="container-lc py-6">
+        {suggestions.length > 0 ? (
+          <section className="container-lc py-4 sm:py-6">
             <div className="flex items-end justify-between gap-3">
               <div>
-                <h2 className="text-xl font-bold">Profils à découvrir</h2>
+                <h2 className="text-xl font-black tracking-tight sm:text-2xl">
+                  Suggestions pour vous
+                </h2>
                 <p className="mt-1 text-sm text-muted">
-                  Des professionnels vérifiés, prêts à répondre.
+                  Des opportunités et profils réels publiés sur LIFE CONNECT.
                 </p>
               </div>
               <Link
-                href="/people"
+                href="/market"
                 className="text-sm font-semibold text-teal-700 hover:underline dark:text-teal-300"
               >
-                Voir l’annuaire
+                Voir tout
               </Link>
             </div>
 
-            <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              {providers.slice(0, 3).map((provider) => (
-                <Link
-                  key={provider.id}
-                  href={`/prestataires/${provider.id}`}
-                  className="rounded-2xl border border-line bg-surface p-4 shadow-soft transition-colors hover:border-teal-500/40"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-teal-50 text-sm font-bold text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
-                      {provider.nom
-                        .split(/\s+/)
-                        .slice(0, 2)
-                        .map((part) => part[0]?.toUpperCase())
-                        .join('')}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-bold">{provider.nom}</p>
-                      <p className="truncate text-[11px] text-muted">
-                        {provider.metier_nom ?? provider.metier} ·{' '}
-                        {provider.quartier}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="mt-2 text-[11px] text-muted">
-                    ★ {provider.note_moyenne.toFixed(1)} · {provider.nombre_avis}{' '}
-                    avis
-                  </p>
-                </Link>
+            <div className="mt-4 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+              {suggestions.map((item) => (
+                <SuggestionCard
+                  key={
+                    item.kind === 'market'
+                      ? `market-${item.listing.id}`
+                      : `provider-${item.provider.id}`
+                  }
+                  item={item}
+                />
               ))}
             </div>
           </section>
         ) : null}
 
-        {families.length > 0 ? (
-          <section className="container-lc py-6">
-            <h2 className="text-xl font-bold">Services populaires</h2>
-            <p className="mt-1 text-sm text-muted">
-              Le catalogue HELP ME reste disponible pour les besoins précis.
-            </p>
-            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-              {families.slice(0, 8).map((family) => (
-                <Link
-                  key={family.slug}
-                  href={`/aide?famille=${family.slug}`}
-                  className="flex items-center gap-2 rounded-xl border border-line bg-surface px-3 py-2 text-xs font-semibold hover:border-teal-500/40"
-                >
-                  <Icon name={safeIcon(family.icon)} size={16} />
-                  {family.nom_fr}
-                </Link>
-              ))}
+        <section className="container-lc py-4 sm:py-6">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-600 via-teal-500 to-emerald-500 p-5 text-white shadow-soft sm:p-7">
+            <div className="absolute -right-8 -top-10 h-36 w-36 rounded-full bg-white/10" />
+            <div className="absolute -bottom-12 right-16 h-28 w-28 rounded-full bg-white/10" />
+            <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/75">
+                  Publier
+                </p>
+                <h2 className="mt-1 text-2xl font-black tracking-tight">
+                  Une annonce, une demande, une opportunité ?
+                </h2>
+                <p className="mt-1 max-w-lg text-sm text-white/85">
+                  Publiez en quelques secondes et laissez la communauté vous
+                  répondre.
+                </p>
+              </div>
+              <ButtonLink
+                href="/publier"
+                variant="secondary"
+                size="lg"
+                className="shrink-0 bg-white text-teal-700 hover:bg-white/90"
+              >
+                <Icon name="send" size={19} />
+                Publier maintenant
+              </ButtonLink>
             </div>
-          </section>
-        ) : null}
+          </div>
+        </section>
 
-        <section className="container-lc py-6">
-          <div className="rounded-2xl border border-line bg-surface p-4 sm:p-5">
+        <section className="container-lc py-4 sm:py-6">
+          <div className="grid gap-2.5 sm:grid-cols-3">
+            <div className="rounded-2xl border border-line bg-surface p-4">
+              <span className="grid h-9 w-9 place-items-center rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
+                <Icon name="shield" size={18} />
+              </span>
+              <p className="mt-2 text-sm font-bold">Profils vérifiés</p>
+              <p className="mt-0.5 text-xs text-muted">
+                Les prestataires sont validés avant publication.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-line bg-surface p-4">
+              <span className="grid h-9 w-9 place-items-center rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
+                <Icon name="search" size={18} />
+              </span>
+              <p className="mt-2 text-sm font-bold">Résultats réels</p>
+              <p className="mt-0.5 text-xs text-muted">
+                Aucun profil, prix ou avis inventé.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-line bg-surface p-4">
+              <span className="grid h-9 w-9 place-items-center rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
+                <Icon name="phone" size={18} />
+              </span>
+              <p className="mt-2 text-sm font-bold">Contact direct</p>
+              <p className="mt-0.5 text-xs text-muted">
+                Messagerie, téléphone ou WhatsApp.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="container-lc py-5">
+          <div className="rounded-2xl border border-line bg-surface p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-urgent-600">
+                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-urgent-600">
                   Urgence vitale
                 </p>
                 <p className="mt-1 text-sm font-semibold">
-                  Appelez d’abord les secours. LIFE CONNECT ne remplace pas la
-                  police, les pompiers ou le SAMU.
+                  Appelez d’abord les secours. LIFE CONNECT ne remplace pas les
+                  services d’urgence.
                 </p>
               </div>
               <ButtonLink href="/urgence" variant="outline" size="sm">
-                Numéros d’urgence
+                Numéros utiles
                 <Icon name="chevronRight" size={16} />
               </ButtonLink>
             </div>
@@ -294,31 +246,14 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section className="container-lc py-8">
-          <div className="grid gap-3 sm:grid-cols-3">
-            {TRUST.map((item) => (
-              <div
-                key={item.title}
-                className="rounded-2xl border border-line bg-surface p-5"
-              >
-                <span className="grid h-10 w-10 place-items-center rounded-xl bg-teal-50 text-teal-600 dark:bg-teal-500/10 dark:text-teal-300">
-                  <Icon name={item.icon} size={20} />
-                </span>
-                <p className="mt-3 font-semibold">{item.title}</p>
-                <p className="mt-1 text-sm text-muted">{item.text}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="container-lc py-8">
-          <div className="overflow-hidden rounded-3xl bg-navy-900 p-6 text-white sm:p-10">
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <section className="container-lc py-6">
+          <div className="overflow-hidden rounded-3xl bg-navy-900 p-6 text-white sm:p-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-2xl font-bold">
+                <h2 className="text-xl font-bold">
                   Vous proposez un service ou une compétence ?
                 </h2>
-                <p className="mt-2 max-w-lg text-sm text-white/80">
+                <p className="mt-1 max-w-lg text-sm text-white/75">
                   Créez votre profil, choisissez vos zones et recevez des
                   demandes adaptées.
                 </p>

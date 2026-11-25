@@ -33,7 +33,16 @@ export type IconName =
   | 'logout'
   | 'download'
   | 'send'
-  | 'spark';
+  | 'spark'
+  | 'briefcase'
+  | 'home'
+  | 'cart'
+  | 'users'
+  | 'handshake'
+  | 'trophy'
+  | 'plus'
+  | 'mic'
+  | 'grid';
 
 export interface CategoryDef {
   slug: Categorie;
