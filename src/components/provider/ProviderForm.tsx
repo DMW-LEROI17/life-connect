@@ -103,6 +103,7 @@ export function ProviderForm({
     const result = await registerProvider(formData);
 
     if (!result.ok) {
+      console.error('[ProviderForm]', result.error);
       setError(result.error);
       setLoading(false);
       return;

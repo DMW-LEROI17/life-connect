@@ -121,6 +121,16 @@ export async function signInAction(formData: FormData): Promise<AuthResult> {
 
     if (error) {
       console.error('[signInAction]', error.message);
+      const message = error.message.toLowerCase();
+
+      if (message.includes('email not confirmed')) {
+        return {
+          ok: false,
+          error:
+            'Votre e-mail n’est pas encore confirmé. Ouvrez le lien reçu par e-mail, puis reconnectez-vous.',
+        };
+      }
+
       return {
         ok: false,
         error: 'E-mail ou mot de passe incorrect.',
@@ -134,7 +144,13 @@ export async function signInAction(formData: FormData): Promise<AuthResult> {
   }
 
   if (connected) {
-    redirect(next);
+    const current = await getCurrentUser();
+    const destination =
+      next === '/compte' && current?.profile.role === 'professionnel'
+        ? '/dashboard-aideur'
+        : next;
+
+    redirect(destination);
   }
 
   return { ok: false, error: 'Connexion impossible.' };

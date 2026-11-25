@@ -30,7 +30,11 @@ export default async function ConnexionPage({
   const current = await getCurrentUser();
 
   if (current) {
-    redirect('/compte');
+    redirect(
+      current.profile.role === 'professionnel'
+        ? '/dashboard-aideur'
+        : '/compte',
+    );
   }
 
   const next = safeNext(first(searchParams.next));

@@ -278,13 +278,26 @@ export async function registerProvider(
     }
 
     const resolvedZones: ResolvedZone[] = [];
+    const seenZones = new Set<string>();
 
     for (const zone of zoneInputs) {
       const resolved = await resolveZone(supabase, zone);
       if ('error' in resolved) {
         return { ok: false, error: resolved.error };
       }
-      resolvedZones.push(resolved);
+
+      const key = [
+        resolved.scope,
+        resolved.region_id ?? '',
+        resolved.departement_id ?? '',
+        resolved.arrondissement_id ?? '',
+        resolved.quartier_id ?? '',
+      ].join(':');
+
+      if (!seenZones.has(key)) {
+        seenZones.add(key);
+        resolvedZones.push(resolved);
+      }
     }
 
     const baseZone =
@@ -310,11 +323,10 @@ export async function registerProvider(
         });
 
       if (uploadError) {
-        console.error('[registerProvider:upload]', uploadError.message);
+        console.error('[registerProvider:upload]', uploadError);
         return {
           ok: false,
-          error:
-            'La photo n’a pas pu être envoyée. Réessayez sans photo ou avec une image plus légère.',
+          error: `La photo n’a pas pu être envoyée : ${uploadError.message}`,
         };
       }
 
@@ -332,7 +344,8 @@ export async function registerProvider(
         nom: input.nom,
         metier: category.slug,
         metier_nom: category.nom_fr,
-        specialite: input.specialite.trim() || firstService.nom_fr,
+        specialite:
+          (input.specialite.trim() || firstService.nom_fr).slice(0, 60),
         quartier: baseZone.label.slice(0, 60),
         region_id: baseZone.region_id,
         departement_id: baseZone.departement_id,
@@ -354,11 +367,12 @@ export async function registerProvider(
       if (uploadedPath) {
         await supabase.storage.from('providers').remove([uploadedPath]);
       }
-      console.error('[registerProvider:insert]', error?.message);
+      console.error('[registerProvider:insert]', error);
       return {
         ok: false,
-        error:
-          'L’inscription n’a pas pu être enregistrée. Réessayez dans un instant.',
+        error: `Inscription impossible : ${
+          error?.message ?? 'identifiant non retourné'
+        }`,
       };
     }
 
@@ -379,17 +393,26 @@ export async function registerProvider(
         resolvedZones.map((zone) => ({
           provider_id: providerId,
           scope: zone.scope,
-          region_id: zone.region_id,
-          departement_id: zone.departement_id,
-          arrondissement_id: zone.arrondissement_id,
-          quartier_id: zone.quartier_id,
+          // La contrainte provider_zones_scope_check exige UNE seule zone
+          // renseignée selon le scope. Les IDs parents restent dans providers.
+          region_id: zone.scope === 'region' ? zone.region_id : null,
+          departement_id:
+            zone.scope === 'departement' ? zone.departement_id : null,
+          arrondissement_id:
+            zone.scope === 'arrondissement' ? zone.arrondissement_id : null,
+          quartier_id: zone.scope === 'quartier' ? zone.quartier_id : null,
         })),
       );
 
     if (servicesInsertError || zonesInsertError) {
+      const details =
+        servicesInsertError?.message ||
+        zonesInsertError?.message ||
+        'erreur inconnue';
       console.error(
         '[registerProvider:relations]',
-        servicesInsertError?.message || zonesInsertError?.message,
+        servicesInsertError,
+        zonesInsertError,
       );
       await supabase.from('providers').delete().eq('id', providerId);
       if (uploadedPath) {
@@ -397,8 +420,7 @@ export async function registerProvider(
       }
       return {
         ok: false,
-        error:
-          'Les services ou zones n’ont pas pu être enregistrés. Réessayez.',
+        error: `Services/zones non enregistrés : ${details}`,
       };
     }
 
@@ -407,7 +429,9 @@ export async function registerProvider(
     console.error('[registerProvider]', error);
     return {
       ok: false,
-      error: 'Le service est momentanément indisponible.',
+      error: `Erreur serveur : ${
+        error instanceof Error ? error.message : 'inconnue'
+      }`,
     };
   }
 }
