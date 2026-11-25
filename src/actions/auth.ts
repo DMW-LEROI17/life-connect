@@ -52,6 +52,8 @@ export async function signUpAction(formData: FormData): Promise<AuthResult> {
   }
 
   let hasSession = false;
+  const destination =
+    role === 'professionnel' ? '/dashboard-aideur' : '/compte';
 
   try {
     const supabase = createSupabaseServerClient();
@@ -60,7 +62,7 @@ export async function signUpAction(formData: FormData): Promise<AuthResult> {
       email,
       password,
       options: {
-        emailRedirectTo: `${getAppUrl()}/auth/callback?next=/compte`,
+        emailRedirectTo: `${getAppUrl()}/auth/callback?next=${destination}`,
         data: {
           full_name: fullName,
           role,
@@ -85,20 +87,31 @@ export async function signUpAction(formData: FormData): Promise<AuthResult> {
     }
 
     hasSession = Boolean(data.session);
+
+    // Confirmation e-mail désactivée : la session est normalement immédiate.
+    // Si Supabase ne la renvoie pas, on tente une connexion directe.
+    if (!hasSession) {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (!signInError) hasSession = true;
+    }
   } catch (error) {
     console.error('[signUpAction]', error);
     return { ok: false, error: 'Le service est momentanément indisponible.' };
   }
 
-  if (!hasSession) {
-    return {
-      ok: true,
-      message:
-        'Compte créé. Vérifiez votre boîte e-mail pour confirmer votre adresse, puis connectez-vous.',
-    };
+  if (hasSession) {
+    redirect(destination);
   }
 
-  redirect('/compte');
+  return {
+    ok: false,
+    error:
+      'Compte créé, mais la connexion automatique a échoué. Utilisez « Se connecter ».',
+  };
 }
 
 export async function signInAction(formData: FormData): Promise<AuthResult> {

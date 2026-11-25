@@ -18,7 +18,11 @@ export default async function InscriptionPage() {
   const current = await getCurrentUser();
 
   if (current) {
-    redirect('/compte');
+    redirect(
+      current.profile.role === 'professionnel'
+        ? '/dashboard-aideur'
+        : '/compte',
+    );
   }
 
   return (
