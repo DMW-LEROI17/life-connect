@@ -169,8 +169,41 @@ export async function signInAction(formData: FormData): Promise<AuthResult> {
   return { ok: false, error: 'Connexion impossible.' };
 }
 
-export async function signOutAction() {
+export async function requestPasswordResetAction(
+  formData: FormData,
+): Promise<AuthResult> {
+  const email = String(formData.get('email') ?? '').trim().toLowerCase();
+
+  if (!emailIsValid(email)) {
+    return { ok: false, error: 'Adresse e-mail invalide.' };
+  }
+
   try {
+    const supabase = createSupabaseServerClient();
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${getAppUrl()}/auth/callback?next=/parametres`,
+    });
+
+    if (error) {
+      console.error('[requestPasswordResetAction]', error.message);
+      return {
+        ok: false,
+        error: 'L’envoi du lien a échoué. Réessayez plus tard.',
+      };
+    }
+
+    return {
+      ok: true,
+      message:
+        'Si un compte existe avec cet e-mail, un lien de réinitialisation vient d’être envoyé.',
+    };
+  } catch (error) {
+    console.error('[requestPasswordResetAction]', error);
+    return { ok: false, error: 'Le service est momentanément indisponible.' };
+  }
+}
+
+export async function signOutAction() {  try {
     const supabase = createSupabaseServerClient();
     await supabase.auth.signOut();
   } catch {

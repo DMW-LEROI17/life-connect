@@ -159,6 +159,18 @@ const paths: Record<IconName, ReactNode> = {
       <rect x="14" y="14" width="7" height="7" rx="1.5" />
     </>
   ),
+  eye: (
+    <>
+      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+      <circle cx="12" cy="12" r="3" />
+    </>
+  ),
+  eyeOff: (
+    <>
+      <path d="m3 3 18 18M10.6 10.6a3 3 0 0 0 4.2 4.2" />
+      <path d="M9.9 5.2A10.5 10.5 0 0 1 12 5c6.5 0 10 7 10 7a18.5 18.5 0 0 1-3 4M6.3 6.3C3.4 8.3 2 12 2 12s3.5 7 10 7c1 0 2-.2 2.8-.5" />
+    </>
+  ),
 };
 
 export function Icon({ name, size = 24, className, ...props }: IconProps) {

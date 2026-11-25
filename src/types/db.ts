@@ -42,7 +42,9 @@ export type IconName =
   | 'trophy'
   | 'plus'
   | 'mic'
-  | 'grid';
+  | 'grid'
+  | 'eye'
+  | 'eyeOff';
 
 export interface CategoryDef {
   slug: Categorie;

@@ -13,7 +13,14 @@ const ITEMS = [
   { href: '/compte', label: 'Profil', icon: 'user' as const, accent: false },
 ];
 
-const HIDDEN_PREFIXES = ['/admin', '/suivi', '/noter', '/connexion', '/inscription'];
+const HIDDEN_PREFIXES = [
+  '/admin',
+  '/suivi',
+  '/noter',
+  '/connexion',
+  '/inscription',
+  '/mot-de-passe-oublie',
+];
 
 export function BottomNav() {
   const pathname = usePathname();

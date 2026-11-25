@@ -9,7 +9,7 @@ import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { ButtonLink } from '@/components/ui/Button';
 import { formatDate } from '@/lib/format';
-import { getFamilies } from '@/lib/catalog';
+import { getCatalog, getFamilies } from '@/lib/catalog';
 import { listGroups } from '@/lib/community';
 import { listMarketListings } from '@/lib/market';
 import { listOpportunities } from '@/lib/radar';
@@ -24,13 +24,14 @@ const STATS = [
 ];
 
 export default async function HomePage() {
-  const [providers, listings, opportunities, groups, families] =
+  const [providers, listings, opportunities, groups, families, catalog] =
     await Promise.all([
       getFeaturedProviders(),
       listMarketListings({}),
       listOpportunities({}),
       listGroups({}),
       getFamilies(),
+      getCatalog(),
     ]);
 
   const suggestions: SuggestionItem[] = [
@@ -153,19 +154,32 @@ export default async function HomePage() {
                 Tout voir
               </Link>
             </div>
-            <div className="scrollbar-none mt-3 flex gap-2 overflow-x-auto pb-1">
-              {families.slice(0, 8).map((family) => (
-                <Link
-                  key={family.slug}
-                  href={`/aide?famille=${family.slug}`}
-                  className="flex shrink-0 items-center gap-2 rounded-xl border border-line bg-surface px-3 py-2 text-xs font-semibold shadow-soft"
-                >
-                  <span className="grid h-8 w-8 place-items-center rounded-lg bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
-                    <Icon name={safeIcon(family.icon)} size={15} />
-                  </span>
-                  {family.nom_fr}
-                </Link>
-              ))}
+            <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+              {families.slice(0, 8).map((family) => {
+                const count = catalog.filter(
+                  (category) => category.family_slug === family.slug,
+                ).length;
+
+                return (
+                  <Link
+                    key={family.slug}
+                    href={`/aide?famille=${family.slug}`}
+                    className="group flex items-center gap-3 rounded-2xl border border-line bg-surface p-3.5 shadow-soft transition-all hover:-translate-y-0.5 hover:border-teal-500/30 hover:shadow-lift"
+                  >
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-teal-50 to-cyan-50 text-teal-700 dark:from-teal-500/10 dark:to-cyan-500/10 dark:text-teal-300">
+                      <Icon name={safeIcon(family.icon)} size={20} />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-xs font-black text-ink">
+                        {family.nom_fr}
+                      </span>
+                      <span className="block text-[10px] text-muted">
+                        {count} service{count > 1 ? 's' : ''}
+                      </span>
+                    </span>
+                  </Link>
+                );
+              })}
             </div>
           </section>
         ) : null}
@@ -420,8 +434,56 @@ export default async function HomePage() {
           </section>
         ) : null}
 
+        {opportunities.length === 0 ? (
+          <section className="container-lc py-4">
+            <div className="flex flex-col items-start justify-between gap-3 rounded-2xl border border-dashed border-line bg-surface p-5 sm:flex-row sm:items-center">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-500">
+                  LIFE RADAR
+                </p>
+                <p className="mt-1 text-sm font-bold">
+                  Aucune opportunité pour l’instant
+                </p>
+                <p className="text-xs text-muted">
+                  Publiez la première offre d’emploi, de stage ou de partenariat.
+                </p>
+              </div>
+              <Link
+                href="/radar/nouveau"
+                className="inline-flex min-h-10 items-center rounded-xl gradient-violet px-3 text-xs font-bold text-white"
+              >
+                Publier une opportunité
+              </Link>
+            </div>
+          </section>
+        ) : null}
+
+        {groups.length === 0 ? (
+          <section className="container-lc py-4">
+            <div className="flex flex-col items-start justify-between gap-3 rounded-2xl border border-dashed border-line bg-surface p-5 sm:flex-row sm:items-center">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-emerald-600">
+                  LIFE COMMUNITY
+                </p>
+                <p className="mt-1 text-sm font-bold">
+                  Aucune communauté pour l’instant
+                </p>
+                <p className="text-xs text-muted">
+                  Créez un groupe autour d’un métier, d’un quartier ou d’un projet.
+                </p>
+              </div>
+              <Link
+                href="/community/nouveau"
+                className="inline-flex min-h-10 items-center rounded-xl bg-emerald-600 px-3 text-xs font-bold text-white"
+              >
+                Créer un groupe
+              </Link>
+            </div>
+          </section>
+        ) : null}
+
         <section className="container-lc py-4 sm:py-6">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-600 via-teal-500 to-emerald-500 p-5 text-white shadow-soft sm:p-7">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-600 via-teal-500 to-sky-500 p-5 text-white shadow-soft sm:p-7">
             <div className="absolute -right-8 -top-10 h-36 w-36 rounded-full bg-white/10" />
             <div className="absolute -bottom-12 right-16 h-28 w-28 rounded-full bg-white/10" />
             <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

@@ -60,14 +60,14 @@ export function ModuleGrid() {
         <Link
           key={module.label}
           href={module.href}
-          className="group flex min-h-[104px] flex-col items-center justify-center gap-2 rounded-2xl border border-line bg-surface p-2 text-center shadow-soft transition-all hover:-translate-y-0.5 hover:border-teal-500/30 sm:min-h-[112px]"
+          className="group flex min-h-[118px] flex-col items-center justify-center gap-2 rounded-[1.4rem] border border-line bg-surface p-2 text-center shadow-soft transition-all hover:-translate-y-1 hover:border-teal-500/30 hover:shadow-lift sm:min-h-[128px] sm:gap-3"
         >
           <span
-            className={`grid h-11 w-11 place-items-center rounded-xl ${module.color}`}
+            className={`grid h-12 w-12 place-items-center rounded-2xl shadow-sm ${module.color} transition-transform group-hover:scale-105`}
           >
-            <Icon name={module.icon} size={21} />
+            <Icon name={module.icon} size={23} />
           </span>
-          <span className="text-[10px] font-bold leading-tight text-ink sm:text-xs">
+          <span className="text-[11px] font-black leading-tight text-ink sm:text-sm">
             {module.label}
           </span>
         </Link>

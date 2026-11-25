@@ -12,6 +12,7 @@ import { Spinner } from '@/components/ui/Spinner';
 export function SignInForm({ next }: { next: string }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,19 +40,40 @@ export function SignInForm({ next }: { next: string }) {
           autoComplete="email"
           required
           className="input-lc"
+          placeholder="vous@exemple.com"
         />
       </Field>
 
       <Field label="Mot de passe" htmlFor="password" required>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          required
-          className="input-lc"
-        />
+        <div className="relative">
+          <input
+            id="password"
+            name="password"
+            type={showPassword ? 'text' : 'password'}
+            autoComplete="current-password"
+            required
+            className="input-lc pr-12"
+            placeholder="Votre mot de passe"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((value) => !value)}
+            className="absolute right-1 top-1 grid h-10 w-10 place-items-center rounded-lg text-muted hover:bg-surface2"
+            aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+          >
+            <Icon name={showPassword ? 'eyeOff' : 'eye'} size={18} />
+          </button>
+        </div>
       </Field>
+
+      <div className="flex justify-end">
+        <Link
+          href="/mot-de-passe-oublie"
+          className="text-xs font-semibold text-teal-700 hover:underline dark:text-teal-300"
+        >
+          Mot de passe oublié ?
+        </Link>
+      </div>
 
       {error ? (
         <p
@@ -69,7 +91,7 @@ export function SignInForm({ next }: { next: string }) {
 
       <p className="text-center text-xs text-muted">
         Pas encore de compte ?{' '}
-        <Link href="/inscription" className="font-semibold underline underline-offset-2">
+        <Link href="/inscription" className="font-semibold text-teal-700 underline underline-offset-2 dark:text-teal-300">
           Créer un compte
         </Link>
       </p>
