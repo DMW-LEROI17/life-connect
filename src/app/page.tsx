@@ -2,7 +2,6 @@ import Link from 'next/link';
 
 import { EmergencyNumbers } from '@/components/emergency/EmergencyNumbers';
 import { ModuleGrid } from '@/components/home/ModuleGrid';
-import { SuggestionCard, type SuggestionItem } from '@/components/home/SuggestionCard';
 import { UniversalSearch } from '@/components/home/UniversalSearch';
 import { Icon, safeIcon } from '@/components/Icons';
 import { Footer } from '@/components/layout/Footer';
@@ -23,6 +22,31 @@ const STATS = [
   { value: '8', label: 'univers' },
 ];
 
+const PEOPLE_IMAGES = [
+  '/images/afr-woman-2.jpg',
+  '/images/afr-man-1.jpg',
+  '/images/afr-woman-1.jpg',
+  '/images/afr-man-3.jpg',
+  '/images/afr-woman-4.jpg',
+  '/images/afr-man-2.jpg',
+  '/images/afr-woman-3.jpg',
+  '/images/afr-doctor.jpg',
+];
+
+const FAMILY_IMAGES: Record<string, string> = {
+  urgence_sante: '/images/afr-doctor.jpg',
+  auto_moto: '/images/cat-auto.jpg',
+  maison_construction: '/images/cat-logement.jpg',
+  numerique_reseau: '/images/cat-emploi.jpg',
+  famille_education: '/images/afr-woman-2.jpg',
+  beaute_mode: '/images/afr-woman-1.jpg',
+  evenements_restauration: '/images/cat-community.jpg',
+  agriculture_elevage: '/images/cat-construction.jpg',
+  administratif_juridique: '/images/afr-man-3.jpg',
+  transport_livraison: '/images/cat-auto.jpg',
+  autre: '/images/cat-market.jpg',
+};
+
 export default async function HomePage() {
   const [providers, listings, opportunities, groups, families, catalog] =
     await Promise.all([
@@ -33,17 +57,6 @@ export default async function HomePage() {
       getFamilies(),
       getCatalog(),
     ]);
-
-  const suggestions: SuggestionItem[] = [
-    ...listings.slice(0, 3).map<SuggestionItem>((listing) => ({
-      kind: 'market',
-      listing,
-    })),
-    ...providers.slice(0, 3).map<SuggestionItem>((provider) => ({
-      kind: 'provider',
-      provider,
-    })),
-  ].slice(0, 3);
 
   return (
     <>
@@ -64,7 +77,7 @@ export default async function HomePage() {
           <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[54%] lg:block">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/hero-people.jpg"
+              src="/images/hero-africa.jpg"
               alt=""
               className="h-full w-full object-cover object-center"
             />
@@ -98,22 +111,24 @@ export default async function HomePage() {
             </div>
 
             <div className="mt-4 flex flex-wrap items-center gap-2">
-              <ButtonLink href="/publier" size="lg">
-                <Icon name="send" size={19} />
-                Publier une demande
-              </ButtonLink>
-              <ButtonLink
-                href="/aide"
-                size="lg"
-                variant="outline"
-                className="border-white/30 bg-white/10 text-white hover:bg-white/20"
+              <Link
+                href="/match"
+                className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-white px-5 text-sm font-bold text-navy-900 shadow-lift transition hover:bg-white/90"
               >
-                <Icon name="alert" size={19} />
-                HELP ME
-              </ButtonLink>
+                <Icon name="search" size={18} />
+                Trouver une solution
+                <Icon name="chevronRight" size={16} />
+              </Link>
+              <Link
+                href="/connect/nouveau"
+                className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-white/35 bg-white/10 px-5 text-sm font-bold text-white backdrop-blur transition hover:bg-white/20"
+              >
+                <Icon name="send" size={18} />
+                Publier un besoin
+              </Link>
             </div>
 
-            <div className="mt-6 flex flex-wrap gap-4 text-[11px] text-white/65">
+            <div className="mt-5 flex flex-wrap gap-4 text-[11px] text-white/70">
               {STATS.map((stat) => (
                 <span key={stat.label} className="inline-flex items-baseline gap-1">
                   <strong className="text-lg font-black text-white">
@@ -149,6 +164,30 @@ export default async function HomePage() {
           </div>
         </section>
 
+        <section className="container-lc py-2">
+          <div className="flex flex-col items-start justify-between gap-3 overflow-hidden rounded-2xl bg-gradient-to-r from-urgent-600 via-urgent-500 to-coral-500 p-4 text-white shadow-soft sm:flex-row sm:items-center sm:p-5">
+            <div className="flex items-center gap-3">
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white/20 backdrop-blur">
+                <Icon name="alert" size={26} />
+              </span>
+              <div>
+                <p className="text-lg font-black">HELP ME</p>
+                <p className="text-xs text-white/80">
+                  Obtenez une assistance immédiate pour vos problèmes du
+                  quotidien.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/demande"
+              className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-white px-4 text-xs font-black text-urgent-600 shadow-soft"
+            >
+              Demander de l’aide
+              <Icon name="chevronRight" size={15} />
+            </Link>
+          </div>
+        </section>
+
         <section className="container-lc py-5 sm:py-7">
           <div className="grid gap-4 lg:grid-cols-[1.65fr_1fr]">
             <div>
@@ -171,29 +210,19 @@ export default async function HomePage() {
 
               {providers.length > 0 ? (
                 <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
-                  {providers.slice(0, 4).map((provider) => (
+                  {providers.slice(0, 4).map((provider, index) => (
                     <Link
                       key={provider.id}
                       href={`/prestataires/${provider.id}`}
                       className="group rounded-2xl border border-line bg-surface p-3 shadow-soft transition-all hover:-translate-y-0.5 hover:border-teal-500/30 hover:shadow-lift"
                     >
-                      <div className="relative h-24 overflow-hidden rounded-xl bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-500/10 dark:to-cyan-500/10">
-                        {provider.photo_url ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={provider.photo_url}
-                            alt=""
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <span className="grid h-full w-full place-items-center text-3xl font-black text-teal-600 dark:text-teal-300">
-                            {provider.nom
-                              .split(/\s+/)
-                              .slice(0, 2)
-                              .map((part) => part[0]?.toUpperCase())
-                              .join('')}
-                          </span>
-                        )}
+                      <div className="relative h-28 overflow-hidden rounded-xl bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-500/10 dark:to-cyan-500/10">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={provider.photo_url || PEOPLE_IMAGES[index % PEOPLE_IMAGES.length]}
+                          alt=""
+                          className="h-full w-full object-cover object-top"
+                        />
                         <span className="absolute left-2 top-2 rounded-full bg-teal-600 px-2 py-0.5 text-[9px] font-black text-white">
                           Vérifié
                         </span>
@@ -310,86 +339,58 @@ export default async function HomePage() {
               </Link>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-              {families.slice(0, 8).map((family) => {
+              {families.slice(0, 8).map((family, index) => {
                 const count = catalog.filter(
                   (category) => category.family_slug === family.slug,
                 ).length;
+                const images = [
+                  '/images/cat-logement.jpg',
+                  '/images/cat-auto.jpg',
+                  '/images/afr-doctor.jpg',
+                  '/images/cat-emploi.jpg',
+                  '/images/cat-community.jpg',
+                  '/images/cat-services.jpg',
+                  '/images/cat-market.jpg',
+                  '/images/hero-africa.jpg',
+                ];
 
                 return (
                   <Link
                     key={family.slug}
                     href={`/aide?famille=${family.slug}`}
-                    className="group flex items-center gap-3 rounded-2xl border border-line bg-surface p-3.5 shadow-soft transition-all hover:-translate-y-0.5 hover:border-teal-500/30 hover:shadow-lift"
+                    className="group relative h-[132px] overflow-hidden rounded-2xl border border-line bg-navy-900 shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-lift"
                   >
-                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-teal-50 to-cyan-50 text-teal-700 dark:from-teal-500/10 dark:to-cyan-500/10 dark:text-teal-300">
-                      <Icon name={safeIcon(family.icon)} size={20} />
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block truncate text-xs font-black text-ink">
-                        {family.nom_fr}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={
+                        FAMILY_IMAGES[family.slug] ??
+                        images[index % images.length]
+                      }
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <span className="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-navy-950/20 to-transparent" />
+                    <span className="relative flex h-full flex-col justify-between p-3">
+                      <span className="grid h-8 w-8 place-items-center rounded-xl bg-white/90 text-navy-900">
+                        <Icon name={safeIcon(family.icon)} size={17} />
                       </span>
-                      <span className="block text-[10px] text-muted">
-                        {count} service{count > 1 ? 's' : ''}
+                      <span className="flex items-end justify-between gap-2">
+                        <span className="min-w-0">
+                          <span className="block truncate text-xs font-black text-white">
+                            {family.nom_fr}
+                          </span>
+                          <span className="block text-[9px] text-white/70">
+                            {count} service{count > 1 ? 's' : ''}
+                          </span>
+                        </span>
+                        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white/20 text-white">
+                          <Icon name="chevronRight" size={13} />
+                        </span>
                       </span>
                     </span>
                   </Link>
                 );
               })}
-            </div>
-          </section>
-        ) : null}
-
-        {suggestions.length > 0 ? (
-          <section className="container-lc py-4 sm:py-6">
-            <div className="flex items-end justify-between gap-3">
-              <div>
-                <h2 className="text-xl font-black tracking-tight sm:text-2xl">
-                  Suggestions pour vous
-                </h2>
-                <p className="mt-1 text-sm text-muted">
-                  Des opportunités et profils réels publiés sur LIFE CONNECT.
-                </p>
-              </div>
-              <Link
-                href="/market"
-                className="text-sm font-semibold text-teal-700 hover:underline dark:text-teal-300"
-              >
-                Voir tout
-              </Link>
-            </div>
-
-            <div className="mt-4 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-              {suggestions.map((item) => (
-                <SuggestionCard
-                  key={
-                    item.kind === 'market'
-                      ? `market-${item.listing.id}`
-                      : `provider-${item.provider.id}`
-                  }
-                  item={item}
-                />
-              ))}
-            </div>
-          </section>
-        ) : null}
-
-        {suggestions.length === 0 ? (
-          <section className="container-lc py-5">
-            <div className="rounded-3xl border border-dashed border-line bg-surface p-8 text-center">
-              <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
-                <Icon name="spark" size={26} />
-              </span>
-              <h2 className="mt-3 text-lg font-black">
-                La plateforme démarre avec vous
-              </h2>
-              <p className="mx-auto mt-1 max-w-md text-sm text-muted">
-                Aucune annonce pour le moment. Publiez la première et donnez le
-                ton à votre communauté.
-              </p>
-              <ButtonLink href="/publier" className="mt-4">
-                <Icon name="send" size={18} />
-                Publier la première annonce
-              </ButtonLink>
             </div>
           </section>
         ) : null}
@@ -413,31 +414,40 @@ export default async function HomePage() {
               </Link>
             </div>
             <div className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
-              {providers.slice(0, 4).map((provider) => (
+              {providers.slice(0, 4).map((provider, index) => (
                 <Link
                   key={provider.id}
                   href={`/prestataires/${provider.id}`}
-                  className="rounded-2xl border border-line bg-surface p-4 shadow-soft transition-colors hover:border-teal-500/30"
+                  className="group rounded-2xl border border-line bg-surface p-3 shadow-soft transition-all hover:-translate-y-0.5 hover:border-teal-500/30 hover:shadow-lift"
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="grid h-10 w-10 place-items-center rounded-full gradient-brand text-xs font-black text-white">
-                      {provider.nom
-                        .split(/\s+/)
-                        .slice(0, 2)
-                        .map((part) => part[0]?.toUpperCase())
-                        .join('')}
+                    <span className="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-teal-50">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={provider.photo_url || PEOPLE_IMAGES[index % PEOPLE_IMAGES.length]}
+                        alt=""
+                        className="h-full w-full object-cover object-top"
+                      />
                     </span>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-bold">{provider.nom}</p>
+                      <p className="truncate text-sm font-black">{provider.nom}</p>
                       <p className="truncate text-[10px] text-muted">
-                        {provider.metier_nom} · {provider.quartier}
+                        {provider.metier_nom}
+                      </p>
+                      <p className="mt-0.5 flex items-center gap-1 text-[10px] text-muted">
+                        <Icon name="mapPin" size={11} />
+                        {provider.quartier}
                       </p>
                     </div>
                   </div>
-                  <p className="mt-2 text-[10px] text-muted">
-                    ★ {provider.note_moyenne.toFixed(1)} · {provider.nombre_avis}{' '}
-                    avis
-                  </p>
+                  <div className="mt-2 flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-semibold text-amber-600">
+                      ★ {provider.note_moyenne.toFixed(1)} ({provider.nombre_avis})
+                    </span>
+                    <span className="rounded-lg bg-teal-50 px-2 py-1 text-[10px] font-bold text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
+                      Voir profil
+                    </span>
+                  </div>
                 </Link>
               ))}
             </div>
@@ -483,63 +493,6 @@ export default async function HomePage() {
                     {opportunity.city ?? 'Cameroun'} ·{' '}
                     {formatDate(opportunity.created_at)}
                   </p>
-                </Link>
-              ))}
-            </div>
-          </section>
-        ) : null}
-
-        {listings.length > 0 ? (
-          <section className="container-lc py-4 sm:py-6">
-            <div className="flex items-end justify-between gap-3">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-coral-500">
-                  LIFE MARKET
-                </p>
-                <h2 className="mt-1 text-xl font-black tracking-tight sm:text-2xl">
-                  Annonces à découvrir
-                </h2>
-              </div>
-              <Link
-                href="/market"
-                className="text-sm font-semibold text-teal-700 hover:underline dark:text-teal-300"
-              >
-                Voir tout
-              </Link>
-            </div>
-            <div className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
-              {listings.slice(0, 4).map((listing) => (
-                <Link
-                  key={listing.id}
-                  href={`/market/${listing.id}`}
-                  className="overflow-hidden rounded-2xl border border-line bg-surface shadow-soft transition-colors hover:border-coral-500/30"
-                >
-                  <div className="grid h-28 place-items-center bg-surface2">
-                    {listing.image_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={listing.image_url}
-                        alt=""
-                        className="h-28 w-full object-cover"
-                      />
-                    ) : (
-                      <Icon name="cart" size={30} className="text-muted" />
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <p className="line-clamp-2 text-xs font-bold">
-                      {listing.title}
-                    </p>
-                    <p className="mt-1 text-sm font-black text-teal-600 dark:text-teal-300">
-                      {listing.price_fcfa != null
-                        ? `${new Intl.NumberFormat('fr-FR').format(listing.price_fcfa)} FCFA`
-                        : 'Prix à discuter'}
-                    </p>
-                    <p className="mt-1 flex items-center gap-1 text-[10px] text-muted">
-                      <Icon name="mapPin" size={11} />
-                      {listing.city ?? 'Cameroun'}
-                    </p>
-                  </div>
                 </Link>
               ))}
             </div>
@@ -638,9 +591,15 @@ export default async function HomePage() {
         ) : null}
 
         <section className="container-lc py-4 sm:py-6">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-600 via-teal-500 to-sky-500 p-5 text-white shadow-soft sm:p-7">
-            <div className="absolute -right-8 -top-10 h-36 w-36 rounded-full bg-white/10" />
-            <div className="absolute -bottom-12 right-16 h-28 w-28 rounded-full bg-white/10" />
+          <div className="relative overflow-hidden rounded-3xl gradient-night p-5 text-white shadow-soft sm:p-7">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/douala.jpg"
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover opacity-35"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/80 to-navy-950/30" />
+            <div className="absolute -right-8 -top-10 h-36 w-36 rounded-full bg-cyan-400/20 blur-2xl" />
             <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/75">

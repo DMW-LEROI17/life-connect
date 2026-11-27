@@ -6,48 +6,56 @@ const MODULES = [
   {
     href: '/radar?kind=emploi',
     label: 'Emploi',
+    subtitle: 'Trouvez un emploi',
     icon: 'briefcase' as const,
     image: '/images/cat-emploi.jpg',
   },
   {
     href: '/market?q=logement',
     label: 'Logement',
+    subtitle: 'Trouvez un toit',
     icon: 'home' as const,
     image: '/images/cat-logement.jpg',
   },
   {
     href: '/people',
     label: 'Services',
+    subtitle: 'Des pros près de vous',
     icon: 'wrench' as const,
     image: '/images/cat-services.jpg',
   },
   {
     href: '/market',
-    label: 'Acheter / vendre',
+    label: 'Acheter / Vendre',
+    subtitle: 'Achetez, vendez',
     icon: 'cart' as const,
     image: '/images/cat-market.jpg',
   },
   {
     href: '/radar?kind=partenariat',
     label: 'Partenaires',
+    subtitle: 'Collaborez ensemble',
     icon: 'handshake' as const,
     image: '/images/cat-partenaires.jpg',
   },
   {
     href: '/radar',
     label: 'Opportunités',
+    subtitle: 'Saisissez les opportunités',
     icon: 'trophy' as const,
     image: '/images/cat-construction.jpg',
   },
   {
     href: '/community',
     label: 'Communauté',
+    subtitle: 'Rejoignez une communauté',
     icon: 'users' as const,
     image: '/images/cat-community.jpg',
   },
   {
     href: '/aide',
     label: 'HELP ME',
+    subtitle: 'Demandez de l’aide',
     icon: 'alert' as const,
     image: null,
   },
@@ -83,8 +91,13 @@ export function ModuleGrid() {
               <Icon name={module.icon} size={17} />
             </span>
             <span className="flex items-end justify-between gap-2">
-              <span className="text-xs font-black leading-tight text-white sm:text-sm">
-                {module.label}
+              <span className="min-w-0">
+                <span className="block text-xs font-black leading-tight text-white sm:text-sm">
+                  {module.label}
+                </span>
+                <span className="mt-0.5 block truncate text-[9px] font-medium text-white/70">
+                  {module.subtitle}
+                </span>
               </span>
               <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white/20 text-white backdrop-blur">
                 <Icon name="chevronRight" size={13} />

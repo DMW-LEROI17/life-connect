@@ -1,6 +1,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+const AFRICAN_PORTRAITS = [
+  '/images/afr-woman-2.jpg',
+  '/images/afr-man-1.jpg',
+  '/images/afr-woman-1.jpg',
+  '/images/afr-man-3.jpg',
+  '/images/afr-woman-4.jpg',
+];
+
 import { Icon } from '@/components/Icons';
 import { formatFcfa } from '@/lib/format';
 import type { MarketListingRow } from '@/types/db';
@@ -66,6 +74,9 @@ export function SuggestionCard({ item }: { item: SuggestionItem }) {
   }
 
   const provider = item.provider;
+  const portrait =
+    provider.photo_url ||
+    AFRICAN_PORTRAITS[provider.id.charCodeAt(0) % AFRICAN_PORTRAITS.length];
 
   return (
     <Link
@@ -73,23 +84,13 @@ export function SuggestionCard({ item }: { item: SuggestionItem }) {
       className="group flex min-h-[124px] min-w-0 items-stretch gap-3 rounded-3xl border border-line bg-surface p-3 shadow-soft transition-all hover:-translate-y-0.5 hover:border-teal-500/30 hover:shadow-lift"
     >
       <div className="relative grid h-[100px] w-[100px] shrink-0 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-teal-50 to-blue-50 dark:from-teal-500/10 dark:to-blue-500/10">
-        {provider.photo_url ? (
-          <Image
-            src={provider.photo_url}
-            alt=""
-            width={100}
-            height={100}
-            className="h-[100px] w-[100px] object-cover"
-          />
-        ) : (
-          <span className="text-2xl font-black text-teal-700 dark:text-teal-300">
-            {provider.nom
-              .split(/\s+/)
-              .slice(0, 2)
-              .map((part) => part[0]?.toUpperCase())
-              .join('')}
-          </span>
-        )}
+        <Image
+          src={portrait}
+          alt=""
+          width={100}
+          height={100}
+          className="h-[100px] w-[100px] object-cover object-top"
+        />
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col justify-center">

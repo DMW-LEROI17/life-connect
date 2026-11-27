@@ -43,6 +43,16 @@ export default async function ConnexionPage({
     <main id="contenu" className="min-h-dvh bg-bg p-3 sm:p-5 lg:p-6">
       <div className="mx-auto grid min-h-[calc(100dvh-1.5rem)] max-w-6xl overflow-hidden rounded-[2rem] border border-line bg-surface shadow-lift sm:min-h-[calc(100dvh-2.5rem)] lg:grid-cols-[1.05fr_1fr]">
         <section className="relative hidden overflow-hidden gradient-night p-10 text-white lg:flex lg:flex-col lg:justify-between">
+          <div className="absolute inset-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/hero-africa.jpg"
+              alt=""
+              className="h-full w-full object-cover object-center opacity-45"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/80 to-navy-950/20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-transparent to-navy-950/30" />
+          </div>
           <div className="absolute -right-20 -top-16 h-64 w-64 rounded-full bg-cyan-400/25 blur-3xl" />
           <div className="absolute -bottom-24 -left-20 h-72 w-72 rounded-full bg-violet-500/25 blur-3xl" />
 
