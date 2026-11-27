@@ -8,7 +8,7 @@ import { Icon, safeIcon } from '@/components/Icons';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { ButtonLink } from '@/components/ui/Button';
-import { formatDate } from '@/lib/format';
+import { formatDate, formatFcfa } from '@/lib/format';
 import { getCatalog, getFamilies } from '@/lib/catalog';
 import { listGroups } from '@/lib/community';
 import { listMarketListings } from '@/lib/market';
@@ -61,7 +61,20 @@ export default async function HomePage() {
             aria-hidden="true"
           />
 
-          <div className="container-lc pb-7 pt-8 sm:pb-10 sm:pt-12">
+          <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[54%] lg:block">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/hero-people.jpg"
+              alt=""
+              className="h-full w-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/35 to-transparent" />
+            <p className="absolute right-8 top-10 max-w-[190px] rotate-[-5deg] text-right text-2xl font-black italic leading-tight text-cyan-200 drop-shadow-lg">
+              Ensemble, connectons le monde !
+            </p>
+          </div>
+
+          <div className="container-lc relative z-10 pb-7 pt-8 sm:pb-10 sm:pt-12">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/90 backdrop-blur">
               <span className="h-1.5 w-1.5 rounded-full bg-teal-400" />
               Everything. Everyone. Everywhere.
@@ -133,6 +146,148 @@ export default async function HomePage() {
 
           <div className="mt-4">
             <ModuleGrid />
+          </div>
+        </section>
+
+        <section className="container-lc py-5 sm:py-7">
+          <div className="grid gap-4 lg:grid-cols-[1.65fr_1fr]">
+            <div>
+              <div className="flex items-end justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-black tracking-tight sm:text-2xl">
+                    Services recommandés
+                  </h2>
+                  <p className="mt-1 text-sm text-muted">
+                    Des professionnels vérifiés, près de chez vous.
+                  </p>
+                </div>
+                <Link
+                  href="/people"
+                  className="text-xs font-bold text-teal-700 hover:underline dark:text-teal-300"
+                >
+                  Voir tout
+                </Link>
+              </div>
+
+              {providers.length > 0 ? (
+                <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
+                  {providers.slice(0, 4).map((provider) => (
+                    <Link
+                      key={provider.id}
+                      href={`/prestataires/${provider.id}`}
+                      className="group rounded-2xl border border-line bg-surface p-3 shadow-soft transition-all hover:-translate-y-0.5 hover:border-teal-500/30 hover:shadow-lift"
+                    >
+                      <div className="relative h-24 overflow-hidden rounded-xl bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-500/10 dark:to-cyan-500/10">
+                        {provider.photo_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={provider.photo_url}
+                            alt=""
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="grid h-full w-full place-items-center text-3xl font-black text-teal-600 dark:text-teal-300">
+                            {provider.nom
+                              .split(/\s+/)
+                              .slice(0, 2)
+                              .map((part) => part[0]?.toUpperCase())
+                              .join('')}
+                          </span>
+                        )}
+                        <span className="absolute left-2 top-2 rounded-full bg-teal-600 px-2 py-0.5 text-[9px] font-black text-white">
+                          Vérifié
+                        </span>
+                      </div>
+                      <p className="mt-2 truncate text-sm font-black">
+                        {provider.nom}
+                      </p>
+                      <p className="truncate text-[11px] text-muted">
+                        {provider.metier_nom} · {provider.quartier}
+                      </p>
+                      <div className="mt-1.5 flex items-center justify-between gap-2">
+                        <span className="text-[10px] text-muted">
+                          ★ {provider.note_moyenne.toFixed(1)} ·{' '}
+                          {provider.nombre_avis} avis
+                        </span>
+                        <span className="rounded-lg bg-teal-50 px-2 py-1 text-[10px] font-bold text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
+                          Voir
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-3 rounded-2xl border border-dashed border-line p-6 text-sm text-muted">
+                  Aucun prestataire pour le moment.{' '}
+                  <Link href="/devenir-aideur" className="font-bold text-teal-700">
+                    Inscrivez le premier.
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <div className="flex items-end justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-black tracking-tight sm:text-2xl">
+                    Annonces à découvrir
+                  </h2>
+                  <p className="mt-1 text-sm text-muted">Les dernières annonces.</p>
+                </div>
+                <Link
+                  href="/market"
+                  className="text-xs font-bold text-teal-700 hover:underline dark:text-teal-300"
+                >
+                  Voir tout
+                </Link>
+              </div>
+
+              {listings[0] ? (
+                <Link
+                  href={`/market/${listings[0].id}`}
+                  className="group mt-3 block overflow-hidden rounded-2xl border border-line bg-surface shadow-soft transition-all hover:-translate-y-0.5 hover:border-teal-500/30 hover:shadow-lift"
+                >
+                  <div className="relative h-36 bg-surface2">
+                    {listings[0].image_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={listings[0].image_url}
+                        alt=""
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <span className="grid h-full place-items-center">
+                        <Icon name="cart" size={34} className="text-muted" />
+                      </span>
+                    )}
+                    <span className="absolute left-2 top-2 rounded-lg bg-orange-500 px-2 py-1 text-[9px] font-black uppercase text-white">
+                      À vendre
+                    </span>
+                  </div>
+                  <div className="p-3">
+                    <p className="line-clamp-2 text-sm font-black">
+                      {listings[0].title}
+                    </p>
+                    <p className="mt-1 text-lg font-black text-teal-600 dark:text-teal-300">
+                      {listings[0].price_fcfa != null
+                        ? formatFcfa(listings[0].price_fcfa)
+                        : 'Prix à discuter'}
+                    </p>
+                    <p className="mt-1 flex items-center gap-1 text-[10px] text-muted">
+                      <Icon name="mapPin" size={12} />
+                      {listings[0].city ?? 'Cameroun'}
+                    </p>
+                  </div>
+                </Link>
+              ) : (
+                <div className="mt-3 rounded-2xl border border-dashed border-line p-6 text-sm text-muted">
+                  Aucune annonce pour le moment.{' '}
+                  <Link href="/market/nouveau" className="font-bold text-teal-700">
+                    Publier.
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </section>
 
@@ -513,8 +668,8 @@ export default async function HomePage() {
         </section>
 
         <section className="container-lc py-4 sm:py-6">
-          <div className="grid gap-2.5 sm:grid-cols-3">
-            <div className="rounded-2xl border border-line bg-surface p-4">
+          <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-2xl border border-line bg-surface p-4 shadow-soft">
               <span className="grid h-9 w-9 place-items-center rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
                 <Icon name="shield" size={18} />
               </span>
@@ -532,13 +687,22 @@ export default async function HomePage() {
                 Aucun profil, prix ou avis inventé.
               </p>
             </div>
-            <div className="rounded-2xl border border-line bg-surface p-4">
+            <div className="rounded-2xl border border-line bg-surface p-4 shadow-soft">
               <span className="grid h-9 w-9 place-items-center rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
                 <Icon name="phone" size={18} />
               </span>
               <p className="mt-2 text-sm font-bold">Contact direct</p>
               <p className="mt-0.5 text-xs text-muted">
                 Messagerie, téléphone ou WhatsApp.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-line bg-surface p-4 shadow-soft">
+              <span className="grid h-9 w-9 place-items-center rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
+                <Icon name="users" size={18} />
+              </span>
+              <p className="mt-2 text-sm font-bold">Communauté active</p>
+              <p className="mt-0.5 text-xs text-muted">
+                Des personnes et des groupes qui répondent réellement.
               </p>
             </div>
           </div>

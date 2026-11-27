@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { revalidatePath } from 'next/cache';
 
 import { getCurrentUser } from '@/lib/auth-user';
+import { notifyAdmins, notifyUser } from '@/lib/notifications';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export type MarketActionResult =
@@ -98,6 +99,22 @@ export async function createMarketListingAction(
     }
 
     revalidatePath('/market');
+
+    await notifyUser({
+      userId: current.user.id,
+      type: 'systeme',
+      title: 'Annonce publiée',
+      body: title,
+      link: `/market/${data.id}`,
+    });
+
+    await notifyAdmins({
+      type: 'systeme',
+      title: 'Nouvelle annonce',
+      body: `${title} · ${city || current.profile.city || 'Cameroun'}`,
+      link: `/market/${data.id}`,
+    });
+
     return { ok: true, id: data.id as string, message: 'Annonce publiée.' };
   } catch (error) {
     console.error('[createMarketListingAction]', error);

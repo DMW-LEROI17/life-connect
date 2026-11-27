@@ -10,6 +10,7 @@ export function NotificationBell() {
 
   useEffect(() => {
     let cancelled = false;
+    let channel: any = null;
 
     async function load() {
       try {
@@ -21,7 +22,7 @@ export function NotificationBell() {
           data: { user },
         } = await supabase.auth.getUser();
 
-        if (!user) return;
+        if (!user || cancelled) return;
 
         const { count: unread } = await supabase
           .from('notifications')
@@ -30,6 +31,24 @@ export function NotificationBell() {
           .eq('is_read', false);
 
         if (!cancelled) setCount(unread ?? 0);
+
+        if (!channel) {
+          channel = supabase
+            .channel(`notifications-${user.id}`)
+            .on(
+              'postgres_changes',
+              {
+                event: '*',
+                schema: 'public',
+                table: 'notifications',
+                filter: `user_id=eq.${user.id}`,
+              },
+              () => {
+                void load();
+              },
+            )
+            .subscribe();
+        }
       } catch {
         // Table non installée ou session absente.
       }
@@ -39,6 +58,7 @@ export function NotificationBell() {
 
     return () => {
       cancelled = true;
+      if (channel) channel.unsubscribe();
     };
   }, []);
 

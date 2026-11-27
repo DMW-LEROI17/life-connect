@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { Icon } from '@/components/Icons';
+import { UnreadBadge } from '@/components/layout/UnreadBadge';
 
 const ITEMS = [
   { href: '/', label: 'Accueil', icon: 'spark' as const, accent: false },
@@ -68,6 +69,7 @@ export function BottomNav() {
               </span>
               <span className={item.accent ? 'text-teal-600 dark:text-teal-300' : ''}>
                 {item.label}
+                {item.href === '/messages' ? <UnreadBadge /> : null}
               </span>
             </Link>
           );

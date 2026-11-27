@@ -22,3 +22,24 @@ export async function notifyUser(input: {
     console.error('[notifyUser]', error);
   }
 }
+
+export async function notifyAdmins(input: {
+  type: NotificationType;
+  title: string;
+  body?: string;
+  link?: string;
+}) {
+  try {
+    const admin = getSupabaseAdmin();
+    const { data } = await admin
+      .from('profiles')
+      .select('id')
+      .in('role', ['admin', 'moderateur']);
+
+    for (const profile of data ?? []) {
+      await notifyUser({ ...input, userId: String(profile.id) });
+    }
+  } catch (error) {
+    console.error('[notifyAdmins]', error);
+  }
+}

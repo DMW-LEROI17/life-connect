@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import { UnreadBadge } from '@/components/layout/UnreadBadge';
+
 const NAV = [
   { href: '/', label: 'Accueil' },
   { href: '/explorer', label: 'Explorer' },
@@ -33,6 +35,7 @@ export function HeaderNav() {
             }`}
           >
             {item.label}
+            {item.href === '/messages' ? <UnreadBadge /> : null}
           </Link>
         );
       })}

@@ -2,6 +2,8 @@
 
 import { normalizeCmPhone } from '@/lib/phone';
 import { createRequestRecord } from '@/lib/request-service';
+import { getCurrentUser } from '@/lib/auth-user';
+import { notifyAdmins, notifyUser } from '@/lib/notifications';
 import { createRequestSchema, firstZodError } from '@/lib/validation';
 
 export type CreateRequestResult =
@@ -83,7 +85,7 @@ export async function createRequest(
     };
   }
 
-  return createRequestRecord({
+  const result = await createRequestRecord({
     categorie: input.categorie,
     sousCategorieId: input.sous_categorie_id ?? null,
     probleme: input.probleme,
@@ -98,4 +100,27 @@ export async function createRequest(
     latitude,
     longitude,
   });
+
+  if (result.ok) {
+    const current = await getCurrentUser();
+
+    if (current) {
+      await notifyUser({
+        userId: current.user.id,
+        type: 'demande',
+        title: 'Demande enregistrée',
+        body: `${input.probleme.slice(0, 120)} — suivez son statut en temps réel.`,
+        link: `/suivi/${result.token}`,
+      });
+    }
+
+    await notifyAdmins({
+      type: 'sos',
+      title: 'Nouvelle demande',
+      body: `${input.probleme.slice(0, 120)} · ${input.quartier || 'zone à préciser'}`,
+      link: '/admin',
+    });
+  }
+
+  return result;
 }

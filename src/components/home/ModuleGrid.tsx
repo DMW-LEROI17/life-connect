@@ -7,68 +7,89 @@ const MODULES = [
     href: '/radar?kind=emploi',
     label: 'Emploi',
     icon: 'briefcase' as const,
-    color: 'bg-blue-50 text-blue-600',
+    image: '/images/cat-emploi.jpg',
   },
   {
     href: '/market?q=logement',
     label: 'Logement',
     icon: 'home' as const,
-    color: 'bg-emerald-50 text-emerald-600',
+    image: '/images/cat-logement.jpg',
   },
   {
     href: '/people',
     label: 'Services',
     icon: 'wrench' as const,
-    color: 'bg-[#F3E8FF] text-[#7C3AED]',
+    image: '/images/cat-services.jpg',
   },
   {
     href: '/market',
     label: 'Acheter / vendre',
     icon: 'cart' as const,
-    color: 'bg-orange-50 text-orange-600',
+    image: '/images/cat-market.jpg',
   },
   {
     href: '/radar?kind=partenariat',
     label: 'Partenaires',
     icon: 'handshake' as const,
-    color: 'bg-cyan-50 text-cyan-600',
+    image: '/images/cat-partenaires.jpg',
   },
   {
     href: '/radar',
     label: 'Opportunités',
     icon: 'trophy' as const,
-    color: 'bg-purple-50 text-purple-600',
+    image: '/images/cat-construction.jpg',
   },
   {
     href: '/community',
     label: 'Communauté',
     icon: 'users' as const,
-    color: 'bg-emerald-50 text-emerald-600',
+    image: '/images/cat-community.jpg',
   },
   {
     href: '/aide',
     label: 'HELP ME',
     icon: 'alert' as const,
-    color: 'bg-urgent-50 text-urgent-600',
+    image: null,
   },
 ];
 
 export function ModuleGrid() {
   return (
-    <div className="grid grid-cols-4 gap-2.5 sm:gap-3">
+    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3">
       {MODULES.map((module) => (
         <Link
           key={module.label}
           href={module.href}
-          className="group flex min-h-[118px] flex-col items-center justify-center gap-2 rounded-[1.4rem] border border-line bg-surface p-2 text-center shadow-soft transition-all hover:-translate-y-1 hover:border-teal-500/30 hover:shadow-lift sm:min-h-[128px] sm:gap-3"
+          className={`group relative h-[120px] overflow-hidden rounded-[1.35rem] shadow-soft transition-all hover:-translate-y-1 hover:shadow-lift sm:h-[132px] ${
+            module.image ? 'bg-navy-900' : 'bg-gradient-to-br from-urgent-500 to-urgent-600'
+          }`}
         >
-          <span
-            className={`grid h-12 w-12 place-items-center rounded-2xl shadow-sm ${module.color} transition-transform group-hover:scale-105`}
-          >
-            <Icon name={module.icon} size={23} />
-          </span>
-          <span className="text-[11px] font-black leading-tight text-ink sm:text-sm">
-            {module.label}
+          {module.image ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={module.image}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <span className="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-navy-950/25 to-transparent" />
+            </>
+          ) : (
+            <span className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-white/10" />
+          )}
+
+          <span className="relative flex h-full flex-col justify-between p-3">
+            <span className="grid h-8 w-8 place-items-center rounded-xl bg-white/90 text-navy-900 shadow-sm backdrop-blur">
+              <Icon name={module.icon} size={17} />
+            </span>
+            <span className="flex items-end justify-between gap-2">
+              <span className="text-xs font-black leading-tight text-white sm:text-sm">
+                {module.label}
+              </span>
+              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white/20 text-white backdrop-blur">
+                <Icon name="chevronRight" size={13} />
+              </span>
+            </span>
           </span>
         </Link>
       ))}

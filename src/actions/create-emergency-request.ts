@@ -2,6 +2,8 @@
 
 import { normalizeCmPhone } from '@/lib/phone';
 import { createRequestRecord } from '@/lib/request-service';
+import { getCurrentUser } from '@/lib/auth-user';
+import { notifyAdmins, notifyUser } from '@/lib/notifications';
 
 export type CreateEmergencyResult =
   | { ok: true; token: string }
@@ -64,7 +66,7 @@ export async function createEmergencyRequest(
     return { ok: false, error: 'Position incomplète.' };
   }
 
-  return createRequestRecord({
+  const result = await createRequestRecord({
     categorie: 'taxi_moto',
     probleme: `Transport urgent — ${typeLabel}`,
     description: String(formData.get('description') ?? '').slice(0, 600),
@@ -80,4 +82,27 @@ export async function createEmergencyRequest(
     emergencyType: 'transport',
     needsTransport: true,
   });
+
+  if (result.ok) {
+    const current = await getCurrentUser();
+
+    if (current) {
+      await notifyUser({
+        userId: current.user.id,
+        type: 'demande',
+        title: 'Transport urgent enregistré',
+        body: 'Votre demande urgente est enregistrée.',
+        link: `/suivi/${result.token}`,
+      });
+    }
+
+    await notifyAdmins({
+      type: 'sos',
+      title: 'Transport urgent',
+      body: `${typeLabel} · ${String(formData.get('quartier') ?? 'zone à préciser')}`,
+      link: '/admin',
+    });
+  }
+
+  return result;
 }
