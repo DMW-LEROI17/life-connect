@@ -1,3 +1,4 @@
+import { isDemoText } from '@/lib/demo';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type {
   CommunityGroupRow,
@@ -27,6 +28,7 @@ export async function listGroups(input: {
     }
 
     let rows = (data ?? []) as CommunityGroupRow[];
+    rows = rows.filter((row) => !isDemoText(row.name));
     const q = input.q?.toLowerCase().trim();
 
     if (q) {

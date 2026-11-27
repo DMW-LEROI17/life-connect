@@ -32,7 +32,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 rounded-t-[1.5rem] border-t border-line bg-surface/95 shadow-[0_-10px_35px_rgba(16,28,69,0.10)] safe-bottom backdrop-blur-xl md:hidden"
+      className="safe-bottom fixed inset-x-0 bottom-0 z-40 rounded-t-[1.35rem] border-t border-line/80 bg-surface/95 shadow-[0_-8px_30px_rgba(16,28,69,0.10)] backdrop-blur-xl md:hidden"
       aria-label="Navigation principale"
     >
       <div className="mx-auto grid max-w-md grid-cols-5 px-1">
@@ -48,7 +48,9 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               aria-current={active ? 'page' : undefined}
-              className={`flex min-h-16 flex-col items-center justify-center gap-1 text-[10px] font-bold ${
+              aria-label={item.label}
+              prefetch
+              className={`relative flex min-h-[4.1rem] touch-manipulation select-none flex-col items-center justify-center gap-0.5 text-[10px] font-bold transition-transform duration-150 active:scale-95 ${
                 item.accent
                   ? '-mt-5'
                   : active
@@ -56,10 +58,13 @@ export function BottomNav() {
                     : 'text-muted'
               }`}
             >
+              {active && !item.accent ? (
+                <span className="absolute top-1 h-1 w-5 rounded-full gradient-brand" />
+              ) : null}
               <span
-                className={`grid place-items-center ${
+                className={`grid place-items-center transition-all duration-200 ${
                   item.accent
-                    ? 'h-12 w-12 rounded-full gradient-brand text-white shadow-lift'
+                    ? 'h-12 w-12 rounded-full gradient-brand text-white shadow-lift ring-4 ring-bg'
                     : active
                       ? 'h-8 w-8 rounded-xl bg-teal-50 dark:bg-teal-500/10'
                       : 'h-8 w-8'
@@ -67,7 +72,11 @@ export function BottomNav() {
               >
                 <Icon name={item.icon} size={item.accent ? 23 : 20} />
               </span>
-              <span className={item.accent ? 'text-teal-600 dark:text-teal-300' : ''}>
+              <span
+                className={`flex items-center gap-1 ${
+                  item.accent ? 'text-teal-600 dark:text-teal-300' : ''
+                }`}
+              >
                 {item.label}
                 {item.href === '/messages' ? <UnreadBadge /> : null}
               </span>

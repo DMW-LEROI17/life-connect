@@ -10,18 +10,19 @@ import { ThemeToggle } from '@/components/layout/ThemeToggle';
 export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-line/80 bg-surface/90 shadow-[0_4px_22px_rgba(18,70,216,0.06)] backdrop-blur-xl">
-      <div className="container-lc flex h-16 items-center justify-between gap-2">
+      <div className="container-lc flex h-14 items-center justify-between gap-2 sm:h-16">
         <Logo />
 
         <HeaderNav />
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 sm:gap-1">
           <Link
             href="/urgence"
-            className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-urgent-500 px-2.5 text-xs font-black tracking-wide text-white shadow-soft transition-colors hover:bg-urgent-600 sm:px-3.5 sm:text-sm"
+            aria-label="Urgence"
+            className="inline-flex h-10 min-w-10 touch-manipulation items-center justify-center gap-1.5 rounded-xl bg-urgent-500 px-2 text-xs font-black tracking-wide text-white shadow-soft transition active:scale-95 sm:px-3.5 sm:text-sm"
           >
             <Icon name="alert" size={16} />
-            URGENCE
+            <span className="hidden sm:inline">URGENCE</span>
           </Link>
 
           <Link

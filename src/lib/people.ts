@@ -1,3 +1,4 @@
+import { isDemoText } from '@/lib/demo';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import type { PublicPersonRow } from '@/types/db';
 
@@ -39,6 +40,7 @@ export async function listPeople(input: {
     }
 
     let rows = (data ?? []) as PublicPersonRow[];
+    rows = rows.filter((row) => !isDemoText(row.full_name));
     const q = input.q?.toLowerCase().trim();
 
     if (q) {

@@ -4,135 +4,88 @@ import Link from 'next/link';
 import { Icon } from '@/components/Icons';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
+import { PublishWizard } from '@/components/publish/PublishWizard';
 
 export const metadata: Metadata = {
   title: 'Publier — LIFE CONNECT',
   description:
-    'Publiez une demande, une offre, une annonce, une opportunité ou créez votre profil prestataire.',
+    'Publiez une demande, une offre, une annonce, une opportunité ou créez votre profil prestataire sur LIFE CONNECT.',
 };
-
-const ACTIONS = [
-  {
-    href: '/connect/nouveau',
-    label: 'Publier un besoin ou une offre',
-    text: 'Décrivez ce que vous cherchez ou proposez et recevez des réponses réelles.',
-    icon: 'send' as const,
-    tag: 'LIFE CONNECT',
-    color: 'bg-blue-50 text-blue-600',
-  },
-  {
-    href: '/market/nouveau',
-    label: 'Publier une annonce',
-    text: 'Vendre, acheter ou louer un produit avec photos, prix et localisation.',
-    icon: 'cart' as const,
-    tag: 'LIFE MARKET',
-    color: 'bg-orange-50 text-orange-600',
-  },
-  {
-    href: '/demande',
-    label: 'Demander une aide HELP ME',
-    text: 'Décrivez un problème et trouvez un prestataire adapté à votre zone.',
-    icon: 'wrench' as const,
-    tag: 'HELP ME',
-    color: 'bg-urgent-50 text-urgent-600',
-  },
-  {
-    href: '/radar/nouveau',
-    label: 'Publier une opportunité',
-    text: 'Emploi, stage, événement, projet ou partenariat à partager.',
-    icon: 'trophy' as const,
-    tag: 'LIFE RADAR',
-    color: 'bg-violet-50 text-violet-500',
-  },
-  {
-    href: '/exchange/nouveau',
-    label: 'Proposer un échange',
-    text: 'Échangez une compétence, un service ou un savoir-faire.',
-    icon: 'handshake' as const,
-    tag: 'LIFE EXCHANGE',
-    color: 'bg-emerald-50 text-emerald-600',
-  },
-  {
-    href: '/community/nouveau',
-    label: 'Créer un groupe',
-    text: 'Rassemblez une communauté autour d’un intérêt, d’un métier ou d’un projet.',
-    icon: 'users' as const,
-    tag: 'LIFE COMMUNITY',
-    color: 'bg-cyan-50 text-cyan-600',
-  },
-  {
-    href: '/devenir-aideur',
-    label: 'Devenir prestataire',
-    text: 'Présentez vos services, vos zones et recevez des demandes.',
-    icon: 'shield' as const,
-    tag: 'LIFE PEOPLE',
-    color: 'bg-teal-50 text-teal-700',
-  },
-];
 
 export default function PublierPage() {
   return (
     <>
       <Header />
-      <main id="contenu" className="container-lc max-w-4xl py-6 sm:py-8">
-        <div className="overflow-hidden rounded-[2rem] gradient-night p-6 text-white shadow-lift sm:p-8">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+      <main id="contenu" className="container-lc max-w-3xl py-5 sm:py-8">
+        <div className="relative overflow-hidden rounded-[1.75rem] gradient-night p-5 text-white shadow-lift sm:rounded-[2rem] sm:p-7">
+          <div className="absolute -right-10 -top-12 h-36 w-36 rounded-full bg-cyan-400/25 blur-2xl" />
+          <div className="absolute -bottom-12 left-1/3 h-28 w-28 rounded-full bg-violet-500/25 blur-2xl" />
+
+          <div className="relative flex items-start justify-between gap-3">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/60">
-                Publier
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/55">
+                Publier sur LIFE CONNECT
               </p>
-              <h1 className="mt-1 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">
-                Que souhaitez-vous partager avec la communauté LIFE CONNECT ?
+              <h1 className="mt-1 max-w-xl text-[1.85rem] font-black leading-[1.1] tracking-tight sm:text-4xl">
+                Votre publication en quelques secondes.
               </h1>
-              <p className="mt-2 max-w-xl text-sm text-white/70">
-                Choisissez un format. Chaque action ouvre son véritable
-                formulaire connecté à la base de données.
+              <p className="mt-2 max-w-md text-xs leading-relaxed text-white/70 sm:text-sm">
+                Choisissez un format, vérifiez les informations demandées, puis
+                remplissez le formulaire adapté.
               </p>
             </div>
-            <span className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl border border-white/20 bg-white/10 backdrop-blur">
-              <Icon name="plus" size={30} />
+            <span className="hidden h-14 w-14 shrink-0 place-items-center rounded-2xl border border-white/20 bg-white/10 backdrop-blur sm:grid">
+              <Icon name="plus" size={28} />
+            </span>
+          </div>
+
+          <div className="relative mt-5 flex items-center gap-2">
+            <span className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[10px] font-black text-navy-900">
+              <span className="grid h-4 w-4 place-items-center rounded-full bg-teal-500 text-[8px] text-white">
+                1
+              </span>
+              Type de publication
+            </span>
+            <span className="h-px flex-1 bg-white/20" />
+            <span className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[10px] font-bold text-white/65">
+              <span className="grid h-4 w-4 place-items-center rounded-full bg-white/15 text-[8px]">
+                2
+              </span>
+              Formulaire
             </span>
           </div>
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          {ACTIONS.map((action, index) => (
-            <Link
-              key={action.href}
-              href={action.href}
-              className="card-hover group flex min-h-[170px] flex-col justify-between rounded-3xl border border-line bg-surface p-5 shadow-soft"
-            >
-              <div>
-                <div className="flex items-start justify-between gap-3">
-                  <span
-                    className={`grid h-12 w-12 place-items-center rounded-2xl ${action.color}`}
-                  >
-                    <Icon name={action.icon} size={23} />
-                  </span>
-                  <span className="text-[10px] font-black tabular-nums text-line">
-                    0{index + 1}
-                  </span>
-                </div>
-                <p className="mt-3 text-[9px] font-black uppercase tracking-[0.16em] text-muted">
-                  {action.tag}
-                </p>
-                <p className="mt-1 text-base font-black leading-snug text-ink">
-                  {action.label}
-                </p>
-                <p className="mt-1 text-xs leading-relaxed text-muted">
-                  {action.text}
-                </p>
-              </div>
-              <div className="mt-4 flex items-center justify-between">
-                <span className="text-xs font-bold text-teal-700 dark:text-teal-300">
-                  Continuer
-                </span>
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-surface2 text-muted transition-colors group-hover:bg-teal-500 group-hover:text-white">
-                  <Icon name="chevronRight" size={15} />
-                </span>
-              </div>
-            </Link>
-          ))}
+        <div className="mt-4 rounded-[1.5rem] border border-line bg-surface p-4 shadow-soft sm:p-5">
+          <PublishWizard />
+        </div>
+
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <div className="flex items-start gap-2.5 rounded-2xl border border-line bg-surface p-3.5">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
+              <Icon name="shield" size={17} />
+            </span>
+            <div>
+              <p className="text-xs font-bold">Publication vérifiée</p>
+              <p className="mt-0.5 text-[10px] leading-relaxed text-muted">
+                Les contenus signalés sont modérés avant mise en avant.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-2.5 rounded-2xl border border-line bg-surface p-3.5">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
+              <Icon name="whatsapp" size={17} />
+            </span>
+            <div>
+              <p className="text-xs font-bold">Besoin d’un coup de main ?</p>
+              <p className="mt-0.5 text-[10px] leading-relaxed text-muted">
+                <Link href="/contact" className="font-semibold text-teal-700 underline-offset-2 hover:underline dark:text-teal-300">
+                  Contactez l’équipe
+                </Link>{' '}
+                pour être accompagné.
+              </p>
+            </div>
+          </div>
         </div>
       </main>
       <Footer />

@@ -1,3 +1,4 @@
+import { isDemoText } from '@/lib/demo';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { OpportunityRow } from '@/types/db';
 
@@ -33,6 +34,7 @@ export async function listOpportunities(input: {
     }
 
     let rows = (data ?? []) as OpportunityRow[];
+    rows = rows.filter((row) => !isDemoText(row.title));
     const q = input.q?.toLowerCase().trim();
 
     if (q) {

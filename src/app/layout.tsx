@@ -52,7 +52,7 @@ export default function RootLayout({
       <head>
         <ThemeScript />
       </head>
-      <body className="min-h-dvh bg-bg pb-16 font-sans text-ink antialiased md:pb-0">
+      <body className="min-h-dvh bg-bg pb-[calc(4.75rem+env(safe-area-inset-bottom))] font-sans text-ink antialiased md:pb-0">
         <a
           href="#contenu"
           className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-navy-900 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"

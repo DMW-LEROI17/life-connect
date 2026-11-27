@@ -1,3 +1,4 @@
+import { isDemoText } from '@/lib/demo';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { MarketListingRow } from '@/types/db';
 
@@ -26,6 +27,9 @@ export async function listMarketListings(input: {
     }
 
     let rows = (data ?? []) as MarketListingRow[];
+    rows = rows.filter(
+      (row) => !isDemoText(row.seller_name) && !isDemoText(row.title),
+    );
     const q = input.q?.toLowerCase().trim();
 
     if (q) {

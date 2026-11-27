@@ -25,11 +25,23 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 4.5rem;
     -webkit-text-size-adjust: 100%;
   }
 
   body {
     @apply bg-bg text-ink;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  a,
+  button,
+  summary,
+  [role='button'] {
+    touch-action: manipulation;
   }
 
   ::selection {
@@ -48,11 +60,15 @@
   button {
     font: inherit;
   }
+
+  img {
+    -webkit-user-drag: none;
+  }
 }
 
 @layer components {
   .container-lc {
-    @apply mx-auto w-full max-w-5xl px-4 sm:px-6;
+    @apply mx-auto w-full max-w-5xl px-3.5 sm:px-6;
   }
 
   .card-lc {

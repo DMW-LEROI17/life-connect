@@ -7,10 +7,12 @@ import { Icon, safeIcon } from '@/components/Icons';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { ButtonLink } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { formatDate, formatFcfa } from '@/lib/format';
 import { getCatalog, getFamilies } from '@/lib/catalog';
 import { listGroups } from '@/lib/community';
 import { listMarketListings } from '@/lib/market';
+import { listPeople } from '@/lib/people';
 import { listOpportunities } from '@/lib/radar';
 import { getFeaturedProviders } from '@/lib/search';
 
@@ -48,7 +50,7 @@ const FAMILY_IMAGES: Record<string, string> = {
 };
 
 export default async function HomePage() {
-  const [providers, listings, opportunities, groups, families, catalog] =
+  const [providers, listings, opportunities, groups, families, catalog, people] =
     await Promise.all([
       getFeaturedProviders(),
       listMarketListings({}),
@@ -56,6 +58,7 @@ export default async function HomePage() {
       listGroups({}),
       getFamilies(),
       getCatalog(),
+      listPeople({}),
     ]);
 
   return (
@@ -87,13 +90,23 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="container-lc relative z-10 pb-7 pt-8 sm:pb-10 sm:pt-12">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/90 backdrop-blur">
+          <div className="pointer-events-none absolute inset-0 -z-10 lg:hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/hero-africa.jpg"
+              alt=""
+              className="h-full w-full object-cover object-[65%_center] opacity-30"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-navy-950/80 via-navy-950/85 to-navy-950" />
+          </div>
+
+          <div className="container-lc relative z-10 pb-6 pt-7 sm:pb-10 sm:pt-12">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.16em] text-white/90 backdrop-blur sm:text-[10px]">
               <span className="h-1.5 w-1.5 rounded-full bg-teal-400" />
               Everything. Everyone. Everywhere.
             </div>
 
-            <h1 className="mt-4 max-w-2xl text-[2.35rem] font-black leading-[1.05] tracking-tight sm:text-6xl">
+            <h1 className="mt-3 max-w-2xl text-[2.05rem] font-black leading-[1.04] tracking-tight sm:mt-4 sm:text-6xl">
               Un besoin.
               <br />
               Une connexion.
@@ -101,7 +114,7 @@ export default async function HomePage() {
               <span className="text-teal-300">Une solution.</span>
             </h1>
 
-            <p className="mt-3 max-w-xl text-sm text-white/80 sm:text-base">
+            <p className="mt-2.5 max-w-xl text-xs leading-relaxed text-white/80 sm:mt-3 sm:text-base">
               Emploi, logement, services, produits, partenariats, communauté :
               trouve ce qu’il te faut, près de chez toi.
             </p>
@@ -246,12 +259,14 @@ export default async function HomePage() {
                   ))}
                 </div>
               ) : (
-                <div className="mt-3 rounded-2xl border border-dashed border-line p-6 text-sm text-muted">
-                  Aucun prestataire pour le moment.{' '}
-                  <Link href="/devenir-aideur" className="font-bold text-teal-700">
-                    Inscrivez le premier.
-                  </Link>
-                </div>
+                <EmptyState
+                  className="mt-3"
+                  icon="wrench"
+                  title="Aucun prestataire dans cette zone pour le moment"
+                  text="Les profils vérifiés apparaîtront ici dès les premières inscriptions. Vous pouvez déjà publier votre besoin."
+                  href="/demande"
+                  action="Publier un besoin"
+                />
               )}
             </div>
 
@@ -309,12 +324,14 @@ export default async function HomePage() {
                   </div>
                 </Link>
               ) : (
-                <div className="mt-3 rounded-2xl border border-dashed border-line p-6 text-sm text-muted">
-                  Aucune annonce pour le moment.{' '}
-                  <Link href="/market/nouveau" className="font-bold text-teal-700">
-                    Publier.
-                  </Link>
-                </div>
+                <EmptyState
+                  className="mt-3"
+                  icon="cart"
+                  title="Soyez le premier à publier une annonce"
+                  text="Les produits et services de votre région apparaîtront ici."
+                  href="/market/nouveau"
+                  action="Publier une annonce"
+                />
               )}
             </div>
           </div>
@@ -395,7 +412,7 @@ export default async function HomePage() {
           </section>
         ) : null}
 
-        {providers.length > 0 ? (
+        {people.length > 0 ? (
           <section className="container-lc py-4 sm:py-6">
             <div className="flex items-end justify-between gap-3">
               <div>
@@ -405,46 +422,55 @@ export default async function HomePage() {
                 <h2 className="mt-1 text-xl font-black tracking-tight sm:text-2xl">
                   Personnes recommandées
                 </h2>
+                <p className="mt-1 text-xs text-muted">
+                  Découvrez des profils réels près de chez vous.
+                </p>
               </div>
               <Link
                 href="/people"
-                className="text-sm font-semibold text-teal-700 hover:underline dark:text-teal-300"
+                className="shrink-0 text-xs font-bold text-teal-700 hover:underline dark:text-teal-300 sm:text-sm"
               >
                 Annuaire
               </Link>
             </div>
             <div className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
-              {providers.slice(0, 4).map((provider, index) => (
+              {people.slice(0, 4).map((person) => (
                 <Link
-                  key={provider.id}
-                  href={`/prestataires/${provider.id}`}
-                  className="group rounded-2xl border border-line bg-surface p-3 shadow-soft transition-all hover:-translate-y-0.5 hover:border-teal-500/30 hover:shadow-lift"
+                  key={person.id}
+                  href={`/people/${person.id}`}
+                  className="group flex min-h-[132px] flex-col justify-between rounded-2xl border border-line bg-surface p-3.5 shadow-soft transition active:scale-[0.99] sm:hover:-translate-y-0.5 sm:hover:border-teal-500/30 sm:hover:shadow-lift"
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-teal-50">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={provider.photo_url || PEOPLE_IMAGES[index % PEOPLE_IMAGES.length]}
-                        alt=""
-                        className="h-full w-full object-cover object-top"
-                      />
+                    <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-full gradient-brand text-base font-black text-white">
+                      {person.avatar_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={person.avatar_url}
+                          alt=""
+                          className="h-full w-full object-cover object-top"
+                        />
+                      ) : (
+                        person.full_name.slice(0, 1).toUpperCase()
+                      )}
                     </span>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-black">{provider.nom}</p>
-                      <p className="truncate text-[10px] text-muted">
-                        {provider.metier_nom}
+                      <p className="truncate text-sm font-black">
+                        {person.full_name}
+                      </p>
+                      <p className="truncate text-[10px] capitalize text-muted">
+                        {person.role}
                       </p>
                       <p className="mt-0.5 flex items-center gap-1 text-[10px] text-muted">
                         <Icon name="mapPin" size={11} />
-                        {provider.quartier}
+                        {person.city ?? 'Cameroun'}
                       </p>
                     </div>
                   </div>
                   <div className="mt-2 flex items-center justify-between gap-2">
-                    <span className="text-[10px] font-semibold text-amber-600">
-                      ★ {provider.note_moyenne.toFixed(1)} ({provider.nombre_avis})
+                    <span className="line-clamp-1 text-[10px] text-muted">
+                      {person.bio || 'Membre LIFE CONNECT'}
                     </span>
-                    <span className="rounded-lg bg-teal-50 px-2 py-1 text-[10px] font-bold text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
+                    <span className="shrink-0 rounded-lg bg-teal-50 px-2 py-1 text-[10px] font-bold text-teal-700 dark:bg-teal-500/10 dark:text-teal-300">
                       Voir profil
                     </span>
                   </div>

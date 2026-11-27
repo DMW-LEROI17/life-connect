@@ -1,3 +1,4 @@
+import { isDemoText } from '@/lib/demo';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 
 export interface ProviderSearchResult {
@@ -121,6 +122,10 @@ function filterProviders(
       disponible: Boolean(row.disponible),
     }))
     .filter((provider) => {
+      if (isDemoText(provider.nom)) {
+        return false;
+      }
+
       if (categories.size > 0 && !categories.has(provider.metier)) {
         return false;
       }
